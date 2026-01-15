@@ -35,14 +35,13 @@
   },
   // NOTE: Include source and declaration files so TypeScript can read them for type checking and IDE autocomplete.
   "include": [
-    // "src", // TODO: Check if this is needed
-    "entrypoints", // TODO: Check if this is needed
+    "entrypoints", // NOTE: WXT uses `entrypoints/` for extension entry points (background, content, etc) instead of `src/`.
     "eslint.config.ts",
     "eslint.constants.ts",
     ".prettierrc.mjs",
     "wxt.config.ts",
     "setupTests.ts",
     "global.d.ts", // NOTE: Internal file to provide global type definitions for modules that don't have them.
-    ".wxt/wxt.d.ts", // NOTE: Provides type definitions for WXT related (Vite, React...)
+    ".wxt/wxt.d.ts" // NOTE: Provides type definitions for WXT related (Vite, React...)
   ]
 }
