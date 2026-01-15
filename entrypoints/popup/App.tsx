@@ -1,20 +1,19 @@
 import { useState } from 'react';
-import wxtLogo from '/wxt.svg';
-import './App.css';
 
-function App() {
+import './App.css';
+import wxtLogo from '/wxt.svg';
+
+const App = () => {
   const [count, setCount] = useState(0);
 
   return (
-      <div className='app'>
-        <a href="https://wxt.dev" target="_blank">
-          <img src={wxtLogo} className="logo" alt="WXT logo" />
-        </a>
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-      </div>
+    <div className="app">
+      <a href="https://wxt.dev" rel="noreferrer" target="_blank">
+        <img alt="WXT logo" className="logo" src={wxtLogo} />
+      </a>
+      <button onClick={() => setCount((c) => c + 1)}>count is {count}</button>
+    </div>
   );
-}
+};
 
 export default App;

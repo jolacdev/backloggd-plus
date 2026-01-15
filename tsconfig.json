@@ -1,7 +1,48 @@
 {
-  "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "jsx": "react-jsx"
-  }
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": false, // Disabled to prevent TS from blocking compilation for unused vars/imports. Handled by ESLint `@typescript-eslint/no-unused-vars`.
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+
+    // NOTE: Type checking & IDE autocomplete.
+    // "paths": {
+    //   "@components/*": ["./src/shared/components/*"],
+    //   "@constants": ["./src/shared/constants.ts"],
+    //   "@features/*": ["./src/features/*"],
+    //   "@hooks/*": ["./src/shared/hooks/*"],
+    //   "@icons/*": ["./src/shared/icons/*"],
+    //   "@screens/*": ["./src/screens/*"],
+    //   "@store/*": ["./src/store/*"],
+    //   "@utils/*": ["./src/shared/utils/*"],
+    //   "types/*": ["./src/types/*"]
+    // }
+  },
+  // NOTE: Include source and declaration files so TypeScript can read them for type checking and IDE autocomplete.
+  "include": [
+    // "src", // TODO: Check if this is needed
+    "entrypoints", // TODO: Check if this is needed
+    "eslint.config.ts",
+    "eslint.constants.ts",
+    ".prettierrc.mjs",
+    "wxt.config.ts",
+    "setupTests.ts",
+    "global.d.ts", // NOTE: Internal file to provide global type definitions for modules that don't have them.
+    ".wxt/wxt.d.ts", // NOTE: Provides type definitions for WXT related (Vite, React...)
+  ]
 }

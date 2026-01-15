@@ -1,0 +1,54 @@
+{
+  // ===== [Project Recommended Settings] =====
+  // General Behavior
+  "editor.formatOnSave": true,
+
+  // Syntax highlighting for PyInstaller .spec files
+  "files.associations": {
+    "pywebview-react.spec": "python",
+    "*.css": "tailwindcss"
+  },
+
+  // Language Identifiers Specific Settings
+  "[javascript][typescript][javascriptreact][typescriptreact][html][css][scss][json][jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "never"
+    },
+    "editor.linkedEditing": true
+  },
+
+  // Python
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      // "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    }
+  },
+
+  // Project-specific: treat 'backend' as root so imports omit 'backend.' prefix
+  "python.analysis.extraPaths": ["backend"],
+  "python.analysis.autoImportCompletions": true,
+
+  // Project-specific: specify MyPy config file
+  "mypy-type-checker.args": [
+    "--config-file=${workspaceFolder}/backend/pyproject.toml"
+  ],
+
+  // ===== [Personal Settings] =====
+  "workbench.editor.wrapTabs": true,
+  "editor.mouseWheelZoom": true,
+  "workbench.editor.focusRecentEditorAfterClose": false, // Closing a tab will focus the tab to the right.
+  "git.allowForcePush": true,
+  // Visuals (Theme, Icons, Editor)
+  "workbench.colorTheme": "One Dark Pro Flat",
+  "workbench.iconTheme": "vscode-jetbrains-icon-theme-2023-dark",
+  "editor.cursorBlinking": "smooth",
+  "editor.guides.bracketPairs": true,
+  // Code Spell Checker Extension
+  "cSpell.language": "en,en-GB,es"
+}
