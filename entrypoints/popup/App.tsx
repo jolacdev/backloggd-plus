@@ -1,20 +1,42 @@
-import { useState } from 'react';
-import wxtLogo from '/wxt.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-function App() {
-  const [count, setCount] = useState(0);
+import { testExportLabelStorageItem } from '@globalShared/storage';
+
+const App = () => {
+  const { t } = useTranslation();
+  const [value, setValue] = useState('');
+
+  useEffect(() => {
+    testExportLabelStorageItem.getValue().then(setValue);
+  }, []);
+
+  const handleSave = async () => {
+    await testExportLabelStorageItem.setValue(value);
+  };
 
   return (
-      <div className='app'>
-        <a href="https://wxt.dev" target="_blank">
-          <img src={wxtLogo} className="logo" alt="WXT logo" />
-        </a>
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div className="bg-base-300 p-6 text-white">
+      <header className="mb-6">
+        <h1 className="text-primary text-xl font-bold select-none">
+          {t('title')}
+        </h1>
+      </header>
+
+      <main className="flex flex-col gap-6">
+        <input
+          className="input input-primary"
+          placeholder={t('test.placeholder')}
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
+        <button className="btn btn-primary" onClick={handleSave}>
+          {t('test.save')}
         </button>
-      </div>
+      </main>
+    </div>
   );
-}
+};
 
 export default App;

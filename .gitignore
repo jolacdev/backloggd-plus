@@ -1,3 +1,15 @@
+# IDE Settings
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Node.js - Dependencies
+node_modules
+
+# macOS - System Files
+.DS_Store
+
 # Logs
 logs
 *.log
@@ -7,20 +19,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+# WXT - Build & Cache
 .output
-stats.html
-stats-*.json
 .wxt
 web-ext.config.ts
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
