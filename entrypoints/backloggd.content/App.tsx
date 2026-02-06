@@ -1,8 +1,8 @@
+import { ExportButton } from './features/export/components/ExportButton';
+
 const App = () => (
   <>
-    <button id="testButton" onClick={() => console.log('clicked')}>
-      Test
-    </button>
+    <ExportButton />
   </>
 );
 
