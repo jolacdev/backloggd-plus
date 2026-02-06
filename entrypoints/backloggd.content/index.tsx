@@ -35,6 +35,10 @@ export default defineContentScript({
         append: 'after',
         position: 'inline', // NOTE: Adds inline styles to the container depending on the value.
         onMount: (container) => {
+          // Container inline styles.
+          container.style.display = 'inline-flex';
+          container.style.marginLeft = '10px';
+
           const root = createRoot(container);
           root.render(
             <QueryClientProvider client={queryClient}>

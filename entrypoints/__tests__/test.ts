@@ -1,6 +1,3 @@
-// https://github.com/wxt-dev/examples/blob/main/examples/vitest-unit-testing/entrypoints/__tests__/background.test.ts
-// https://github.com/aklinker1/github-better-line-counts
-
 import { describe, expect, it, vi } from 'vitest';
 
 describe('vitest config: mockReset & restoreMocks', () => {

@@ -3,8 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 import { defineConfig } from 'wxt';
 
-// TODO: in case of TS error check if there are multiple vite versions installed:
-// https://github.com/sveltejs/kit/issues/13102
+// TODO: in case of TS error check if there are multiple vite versions installed: https://github.com/sveltejs/kit/issues/13102
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
