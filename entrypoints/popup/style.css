@@ -1,7 +1,66 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+@import 'tailwindcss';
+
+/* NOTE: https://daisyui.com/docs/themes/#-7 */
+/* Enable only 'business' theme. */
+@plugin 'daisyui' {
+  themes: business;
 }
 
-body {
-  margin: 0;
+/* DaisyUI Business Theme Variables Customizations. */
+@plugin 'daisyui/theme' {
+  name: 'business';
+  default: true;
+  --color-primary: #209a58;
+}
+
+/* DaisyUI Business Theme Classes Customizations */
+/* https://daisyui.com/docs/themes/#how-to-add-custom-styles-for-a-specific-theme */
+[data-theme='business'] {
+  .btn {
+    &:active,
+    &.btn-active {
+      translate: 0 1px;
+    }
+  }
+
+  .btn-ghost {
+    border-width: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+}
+
+@theme {
+  --color-charcoal-50: #f1f1f1;
+  --color-charcoal-100: #e2e2e2;
+  --color-charcoal-200: #c9c9c9;
+  --color-charcoal-300: #aeaeae;
+  --color-charcoal-400: #969696;
+  --color-charcoal-500: #7c7c7c;
+  --color-charcoal-600: #666666;
+  --color-charcoal-700: #4e4e4e;
+  --color-charcoal-800: #393939;
+  --color-charcoal-900: #242424;
+  --color-charcoal-950: #151515;
+
+  --color-leaf-50: #e9ffef;
+  --color-leaf-100: #c5fed6;
+  --color-leaf-200: #83feaf;
+  --color-leaf-300: #39f58f;
+  --color-leaf-400: #35e887;
+  --color-leaf-500: #31d97e;
+  --color-leaf-600: #2dc975;
+  --color-leaf-700: #2abd6d;
+  --color-leaf-800: #25ae64;
+  --color-leaf-900: #22a25d;
+  --color-leaf-950: #209a58;
+}
+
+@layer base {
+  body {
+    margin: 0;
+    width: 320px;
+    min-height: 200px;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  }
 }

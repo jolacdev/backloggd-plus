@@ -1,0 +1,36 @@
+{
+  // ===== [Project Recommended Settings] =====
+  // General Behavior
+  "editor.formatOnSave": true,
+
+  // Syntax highlighting for PyInstaller .spec files
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+
+  // Language Identifiers Specific Settings
+  "[javascript][typescript][javascriptreact][typescriptreact][html][css][scss][json][jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "never"
+    },
+    "editor.linkedEditing": true
+  },
+
+  // ===== [Personal Settings] =====
+  "workbench.editor.wrapTabs": true,
+  "editor.mouseWheelZoom": true,
+  "workbench.editor.focusRecentEditorAfterClose": false, // Closing a tab will focus the tab to the right.
+  "git.allowForcePush": true,
+  // Visuals (Theme, Icons, Editor)
+  "workbench.colorTheme": "One Dark Pro Flat",
+  "workbench.iconTheme": "vscode-jetbrains-icon-theme-2023-dark",
+  "editor.cursorBlinking": "smooth",
+  "editor.guides.bracketPairs": true,
+  // Code Spell Checker Extension
+  "cSpell.language": "en,en-GB,es",
+  // Project Specific Words
+  "cSpell.words": ["backloggd", "Backloggd"]
+}

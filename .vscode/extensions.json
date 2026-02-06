@@ -1,0 +1,28 @@
+{
+  "recommendations": [
+    // ===== [Project Recommended Extensions] =====
+    // ⚛️ React
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "dsznajder.es7-react-js-snippets",
+    "vitest.explorer",
+    "pflannery.vscode-versionlens",
+
+    // ===== [Personal Extensions] =====
+    // 🌐 Spell Checking
+    "streetsidesoftware.code-spell-checker",
+    "streetsidesoftware.code-spell-checker-british-english",
+    "streetsidesoftware.code-spell-checker-spanish",
+
+    // 🛠️ General Tools
+    "gruntfuggly.todo-tree",
+    "donjayamanne.githistory",
+    "mhutchie.git-graph",
+    "shinotatwu-ds.file-tree-generator",
+
+    // 🎨 Themes / Icons
+    "zhuangtongfa.material-theme",
+    "chadalen.vscode-jetbrains-icon-theme"
+  ]
+}
