@@ -6,43 +6,49 @@ import i18n from '@globalShared/i18n';
 import App from './App';
 import { queryClient } from './lib/react-query';
 import { hasUrlChanged } from './utils/url';
-import { isCurrentUserProfilePage } from './utils/user';
+import { getLoggedInUsername } from './utils/user';
 
+import css from './style.css?inline'; // NOTE: Imports CSS file as a string.
+
+// TODO: Check if move to constants
+const INJECTED_ROOT_ELEMENT = 'backloggd-plus-ui';
+
+// TODO: Check support for development hot reload. Check ui.remove(); || ui = null;
 export default defineContentScript({
-  // TODO: Check if specifically filter profile pages here.
-  // If so, remove from isCurrentUserProfilePage logic
   matches: ['*://backloggd.com/*', '*://*.backloggd.com/*'],
 
   main(ctx) {
     i18n.options.defaultNS = 'content'; // NOTE: Set 'content' as default namespace for this entrypoint.
 
-    const inject = () => {
-      // Restrict to the logged-in user that is in their own profile pages.
-      if (!isCurrentUserProfilePage()) {
+    const inject = async () => {
+      const username = getLoggedInUsername();
+      if (!username) {
         return;
       }
 
-      const testElement = document.getElementById('testButton');
-      const anchor = document.getElementById('add-a-game');
+      const injectedRootElement = document.querySelector(INJECTED_ROOT_ELEMENT);
+      const navbarDropdownDividerAnchor = document.querySelector(
+        '#navbarDropdown + .dropdown-menu > .dropdown-divider:last-of-type',
+      );
 
       // Avoid duplicate injections or missing anchor.
-      if (testElement || !anchor) {
+      if (injectedRootElement || !navbarDropdownDividerAnchor) {
         return;
       }
 
-      const ui = createIntegratedUi(ctx, {
-        anchor,
+      const ui = await createShadowRootUi(ctx, {
+        anchor: navbarDropdownDividerAnchor,
         append: 'after',
+        css,
+        name: INJECTED_ROOT_ELEMENT,
         position: 'inline', // NOTE: Adds inline styles to the container depending on the value.
         onMount: (container) => {
-          // Container inline styles.
-          container.style.display = 'inline-flex';
-          container.style.marginLeft = '10px';
+          // NOTE: Use container inline style by using `container.style`.
 
           const root = createRoot(container);
           root.render(
             <QueryClientProvider client={queryClient}>
-              <App />
+              <App username={username} />
             </QueryClientProvider>,
           );
 
