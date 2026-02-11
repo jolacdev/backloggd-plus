@@ -1,7 +1,7 @@
 {
   "features": {
     "export": {
-      "buttonText": "Export",
+      "button": "Export",
       "dialog": {
         "title": "Export your logged games",
         "description": "Download a CSV file containing your logged game details.",

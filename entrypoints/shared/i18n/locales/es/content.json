@@ -1,7 +1,7 @@
 {
   "features": {
     "export": {
-      "buttonText": "Exportar",
+      "button": "Exportar",
       "dialog": {
         "title": "Exportar tus juegos registrados",
         "description": "Descarga un archivo CSV con los detalles de los juegos que has registrado.",

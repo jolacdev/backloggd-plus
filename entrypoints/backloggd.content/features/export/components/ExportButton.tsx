@@ -40,7 +40,7 @@ const ExportButton = ({ username }: ExportButtonProps) => {
   return (
     <DropdownButton
       id="export-button"
-      label={t('buttonText')}
+      label={t('button')}
       onClick={handleClick}
     />
   );

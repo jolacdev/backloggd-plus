@@ -51,7 +51,7 @@ export const TestExportButton = () => {
       onClick={handleClick}
     >
       {/* TODO: Remove hardcoded loading */}
-      {isButtonDisabled ? 'Loading...' : t('buttonText')}
+      {isButtonDisabled ? 'Loading...' : t('button')}
     </button>
   );
 };
