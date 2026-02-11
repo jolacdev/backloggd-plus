@@ -1,1 +1,12 @@
 @import 'tailwindcss';
+/* TODO: Check if `root: ':host'` is the correct value to use for Shadow DOM */
+@plugin 'daisyui' {
+  root: ':host';
+}
+
+@layer base {
+  * {
+    font-family: Roboto, sans-serif;
+    color: #ffffff;
+  }
+}
