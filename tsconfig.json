@@ -21,6 +21,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
+    /* Global Types */
+    "types": ["vitest/globals"],
+
     // NOTE: Type checking & IDE autocomplete.
     "paths": {
       // Standard aliases: @components, @constants, @features, @hooks, @icons, @screens, @store, @utils, types
@@ -38,6 +41,7 @@
     ".prettierrc.mjs",
     "wxt.config.ts",
     "vitest.config.ts",
+    "vitest.setup.ts",
     "global.d.ts", // NOTE: Internal file to provide global type definitions for modules that don't have them.
     ".wxt/wxt.d.ts" // NOTE: Provides type definitions for WXT related (Vite, React...)
   ]

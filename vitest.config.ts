@@ -6,8 +6,11 @@ export default defineConfig({
   plugins: [WxtVitest()],
 
   test: {
-    include: ['**/__tests__/**/*.ts', '**/*.{test,spec}.ts'],
+    environment: 'jsdom',
+    globals: true,
+    include: ['**/__tests__/**/*.{ts,tsx}', '**/*.{test,spec}.{ts,tsx}'],
     mockReset: true,
     restoreMocks: true,
+    setupFiles: ['vitest.setup.ts'],
   },
 });

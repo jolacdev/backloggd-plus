@@ -73,7 +73,7 @@ export default [
       globals: {
         ...autoImports.languageOptions.globals,
         ...globals.browser,
-        ...globals.jest,
+        ...globals.vitest,
         ...globals.node,
       },
     },
