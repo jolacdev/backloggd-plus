@@ -1,7 +1,18 @@
 {
   "features": {
     "export": {
-      "buttonText": "Export"
+      "buttonText": "Export",
+      "dialog": {
+        "title": "Export your logged games",
+        "description": "Download a CSV file containing your logged game details.",
+        "submit": "Export"
+      }
+    }
+  },
+  "common": {
+    "dialog": {
+      "submit": "Submit",
+      "close": "Close"
     }
   }
 }

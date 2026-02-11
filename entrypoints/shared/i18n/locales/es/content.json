@@ -1,7 +1,18 @@
 {
   "features": {
     "export": {
-      "buttonText": "Exportar"
+      "buttonText": "Exportar",
+      "dialog": {
+        "title": "Exportar tus juegos registrados",
+        "description": "Descarga un archivo CSV con los detalles de los juegos que has registrado.",
+        "submit": "Exportar"
+      }
+    }
+  },
+  "common": {
+    "dialog": {
+      "submit": "Aceptar",
+      "close": "Cerrar"
     }
   }
 }

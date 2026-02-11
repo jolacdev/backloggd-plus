@@ -8,7 +8,7 @@ type ExportButtonProps = {
   username: string;
 };
 
-// TODO: Add modal for validation.
+// TODO: Add dialog for validation.
 const ExportButton = ({ username }: ExportButtonProps) => {
   const { t } = useTranslation(undefined, { keyPrefix: 'features.export' });
 
