@@ -48,10 +48,11 @@ const parseProfileGamesPage = (
   const scrapedGames = gameCards.map((card) => {
     const id = card.getAttribute('game_id')!; // Attribute game_id should always exist.
     const name =
-      card.querySelector('.game-text-centered')?.textContent?.trim() || '';
+      card.querySelector('.game-text-centered')?.textContent?.trim() ?? '';
+    const path = card.querySelector('a.cover-link')?.getAttribute('href') ?? '';
     const rating = card.getAttribute('data-rating') || undefined;
 
-    return { id, name, rating };
+    return { id, name, path, rating };
   });
   const totalGames = getTotalGamesCount(doc);
 

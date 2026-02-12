@@ -13,6 +13,7 @@ export type ProfileGamesPageResponseScrape = {
 type ProfileGameResponseScrape = {
   id: string; // .card[game_id]
   name: string; // .card .game-text-centered || .card img.card-img
+  path: string; // .card a.cover-link (href)
   rating?: string; // .card[data-rating]
   // Other fields exist but are unreliable/deprecated like #preloaded-log-<game_id>, status , isLiked, etc.
 };
