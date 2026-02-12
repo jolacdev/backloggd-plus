@@ -26,66 +26,67 @@ type ProfileGameResponseScrape = {
  * ⚠️ Internal, undocumented, and subject to breakage.
  */
 export type GameLogDetailsResponse = {
+  // Inner attributes without comment default to their default type value or null (if nullable).
   playthroughs: PlaythroughResponse[];
   game_log?: GameLogResponse;
 };
 
 type GameLogResponse = {
-  id: number;
-  avg_finish_time: null | unknown; // TODO: Check
-  avg_master_time: null | unknown; // TODO: Check
+  id: number; // Default to generated id.
+  avg_finish_time: null | number;
+  avg_master_time: null | number;
   game_liked: boolean;
   is_backlog: boolean;
   is_play: boolean;
   is_playing: boolean;
   is_wishlist: boolean;
-  override_cover_id: null | unknown; // unknown = number?
-  rating: number; // Defaults to 0.
-  status: string; // "completed" || ... // TODO: Check
-  time_entries_editions: unknown[]; // TODO: Check
-  time_source: number; // TODO: Check if nullable.
-  total_hours: number; // Defaults to 0.
-  total_minutes: number; // Defaults to 0.
+  override_cover_id: null | number;
+  rating: number;
+  status: string; // Appears always as "completed". Can be ignored.
+  time_entries_editions: unknown[]; // Unable to verify `unknown` type.
+  time_source: number; // Default 1.
+  total_hours: number;
+  total_minutes: number;
 };
 
 type PlaythroughResponse = {
-  id: number;
-  created_at: string;
-  edition_id: null | unknown; // unknown = number?
-  finish_date: string;
+  id: number; // Default to generated id.
+  created_at: string; // Defaults to date string.
+  edition_id: null | number;
+  finish_date: null | string;
   hours_finished: number;
   hours_mastered: number;
   hours_played: number;
   is_master: boolean;
   is_replay: boolean;
-  medium_id: number;
+  medium_id: null | number;
   mins_finished: number;
   mins_mastered: number;
   mins_played: number;
-  platform: number; // TODO: Check if nullable.
+  platform: null | number;
   play_dates: PlayDate[];
-  played_platform: number; // TODO: Check if nullable.
+  played_platform: null | number;
   rating: number;
   review: string;
   review_spoilers: boolean;
-  start_date: string;
-  storefront_id: null | unknown; // unknown = number?
-  sync_sessions: boolean;
+  start_date: null | string;
+  storefront_id: null | unknown; // Unable to verify `unknown` type, probably `number`.
+  sync_sessions: boolean; // Default true.
   title: string;
-  updated_at: string;
+  updated_at: string; // Defaults to date string.
 };
 
 type PlayDate = {
-  id: number;
+  id: number; // Default to generated id.
   edited: boolean;
   finish_date: null | string;
   hours: number;
   minutes: number;
   note: string;
-  privacy: null | unknown; // TODO: Check
-  range_end_date: string;
-  range_start_date: string;
+  privacy: null | number;
+  range_end_date: string; // Defaults to date string (YYYY-MM-DD).
+  range_start_date: string; // Defaults to date string (YYYY-MM-DD).
   start_date: null | string;
-  status: null | unknown; // TODO: Check
-  tags: unknown[];
+  status: null | unknown; // Unable to verify `unknown` type.
+  tags: string[];
 };
