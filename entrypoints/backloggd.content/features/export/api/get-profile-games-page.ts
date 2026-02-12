@@ -1,7 +1,7 @@
 import { queryOptions, UseQueryOptions } from '@tanstack/react-query';
 
 import { api } from '@content/lib/axios';
-import { ProfileGamesPageResponseScrape } from '@content/types/api';
+import { ProfileGamesPageResponseScrape } from '@content/shared/types/api';
 
 import { queryKeys } from './keys';
 

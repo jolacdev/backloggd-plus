@@ -1,7 +1,7 @@
 import { queryOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import { api } from '@content/lib/axios';
-import { GameLogDetailsResponse } from '@content/types/api';
+import { GameLogDetailsResponse } from '@content/shared/types/api';
 
 import { queryKeys } from './keys';
 

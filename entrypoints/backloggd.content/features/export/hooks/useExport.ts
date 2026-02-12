@@ -1,7 +1,7 @@
 import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { ProfileGamesPageResponseScrape } from '@content/types/api';
+import { ProfileGamesPageResponseScrape } from '@content/shared/types/api';
 
 import { createProfileGamesPageQueryOptions } from '../api/get-profile-games-page';
 

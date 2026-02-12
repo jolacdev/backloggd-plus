@@ -5,8 +5,8 @@ import i18n from '@globalShared/i18n';
 
 import App from './App';
 import { queryClient } from './lib/react-query';
-import { hasUrlChanged } from './utils/url';
-import { getLoggedInUsername } from './utils/user';
+import { hasUrlChanged } from './shared/utils/url';
+import { getLoggedInUsername } from './shared/utils/user';
 
 import css from './style.css?inline'; // NOTE: Imports CSS file as a string.
 

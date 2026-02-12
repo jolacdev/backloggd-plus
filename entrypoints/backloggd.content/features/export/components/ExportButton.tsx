@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import DropdownButton from '@content/components/DropdownButton';
+import DropdownButton from '@content/shared/components/DropdownButton';
 
 import useExport from '../hooks/useExport';
 

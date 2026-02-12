@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import useStorage from '@content/hooks/useStorage';
-import { getLoggedInUsername } from '@content/utils/user';
+import useStorage from '@content/shared/hooks/useStorage';
+import { getLoggedInUsername } from '@content/shared/utils/user';
 import { testExportLabelStorageItem } from '@globalShared/storage';
 
 import useExport from '../hooks/useExport';
