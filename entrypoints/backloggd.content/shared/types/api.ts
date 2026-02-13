@@ -5,15 +5,15 @@
  *
  * ⚠️ Internal, undocumented, and subject to breakage.
  */
-export type ProfileGamesPageResponseScrape = {
-  games: ProfileGameResponseScrape[];
+export type ProfileGamesPageScrapeResponse = {
+  games: ProfileGameScrapeResponse[];
   totalGames: number;
 };
 
-type ProfileGameResponseScrape = {
+type ProfileGameScrapeResponse = {
   id: string; // .card[game_id]
   name: string; // .card .game-text-centered || .card img.card-img
-  path: string; // .card a.cover-link (href)
+  url: string; // https://backloggd.com + .card a.cover-link (href)
   rating?: string; // .card[data-rating]
   // Other fields exist but are unreliable/deprecated like #preloaded-log-<game_id>, status , isLiked, etc.
 };

@@ -1,7 +1,7 @@
 import { queryOptions, UseQueryOptions } from '@tanstack/react-query';
 
 import { api } from '@content/lib/axios';
-import { ProfileGamesPageResponseScrape } from '@content/shared/types/api';
+import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
 
 import { queryKeys } from './keys';
 
@@ -40,20 +40,23 @@ const getTotalGamesCount = (doc: Document): number => {
 
 const parseProfileGamesPage = (
   doc: Document,
-): ProfileGamesPageResponseScrape => {
+): ProfileGamesPageScrapeResponse => {
   const gameCards = [
     ...doc.querySelectorAll('#user-games-library-container .card.game-cover'),
   ];
 
-  const scrapedGames = gameCards.map((card) => {
-    const id = card.getAttribute('game_id')!; // Attribute game_id should always exist.
-    const name =
-      card.querySelector('.game-text-centered')?.textContent?.trim() ?? '';
-    const path = card.querySelector('a.cover-link')?.getAttribute('href') ?? '';
-    const rating = card.getAttribute('data-rating') || undefined;
+  const scrapedGames: ProfileGamesPageScrapeResponse['games'] = gameCards.map(
+    (card) => {
+      const id = card.getAttribute('game_id')!; // Attribute game_id should always exist.
+      const name =
+        card.querySelector('.game-text-centered')?.textContent?.trim() ?? '';
+      const path = card.querySelector('a.cover-link')?.getAttribute('href');
+      const url = path ? `https://backloggd.com${path}` : '';
+      const rating = card.getAttribute('data-rating') || undefined;
 
-    return { id, name, path, rating };
-  });
+      return { id, name, rating, url };
+    },
+  );
   const totalGames = getTotalGamesCount(doc);
 
   return {
@@ -69,7 +72,7 @@ type ProfileGamesPageParams = {
 
 export const createProfileGamesPageQueryOptions = <
   TError = Error,
-  TData = ProfileGamesPageResponseScrape,
+  TData = ProfileGamesPageScrapeResponse,
 >(
   { pageNumber, username }: ProfileGamesPageParams,
   options?: Omit<

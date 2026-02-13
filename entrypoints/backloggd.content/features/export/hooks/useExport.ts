@@ -1,7 +1,7 @@
 import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { ProfileGamesPageResponseScrape } from '@content/shared/types/api';
+import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
 
 import { createProfileGamesPageQueryOptions } from '../api/get-profile-games-page';
 
@@ -10,7 +10,7 @@ type UseExportProps = {
 };
 
 // TODO: Move to utils?
-const getTotalPages = (profileGamesPage?: ProfileGamesPageResponseScrape) => {
+const getTotalPages = (profileGamesPage?: ProfileGamesPageScrapeResponse) => {
   if (!profileGamesPage) {
     return 0;
   }
@@ -34,7 +34,7 @@ const getPageNumbers = (totalPages: number) =>
 //   }, {});
 
 const combineProfileGameResults = (
-  results: UseQueryResult<ProfileGamesPageResponseScrape, Error>[],
+  results: UseQueryResult<ProfileGamesPageScrapeResponse, Error>[],
 ) => ({
   data: results.flatMap(({ data }) => (data ? data.games : [])),
   fetching: results.some((result) => result.isFetching),
