@@ -1,7 +1,7 @@
 /* eslint-disable perfectionist/sort-object-types */
-type GameDetailsCSV = {
+export type GameLogDetailsCSV = {
   // GET - Profile Games Page
-  id: string;
+  id: number;
   name: string;
   backloggd_url: string; // https://backloggd.com + `path`
 
@@ -26,8 +26,8 @@ type GameDetailsCSV = {
   start_date: string;
   finish_date: string;
   // --- Flags ---
-  is_master: string;
-  is_replay: string;
+  is_master: boolean;
+  is_replay: boolean;
   // --- Review ---
   rating: number;
   review: string;
