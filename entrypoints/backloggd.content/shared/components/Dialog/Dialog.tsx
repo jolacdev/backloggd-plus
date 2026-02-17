@@ -1,4 +1,4 @@
-import { MouseEvent, ReactNode } from 'react';
+import { MouseEvent, ReactNode, SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Button from '../Button';
@@ -37,13 +37,17 @@ const Dialog = ({
     }
   }, [isOpen]);
 
+  const handleClose = (_e: SyntheticEvent<HTMLDialogElement>) => {
+    onClose();
+  };
+
   const handleSubmit = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     onSubmit();
   };
 
   return (
-    <dialog ref={dialogRef} className="modal" onClose={onClose}>
+    <dialog ref={dialogRef} className="modal" onClose={handleClose}>
       <div className="modal-box border border-[var(--back-secondary)] bg-[var(--back-primary)] p-0">
         {/* Main content area */}
         <section className="p-4">
