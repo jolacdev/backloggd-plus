@@ -13,15 +13,6 @@ export const fetchGameLogDetails = async (
 ): Promise<GameLogDetailsResponse> =>
   await api.get<GameLogDetailsResponse>(`/log/edit/${gameId}`);
 
-export const gameLogDetailsQueryOptions = (gameId: string) =>
-  queryOptions({
-    queryKey: queryKeys.gameLogDetails(gameId),
-    queryFn: () => fetchGameLogDetails(gameId),
-  });
-
-export const useGameLogDetails = (gameId: string) =>
-  useQuery(gameLogDetailsQueryOptions(gameId));
-
 type GameLogDetailsParams = {
   gameId: string;
 };
