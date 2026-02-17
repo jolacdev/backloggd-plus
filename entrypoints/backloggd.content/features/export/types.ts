@@ -3,7 +3,7 @@ export type GameLogDetailsCSV = {
   // GET - Profile Games Page
   id: number;
   name: string;
-  backloggd_url: string; // https://backloggd.com + `path`
+  url: string;
 
   // GET - Game Log Details
   // Attributes from `game_log`
