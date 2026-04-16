@@ -46,7 +46,7 @@ describe('Dialog', () => {
     });
 
     it('disables submit button when isLoading is true', () => {
-      render(<Dialog {...defaultProps} isLoading={true} />);
+      render(<Dialog {...defaultProps} isDisabled={true} />);
       const submitButton = screen.getByText(defaultKeys.submit);
       expect(submitButton.closest('button')).toHaveProperty('disabled', true);
     });

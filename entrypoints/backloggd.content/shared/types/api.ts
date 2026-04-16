@@ -10,7 +10,7 @@ export type ProfileGamesPageScrapeResponse = {
   totalGames: number;
 };
 
-type ProfileGameScrapeResponse = {
+export type ProfileGameScrapeResponse = {
   id: string; // .card[game_id]
   name: string; // .card .game-text-centered || .card img.card-img
   url: string; // https://backloggd.com + .card a.cover-link (href)

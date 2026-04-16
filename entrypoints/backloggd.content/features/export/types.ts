@@ -1,4 +1,6 @@
 /* eslint-disable perfectionist/sort-object-types */
+export type ExportType = 'csv';
+
 export type GameLogDetailsCSV = {
   // GET - Profile Games Page
   id: number;

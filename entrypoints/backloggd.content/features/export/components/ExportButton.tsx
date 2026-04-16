@@ -15,22 +15,33 @@ const ExportButton = ({ username }: ExportButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportTriggered, setIsExportTriggered] = useState(false);
 
-  const { fetchData, profileGames, isExportEnabled, isFetching } = useExport({
+  const {
+    fetchData,
+    games,
+    profileGames,
+    isExportEnabled,
+    isFetching,
+    isSuccess,
+  } = useExport({
+    exportType: 'csv',
     username, // NOTE: username truthiness is checked inside useExport
   });
 
-  // const isButtonDisabled = isExportEnabled && isFetching;
+  const isDialogDisabled = isExportEnabled && isFetching;
 
   // TODO: Implement actual logic
   useEffect(() => {
-    if (isExportTriggered && !isFetching && profileGames.length > 0) {
+    if (isExportTriggered && !isFetching && isSuccess) {
       // eslint-disable-next-line no-console
-      console.log('Exporting data:', { profileGames });
+      console.log('Exporting data:', { games, profileGames });
 
       // Reset the trigger after export
       setIsExportTriggered(false);
+      setIsModalOpen(false);
+
+      // TODO: Check if data exists and create CSV
     }
-  }, [isExportTriggered, isFetching, profileGames]);
+  }, [games, isExportTriggered, isFetching, isSuccess, profileGames]);
 
   const handleExport = () => {
     setIsExportTriggered(true);
@@ -48,7 +59,7 @@ const ExportButton = ({ username }: ExportButtonProps) => {
         onClick={() => setIsModalOpen(true)}
       />
       <Dialog
-        // isLoading={is???Disabled} // TODO: implement
+        isDisabled={isDialogDisabled}
         isOpen={isModalOpen}
         submitText={t('dialog.submit')}
         title={t('dialog.title')}

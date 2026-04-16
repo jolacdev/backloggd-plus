@@ -8,7 +8,7 @@ type DialogProps = {
   children?: ReactNode;
   submitText?: string;
   isOpen: boolean;
-  isLoading?: boolean;
+  isDisabled?: boolean;
   onClose: () => void;
   onSubmit: () => void;
 };
@@ -19,7 +19,7 @@ const Dialog = ({
   onSubmit,
   submitText = undefined,
   title,
-  isLoading = false,
+  isDisabled = false,
   isOpen,
 }: DialogProps) => {
   const { t } = useTranslation(undefined, { keyPrefix: 'common.dialog' });
@@ -59,8 +59,10 @@ const Dialog = ({
         <footer className="modal-action m-0 bg-[var(--back-secondary)] px-4 py-2">
           <form method="dialog">
             <div className="flex gap-4">
-              <Button variant="secondary">{t('close')}</Button>
-              <Button disabled={isLoading} onClick={handleSubmit}>
+              <Button disabled={isDisabled} variant="secondary">
+                {t('close')}
+              </Button>
+              <Button disabled={isDisabled} onClick={handleSubmit}>
                 {submitText ?? t('submit')}
               </Button>
             </div>

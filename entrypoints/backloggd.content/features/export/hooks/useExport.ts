@@ -1,11 +1,15 @@
+/* eslint-disable perfectionist/sort-objects */
 import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
 
+import { createGameLogDetailsQueryOptions } from '../api/get-game-log-details';
 import { createProfileGamesPageQueryOptions } from '../api/get-profile-games-page';
+import { ExportType, GameLogDetailsCSV } from '../types';
 
 type UseExportProps = {
+  exportType: ExportType;
   username: string;
 };
 
@@ -22,46 +26,36 @@ const getTotalPages = (profileGamesPage?: ProfileGamesPageScrapeResponse) => {
 const getPageNumbers = (totalPages: number) =>
   Array.from({ length: totalPages }, (_, index) => index + 1);
 
-// TODO: Check if has to be removed.
-// const getGameNamesById = (
-//   games: ProfileGamesPageResponseScrape['games'],
-// ): Record<string, string> =>
-//   games.reduce<Record<string, string>>((acc, { id, name }) => {
-//     if (id) {
-//       acc[id] = name;
-//     }
-//     return acc;
-//   }, {});
-
 const combineProfileGameResults = (
   results: UseQueryResult<ProfileGamesPageScrapeResponse, Error>[],
 ) => ({
   data: results.flatMap(({ data }) => (data ? data.games : [])),
-  fetching: results.some((result) => result.isFetching),
-  pending: results.some((result) => result.isPending),
+  isFetching: results.some((result) => result.isFetching),
   isStale: results.some((result) => result.isStale),
+  isSuccess: !!results.length && results.every((result) => result.isSuccess),
   refetch: () => results.forEach((result) => result.refetch()),
 });
 
-// const combineGamesDetails = (
-//   results: UseQueryResult<GameLogDetailsResponse, Error>[],
-// ) => ({
-//   data: results.flatMap(({ data }) => (data?.game_log ? data : [])),
-//   fetching: results.some((result) => result.isFetching),
-//   pending: results.some((result) => result.isPending),
-//   isStale: results.some((result) => result.isStale),
-//   refetch: () => results.forEach((result) => result.refetch()),
-// });
+const combineGamesDetails = (
+  results: UseQueryResult<GameLogDetailsCSV | undefined, Error>[],
+) => ({
+  data: results.flatMap(({ data }) => (data ? [data] : [])),
+  isFetching: results.some((result) => result.isFetching),
+  isStale: results.some((result) => result.isStale),
+  isSuccess: !!results.length && results.every((result) => result.isSuccess),
+  refetch: () => results.forEach((result) => result.refetch()),
+});
 
 // TODO: Separate into multiple hooks? useProfileGamesPagesExport, useGameLogDetailsExport, etc.
-const useExport = ({ username }: UseExportProps) => {
+const useExport = ({ exportType, username }: UseExportProps) => {
   const [isExportEnabled, setIsExportEnabled] = useState(false);
 
   const {
-    data: firstProfileGamesPage,
+    data: firstPageGamesData,
     refetch: refetchFirstPage,
-    isFetching: isFirstQueryFetching,
-    isStale: isQueryStale,
+    isFetching: isFirstPageFetching,
+    isSuccess: isFirstPageSuccess,
+    isStale: isFirstPageStale,
   } = useQuery(
     createProfileGamesPageQueryOptions(
       { pageNumber: 1, username },
@@ -70,44 +64,66 @@ const useExport = ({ username }: UseExportProps) => {
   );
 
   // 2. Calculate total pages and generate an array of page numbers.
-  const totalPages = getTotalPages(firstProfileGamesPage);
+  const totalPages = getTotalPages(firstPageGamesData);
   const pageNumbers = getPageNumbers(totalPages);
 
   // 3. Fetch all pages available.
   // The first page could be skipped, but is requested (from cache) for simplicity and consistency with the combine logic.
+  const canQueryPages =
+    !isFirstPageStale &&
+    !!pageNumbers.length &&
+    isFirstPageSuccess &&
+    !isFirstPageFetching;
+
   const {
-    data: allProfileGames,
-    fetching: areQueriesFetching,
-    refetch: refetchAllPages,
-    isStale: areQueriesStale,
+    data: pagesGamesData,
+    isFetching: arePagesFetching,
+    refetch: refetchPages,
+    isSuccess: arePagesSuccess,
+    isStale: arePagesStale,
   } = useQueries({
     combine: combineProfileGameResults,
     queries: pageNumbers.map((pageNumber) =>
-      createProfileGamesPageQueryOptions({
-        pageNumber,
-        username,
-      }),
+      createProfileGamesPageQueryOptions(
+        {
+          pageNumber,
+          username,
+        },
+        { enabled: canQueryPages },
+      ),
     ),
   });
 
-  // // TODO: Update name and add a combine
-  // const queries = useQueries({
-  //   combine: combineGamesDetails,
-  //   queries: allProfileGames
-  //     .slice(0, 3) // TODO: ⚠️ TEMP Remove slice, used only for testing purposes.
-  //     .filter(({ id }) => Boolean(id)) // TODO: Check filter logic.
-  //     .map(({ id }) =>
-  //       createGameLogDetailsQueryOptions({
-  //         gameId: id,
-  //       }),
-  //     ),
-  // });
+  // TODO: Update name and add a combine
+  const canQueryGamesDetails =
+    !arePagesStale &&
+    !!pagesGamesData.length &&
+    arePagesSuccess &&
+    !arePagesFetching;
 
-  // console.log({ queries });
-
-  // const gameNamesById = getGameNamesById(allProfileGames);
-
-  const isStale = isQueryStale || areQueriesStale;
+  const {
+    data: gamesDetailsData,
+    isFetching: areDetailsFetching,
+    refetch: refetchDetails,
+    isSuccess: areDetailsSuccess,
+    isStale: areDetailsStale,
+  } = useQueries({
+    combine: combineGamesDetails,
+    queries: pagesGamesData
+      .slice(0, 3) // TODO: ⚠️ TEMP Remove slice, used only for testing purposes.
+      .filter(({ id }) => Boolean(id)) // TODO: Check filter logic.
+      .map((profileGame) =>
+        createGameLogDetailsQueryOptions(
+          {
+            exportType,
+            profileGame,
+          },
+          {
+            enabled: canQueryGamesDetails,
+          },
+        ),
+      ),
+  });
 
   const fetchData = () => {
     // Prevent fetching if username has no value.
@@ -117,18 +133,24 @@ const useExport = ({ username }: UseExportProps) => {
 
     if (!isExportEnabled) {
       setIsExportEnabled(true);
-    } else if (isStale) {
+    }
+
+    const isStale = isFirstPageStale || arePagesStale || areDetailsStale;
+
+    if (isStale) {
       refetchFirstPage();
-      refetchAllPages();
+      refetchPages();
+      refetchDetails();
     }
   };
 
   return {
     fetchData,
-    profileGames: allProfileGames,
+    games: gamesDetailsData,
+    profileGames: pagesGamesData,
     isExportEnabled,
-    isFetching: isFirstQueryFetching || areQueriesFetching,
-    isStale,
+    isFetching: isFirstPageFetching || arePagesFetching || areDetailsFetching,
+    isSuccess: isFirstPageSuccess && arePagesSuccess && areDetailsSuccess,
   };
 };
 
