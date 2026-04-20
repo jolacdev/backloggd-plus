@@ -22,6 +22,10 @@ const parseToGameLogDetailsCSV = (
   { game_log, playthroughs }: GameLogDetailsResponse,
 ): GameLogDetailsCSV | undefined => {
   if (!game_log || playthroughs.length === 0) {
+    // TODO: Logic excludes games without playthroughs. Confirm if Backlog/Wishlist should be ignored.
+    console.debug(
+      `Skipping game '${name}' (${id}) due to missing game log or playthroughs.`,
+    );
     return;
   }
 

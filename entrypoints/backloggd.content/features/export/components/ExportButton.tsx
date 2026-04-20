@@ -4,6 +4,7 @@ import Dialog from '@content/shared/components/Dialog/Dialog';
 import DropdownButton from '@content/shared/components/DropdownButton';
 
 import useExport from '../hooks/useExport';
+import { downloadGameLogDetailsCSV } from '../utils/csv';
 
 type ExportButtonProps = {
   username: string;
@@ -32,14 +33,15 @@ const ExportButton = ({ username }: ExportButtonProps) => {
   // TODO: Implement actual logic
   useEffect(() => {
     if (isExportTriggered && !isFetching && isSuccess) {
-      // eslint-disable-next-line no-console
-      console.log('Exporting data:', { games, profileGames });
+      console.debug('Exporting data:', { games, profileGames });
 
       // Reset the trigger after export
       setIsExportTriggered(false);
       setIsModalOpen(false);
 
-      // TODO: Check if data exists and create CSV
+      if (games.length > 0) {
+        downloadGameLogDetailsCSV(games);
+      }
     }
   }, [games, isExportTriggered, isFetching, isSuccess, profileGames]);
 

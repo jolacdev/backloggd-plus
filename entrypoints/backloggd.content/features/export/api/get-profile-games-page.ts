@@ -13,9 +13,14 @@ const fetchProfileGamesPage = async (
   pageNumber: number,
 ): Promise<Document> => {
   try {
-    const result = await api.get<string>(`/u/${username}/games`, {
-      params: { page: pageNumber },
-    });
+    // TODO: Add UI option to include/exclude fetching specific game statuses (played, playing, backlog, wishlist).
+    // TODO: Remove - Basic fetch by completed status: `/u/${username}/games`
+    const result = await api.get<string>(
+      `/u/${username}/games/added/type:played,playing,backlog,wishlist/`,
+      {
+        params: { page: pageNumber },
+      },
+    );
 
     const parser = new DOMParser();
     return parser.parseFromString(result, 'text/html');
