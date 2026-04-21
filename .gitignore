@@ -23,3 +23,15 @@ lerna-debug.log*
 .output
 .wxt
 web-ext.config.ts
+
+# Agent Skills Mirrors
+## Copilot
+.github/skills/*
+## Antigravity
+.agents/skills/*
+## Claude
+.claude/skills/*
+## Cursor
+.cursor/skills/*
+## Windsurf
+.windsurf/skills/*
