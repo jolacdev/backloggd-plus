@@ -1,11 +1,55 @@
 /* eslint-disable perfectionist/sort-objects */
 import { toCSVString } from '@content/lib/papaparse';
 
-import { GameLogDetailsCSV } from '../types';
+import { GameDetails, GameDetailsCSV } from '../types';
+import { triggerBlobDownload } from './download';
 
-const getGameLogDetailsCSVString = (
-  data: GameLogDetailsCSV[],
-): Promise<string> => {
+/**
+ * Transforms a {@link GameDetails} object into a {@link GameDetailsCSV}.
+ *
+ * If the game log or playthroughs are missing, the function returns `undefined` and the game is skipped from CSV export.
+ */
+export const parseToGameDetailsCSV = ({
+  id,
+  name,
+  url,
+  game_log,
+  playthroughs,
+}: GameDetails): GameDetailsCSV | undefined => {
+  if (!game_log || playthroughs.length === 0) {
+    // TODO: Logic excludes games without playthroughs. Confirm if Backlog/Wishlist should be ignored.
+    console.debug(
+      `Skipping game '${name}' (${id}) due to missing game log or playthroughs.`,
+    );
+    return;
+  }
+
+  return {
+    id: Number(id),
+    finish_date: playthroughs[0].finish_date ?? '',
+    game_liked: game_log.game_liked,
+    hours_finished: playthroughs[0].hours_finished,
+    hours_mastered: playthroughs[0].hours_mastered,
+    hours_played: playthroughs[0].hours_played,
+    is_backlog: game_log.is_backlog,
+    is_master: playthroughs[0].is_master,
+    is_play: game_log.is_play,
+    is_playing: game_log.is_playing,
+    is_replay: playthroughs[0].is_replay,
+    is_wishlist: game_log.is_wishlist,
+    mins_finished: playthroughs[0].mins_finished,
+    mins_mastered: playthroughs[0].mins_mastered,
+    mins_played: playthroughs[0].mins_played,
+    name,
+    rating: playthroughs[0].rating,
+    review: playthroughs[0].review,
+    review_spoilers: playthroughs[0].review_spoilers,
+    start_date: playthroughs[0].start_date ?? '',
+    url,
+  };
+};
+
+const getGameDetailsCSVString = (data: GameDetailsCSV[]): Promise<string> => {
   const csvGameData: Record<string, unknown>[] = data.map((game) => ({
     ID: game.id,
     'Game Name': game.name,
@@ -38,28 +82,10 @@ const getGameLogDetailsCSVString = (
  * @param data - Array of game log details
  * @param filename - The filename for the downloaded CSV file
  */
-export const downloadGameLogDetailsCSV = async (
-  data: GameLogDetailsCSV[],
+export const downloadGameDetailsCSV = async (
+  data: GameDetailsCSV[],
   filename: string = 'games.csv',
 ): Promise<void> => {
-  // 1. Generate CSV string from the game log details
-  const csvString = await getGameLogDetailsCSVString(data);
-
-  // 2. Create a Blob with the correct MIME type
-  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-
-  // 3. Create a temporary anchor element to trigger the download
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename);
-  link.style.visibility = 'hidden';
-
-  document.body.appendChild(link);
-  link.click();
-
-  // 4. Cleanup
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  const csvString = await getGameDetailsCSVString(data);
+  triggerBlobDownload(csvString, filename, 'text/csv;charset=utf-8;');
 };

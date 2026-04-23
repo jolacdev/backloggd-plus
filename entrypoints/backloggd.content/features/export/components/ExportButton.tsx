@@ -4,7 +4,8 @@ import Dialog from '@content/shared/components/Dialog/Dialog';
 import DropdownButton from '@content/shared/components/DropdownButton';
 
 import useExport from '../hooks/useExport';
-import { downloadGameLogDetailsCSV } from '../utils/csv';
+import { downloadGameDetailsCSV, parseToGameDetailsCSV } from '../utils/csv';
+import { downloadGameDetailsJSON, parseToGameDetailsJSON } from '../utils/json';
 
 type ExportButtonProps = {
   username: string;
@@ -16,34 +17,39 @@ const ExportButton = ({ username }: ExportButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportTriggered, setIsExportTriggered] = useState(false);
 
-  const {
-    fetchData,
-    games,
-    profileGames,
-    isExportEnabled,
-    isFetching,
-    isSuccess,
-  } = useExport({
-    exportType: 'csv',
-    username, // NOTE: username truthiness is checked inside useExport
-  });
+  const { fetchData, gameDetails, isExportEnabled, isFetching, isSuccess } =
+    useExport({
+      username, // NOTE: username truthiness is checked inside useExport
+    });
 
   const isDialogDisabled = isExportEnabled && isFetching;
 
   // TODO: Implement actual logic
   useEffect(() => {
     if (isExportTriggered && !isFetching && isSuccess) {
-      console.debug('Exporting data:', { games, profileGames });
+      console.debug('Exporting data:', { gameDetails });
 
       // Reset the trigger after export
       setIsExportTriggered(false);
       setIsModalOpen(false);
 
-      if (games.length > 0) {
-        downloadGameLogDetailsCSV(games);
+      if (gameDetails.length > 0) {
+        const gamesDetailsCSV = gameDetails
+          .map(parseToGameDetailsCSV)
+          .filter((game) => !!game);
+        downloadGameDetailsCSV(gamesDetailsCSV); // TODO: Handle promise with await?
+
+        // Delay (~150ms) JSON download to ensure both downloads are registered by the browser.
+        // Consecutive synchronous anchor.click() calls can be swallowed in some browsers.
+        setTimeout(() => {
+          const gamesDetailsJSON = gameDetails.map(parseToGameDetailsJSON);
+          downloadGameDetailsJSON(gamesDetailsJSON);
+        }, 150);
+      } else {
+        // TODO: Add alert of no game found to export?
       }
     }
-  }, [games, isExportTriggered, isFetching, isSuccess, profileGames]);
+  }, [gameDetails, isExportTriggered, isFetching, isSuccess]);
 
   const handleExport = () => {
     setIsExportTriggered(true);

@@ -1,7 +1,20 @@
 /* eslint-disable perfectionist/sort-object-types */
-export type ExportType = 'csv';
+import {
+  GameLogDetailsResponse,
+  ProfileGameScrapeResponse,
+} from '@content/shared/types/api';
 
-export type GameLogDetailsCSV = {
+/**
+ * This type is used to provide comprehensive details about each game in the user's backlog.
+ *
+ * It includes all the attributes from both request responses {@link ProfileGameScrapeResponse} and {@link GameLogDetailsResponse}
+ */
+export type GameDetails = ProfileGameScrapeResponse & GameLogDetailsResponse;
+
+/**
+ * This type defines the data for the CSV export format.
+ */
+export type GameDetailsCSV = {
   // GET - Profile Games Page
   id: number;
   name: string;
@@ -35,3 +48,9 @@ export type GameLogDetailsCSV = {
   review: string;
   review_spoilers: boolean;
 };
+
+/**
+ * This type defines the data for the JSON export format.
+ */
+export type GameDetailsJSON = Pick<ProfileGameScrapeResponse, 'id' | 'name'> &
+  GameLogDetailsResponse;

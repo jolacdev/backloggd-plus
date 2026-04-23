@@ -4,12 +4,11 @@ import { useState } from 'react';
 
 import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
 
-import { createGameLogDetailsQueryOptions } from '../api/get-game-log-details';
+import { createGameDetailsQueryOptions } from '../api/get-game-log-details';
 import { createProfileGamesPageQueryOptions } from '../api/get-profile-games-page';
-import { ExportType, GameLogDetailsCSV } from '../types';
+import { GameDetails } from '../types';
 
 type UseExportProps = {
-  exportType: ExportType;
   username: string;
 };
 
@@ -37,7 +36,7 @@ const combineProfileGameResults = (
 });
 
 const combineGamesDetails = (
-  results: UseQueryResult<GameLogDetailsCSV | undefined, Error>[],
+  results: UseQueryResult<GameDetails | undefined, Error>[],
 ) => ({
   data: results.flatMap(({ data }) => (data ? [data] : [])),
   isFetching: results.some((result) => result.isFetching),
@@ -47,7 +46,7 @@ const combineGamesDetails = (
 });
 
 // TODO: Separate into multiple hooks? useProfileGamesPagesExport, useGameLogDetailsExport, etc.
-const useExport = ({ exportType, username }: UseExportProps) => {
+const useExport = ({ username }: UseExportProps) => {
   const [isExportEnabled, setIsExportEnabled] = useState(false);
 
   const {
@@ -101,6 +100,10 @@ const useExport = ({ exportType, username }: UseExportProps) => {
     arePagesSuccess &&
     !arePagesFetching;
 
+  const filteredPagesGamesData = pagesGamesData
+    .slice(0, 3) // TODO: ⚠️ TEMP Remove slice, used only for testing purposes.
+    .filter(({ id }) => Boolean(id)); // TODO: Check filter logic.
+
   const {
     data: gamesDetailsData,
     isFetching: areDetailsFetching,
@@ -109,20 +112,11 @@ const useExport = ({ exportType, username }: UseExportProps) => {
     isStale: areDetailsStale,
   } = useQueries({
     combine: combineGamesDetails,
-    queries: pagesGamesData
-      .slice(0, 3) // TODO: ⚠️ TEMP Remove slice, used only for testing purposes.
-      .filter(({ id }) => Boolean(id)) // TODO: Check filter logic.
-      .map((profileGame) =>
-        createGameLogDetailsQueryOptions(
-          {
-            exportType,
-            profileGame,
-          },
-          {
-            enabled: canQueryGamesDetails,
-          },
-        ),
-      ),
+    queries: filteredPagesGamesData.map((profileGame) =>
+      createGameDetailsQueryOptions(profileGame, {
+        enabled: canQueryGamesDetails,
+      }),
+    ),
   });
 
   const fetchData = () => {
@@ -146,8 +140,7 @@ const useExport = ({ exportType, username }: UseExportProps) => {
 
   return {
     fetchData,
-    games: gamesDetailsData,
-    profileGames: pagesGamesData,
+    gameDetails: gamesDetailsData,
     isExportEnabled,
     isFetching: isFirstPageFetching || arePagesFetching || areDetailsFetching,
     isSuccess: isFirstPageSuccess && arePagesSuccess && areDetailsSuccess,

@@ -6,7 +6,7 @@ import {
   ProfileGameScrapeResponse,
 } from '@content/shared/types/api';
 
-import { ExportType, GameLogDetailsCSV } from '../types';
+import { GameDetails } from '../types';
 import { queryKeys } from './keys';
 
 /**
@@ -17,56 +17,23 @@ export const fetchGameLogDetails = async (
 ): Promise<GameLogDetailsResponse> =>
   await api.get<GameLogDetailsResponse>(`/log/edit/${gameId}`);
 
-const parseToGameLogDetailsCSV = (
-  { id, name, url }: ProfileGameScrapeResponse,
-  { game_log, playthroughs }: GameLogDetailsResponse,
-): GameLogDetailsCSV | undefined => {
-  if (!game_log || playthroughs.length === 0) {
-    // TODO: Logic excludes games without playthroughs. Confirm if Backlog/Wishlist should be ignored.
-    console.debug(
-      `Skipping game '${name}' (${id}) due to missing game log or playthroughs.`,
-    );
-    return;
-  }
+const parseToGameDetails = (
+  profileGame: ProfileGameScrapeResponse,
+  gameLogDetails: GameLogDetailsResponse,
+): GameDetails => ({
+  ...profileGame,
+  ...gameLogDetails,
+});
 
-  return {
-    id: Number(id),
-    finish_date: playthroughs[0].finish_date ?? '',
-    game_liked: game_log.game_liked,
-    hours_finished: playthroughs[0].hours_finished,
-    hours_mastered: playthroughs[0].hours_mastered,
-    hours_played: playthroughs[0].hours_played,
-    is_backlog: game_log.is_backlog,
-    is_master: playthroughs[0].is_master,
-    is_play: game_log.is_play,
-    is_playing: game_log.is_playing,
-    is_replay: playthroughs[0].is_replay,
-    is_wishlist: game_log.is_wishlist,
-    mins_finished: playthroughs[0].mins_finished,
-    mins_mastered: playthroughs[0].mins_mastered,
-    mins_played: playthroughs[0].mins_played,
-    name,
-    rating: playthroughs[0].rating,
-    review: playthroughs[0].review,
-    review_spoilers: playthroughs[0].review_spoilers,
-    start_date: playthroughs[0].start_date ?? '',
-    url,
-  };
-};
-
-type GameLogDetailsParams = {
-  exportType: ExportType;
-  profileGame: ProfileGameScrapeResponse;
-};
-
-export const createGameLogDetailsQueryOptions = <
+/**
+ * Creates query options that return the combined {@link ProfileGameScrapeResponse} and {@link GameLogDetailsResponse}
+ * as {@link GameDetails}.
+ */
+export const createGameDetailsQueryOptions = <
   TError = Error,
-  TData = GameLogDetailsCSV,
+  TData = GameDetails,
 >(
-  {
-    exportType, // TODO: Implement parsing based on export type
-    profileGame,
-  }: GameLogDetailsParams,
+  profileGame: ProfileGameScrapeResponse,
   options?: Omit<
     UseQueryOptions<GameLogDetailsResponse, TError, TData>,
     'queryFn' | 'queryKey' | 'select'
@@ -76,5 +43,6 @@ export const createGameLogDetailsQueryOptions = <
     ...options,
     queryKey: queryKeys.gameLogDetails(profileGame.id),
     queryFn: () => fetchGameLogDetails(profileGame.id),
-    select: (data) => parseToGameLogDetailsCSV(profileGame, data),
+    select: (data: GameLogDetailsResponse): GameDetails =>
+      parseToGameDetails(profileGame, data),
   });

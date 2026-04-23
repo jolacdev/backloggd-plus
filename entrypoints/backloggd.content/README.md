@@ -51,7 +51,7 @@ flowchart TD
     E --> F["Parse HTML → Extract game IDs, names, URLs"]
     F --> G["3. Fetch /log/edit/:gameId for each game"]
     G --> H["Parse JSON → Extract playthroughs, ratings, time"]
-    H --> I["Combine into GameLogDetailsCSV array"]
+    H --> I["Combine into GameDetailsCSV array"]
     I --> J["PapaParse → CSV string"]
     J --> K["Blob → anchor download"]
 
@@ -73,7 +73,7 @@ flowchart TD
 ┃   ┣ 📂 components/    → UI components (ExportButton)
 ┃   ┣ 📂 hooks/         → useExport — orchestrates the multi-step fetch cascade
 ┃   ┣ 📂 utils/         → CSV generation and download logic
-┃   ┗ 📜 types.ts       → Feature-specific types (ExportType, GameLogDetailsCSV)
+┃   ┗ 📜 types.ts       → Feature-specific types (GameDetailsCSV, GameDetailsJSON)
 ┃
 ┣ 📂 lib/               → Third-party library configurations (scoped to content)
 ┃ ┣ 📜 axios.ts         → Axios instance with backloggd.com base URL + interceptors
@@ -203,7 +203,6 @@ import { testExportLabelStorageItem } from '@globalShared/storage';
 
 // ✅ CORRECT — Relative imports for same-feature sibling files
 import { queryKeys } from './keys';
-import { ExportType } from '../types';
 
 // ❌ WRONG — Deep relative path that should use an alias
 import { api } from '../../../lib/axios';
