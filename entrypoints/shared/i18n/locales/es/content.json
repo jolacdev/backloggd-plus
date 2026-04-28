@@ -4,7 +4,7 @@
       "button": "Exportar",
       "dialog": {
         "title": "Exportar tus juegos registrados",
-        "description": "Descarga un archivo CSV con los detalles de los juegos que has registrado.",
+        "description": "Descarga un archivo CSV/JSON con los detalles de los juegos que has registrado.",
         "submit": "Exportar"
       }
     }

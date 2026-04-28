@@ -4,7 +4,7 @@
       "button": "Export",
       "dialog": {
         "title": "Export your logged games",
-        "description": "Download a CSV file containing your logged game details.",
+        "description": "Download a CSV/JSON file containing your logged game details.",
         "submit": "Export"
       }
     }

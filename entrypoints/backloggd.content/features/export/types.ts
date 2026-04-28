@@ -27,6 +27,8 @@ export type GameDetailsCSV = {
   is_playing: boolean;
   is_backlog: boolean;
   is_wishlist: boolean;
+  total_hours: number;
+  total_minutes: number;
   // --- Flags ---
   game_liked: boolean;
   // Attributes from `playthroughs[0]`
