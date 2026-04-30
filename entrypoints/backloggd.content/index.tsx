@@ -1,10 +1,8 @@
-import { QueryClientProvider } from '@tanstack/react-query';
 import { createRoot, type Root } from 'react-dom/client';
 
 import i18n from '@globalShared/i18n';
 
 import App from './App';
-import { queryClient } from './lib/react-query';
 import { hasUrlChanged } from './shared/utils/url';
 import { getLoggedInUsername } from './shared/utils/user';
 
@@ -46,11 +44,7 @@ export default defineContentScript({
           // NOTE: Use container inline style by using `container.style`.
 
           const root = createRoot(container);
-          root.render(
-            <QueryClientProvider client={queryClient}>
-              <App username={username} />
-            </QueryClientProvider>,
-          );
+          root.render(<App username={username} />);
 
           return root;
         },
@@ -75,6 +69,7 @@ export default defineContentScript({
         return;
       }
 
+      // TODO: When user navigates to a page already the injected UI is lost. [backloggd.com/games/lib/popular/] > [backloggd.com] > [backloggd.com/games/lib/popular/]
       if (hasUrlChanged(url)) {
         url = location.href;
         inject();

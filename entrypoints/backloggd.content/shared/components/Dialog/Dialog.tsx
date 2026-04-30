@@ -10,13 +10,13 @@ type DialogProps = {
   isOpen: boolean;
   isDisabled?: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onConfirm: () => void;
 };
 
 const Dialog = ({
   children = undefined,
   onClose,
-  onSubmit,
+  onConfirm,
   submitText = undefined,
   title,
   isDisabled = false,
@@ -43,7 +43,7 @@ const Dialog = ({
 
   const handleSubmit = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    onSubmit();
+    onConfirm();
   };
 
   return (

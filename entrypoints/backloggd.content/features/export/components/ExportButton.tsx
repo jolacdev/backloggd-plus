@@ -72,7 +72,7 @@ const ExportButton = ({ username }: ExportButtonProps) => {
         submitText={t('dialog.submit')}
         title={t('dialog.title')}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={handleExport}
+        onConfirm={handleExport}
       >
         <p>{t('dialog.description')}</p>
       </Dialog>
