@@ -1,7 +1,11 @@
 {
   "features": {
     "export": {
-      "button": "Export",
+      "settingsAction": {
+        "title": "Export games",
+        "description": "Export your game collection.",
+        "button": "Export"
+      },
       "dialog": {
         "title": "Export your logged games",
         "description": "Download a CSV/JSON file containing your logged game details.",

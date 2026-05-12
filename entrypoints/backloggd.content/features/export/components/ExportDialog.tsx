@@ -1,20 +1,21 @@
 import { useTranslation } from 'react-i18next';
 
 import Dialog from '@content/shared/components/Dialog/Dialog';
-import DropdownButton from '@content/shared/components/DropdownButton';
 
 import useExport from '../hooks/useExport';
 import { downloadGameDetailsCSV, parseToGameDetailsCSV } from '../utils/csv';
 import { downloadGameDetailsJSON, parseToGameDetailsJSON } from '../utils/json';
 
-type ExportButtonProps = {
+type ExportDialogProps = {
   username: string;
+  onClose: () => void;
 };
 
-const ExportButton = ({ username }: ExportButtonProps) => {
-  const { t } = useTranslation(undefined, { keyPrefix: 'features.export' });
+const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
+  const { t } = useTranslation(undefined, {
+    keyPrefix: 'features.export.dialog',
+  });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportTriggered, setIsExportTriggered] = useState(false);
 
   const { fetchData, gameDetails, isExportEnabled, isFetching, isSuccess } =
@@ -31,7 +32,6 @@ const ExportButton = ({ username }: ExportButtonProps) => {
 
       // Reset the trigger after export
       setIsExportTriggered(false);
-      setIsModalOpen(false);
 
       if (gameDetails.length > 0) {
         const gamesDetailsCSV = gameDetails
@@ -39,8 +39,7 @@ const ExportButton = ({ username }: ExportButtonProps) => {
           .filter((game) => !!game);
         downloadGameDetailsCSV(gamesDetailsCSV); // TODO: Handle promise with await?
 
-        // Delay (~150ms) JSON download to ensure both downloads are registered by the browser.
-        // Consecutive synchronous anchor.click() calls can be swallowed in some browsers.
+        // Delay second download (~150ms) to register both downloads correctly and prevent them from being swallowed by the browser.
         setTimeout(() => {
           const gamesDetailsJSON = gameDetails.map(parseToGameDetailsJSON);
           downloadGameDetailsJSON(gamesDetailsJSON);
@@ -48,8 +47,10 @@ const ExportButton = ({ username }: ExportButtonProps) => {
       } else {
         // TODO: Add alert of no game found to export?
       }
+
+      onClose();
     }
-  }, [gameDetails, isExportTriggered, isFetching, isSuccess]);
+  }, [gameDetails, onClose, isExportTriggered, isFetching, isSuccess]);
 
   const handleExport = () => {
     setIsExportTriggered(true);
@@ -57,27 +58,18 @@ const ExportButton = ({ username }: ExportButtonProps) => {
     // TODO: Should await for fetchData logic to hide modal + show alert.
   };
 
-  // TODO: Manage disabled state
-  // TODO: CHECK - Dialog close animation when ExportButtons unmounts. Check if refactor to global Dialog.
   return (
-    <>
-      <DropdownButton
-        id="export-button"
-        label={t('button')}
-        onClick={() => setIsModalOpen(true)}
-      />
-      <Dialog
-        isDisabled={isDialogDisabled}
-        isOpen={isModalOpen}
-        submitText={t('dialog.submit')}
-        title={t('dialog.title')}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handleExport}
-      >
-        <p>{t('dialog.description')}</p>
-      </Dialog>
-    </>
+    <Dialog
+      isDisabled={isDialogDisabled}
+      isOpen={true} // NOTE: Dialog visibility is managed by the parent so it can be unmounted to reset internal state.
+      submitText={t('submit')}
+      title={t('title')}
+      onClose={onClose}
+      onConfirm={handleExport}
+    >
+      <p>{t('description')}</p>
+    </Dialog>
   );
 };
 
-export default ExportButton;
+export default ExportDialog;

@@ -1,7 +1,11 @@
 {
   "features": {
     "export": {
-      "button": "Exportar",
+      "settingsAction": {
+        "title": "Exportar juegos",
+        "description": "Exportar tu colección de juegos.",
+        "button": "Exportar"
+      },
       "dialog": {
         "title": "Exportar tus juegos registrados",
         "description": "Descarga un archivo CSV/JSON con los detalles de los juegos que has registrado.",

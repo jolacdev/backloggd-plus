@@ -70,7 +70,7 @@ flowchart TD
 ┣ 📂 features/          → Feature modules (vertically sliced)
 ┃ ┗ 📂 export/          → Game Library Export feature
 ┃   ┣ 📂 api/           → React Query options factories + fetch functions
-┃   ┣ 📂 components/    → UI components (ExportButton)
+┃   ┣ 📂 components/    → UI components (Export)
 ┃   ┣ 📂 hooks/         → useExport — orchestrates the multi-step fetch cascade
 ┃   ┣ 📂 utils/         → CSV generation and download logic
 ┃   ┗ 📜 types.ts       → Feature-specific types (GameDetailsCSV, GameDetailsJSON)
@@ -289,7 +289,7 @@ The content script uses a **layered state management** approach:
 | Layer | Tool | Purpose | Example |
 |-------|------|---------|---------|
 | **Server State** | React Query (`useQuery`, `useQueries`) | API responses, caching, stale management, parallel fetching | `useExport` hook — cascading queries |
-| **Local UI State** | React `useState` | Component-level toggles (modal open, export triggered) | `ExportButton` — `isModalOpen`, `isExportTriggered` |
+| **Local UI State** | React `useState` | Component-level toggles (modal open, export triggered) | `Export` — `isModalOpen`, `ExportDialog` - `isExportTriggered` |
 | **Persistent State** | WXT `storage` API + `useStorage` hook | Cross-context values persisted in `chrome.storage.local` | `testExportLabelStorageItem` — popup ↔ content sync |
 
 The `useExport` hook demonstrates the **cascading query pattern**: it chains three levels of `useQuery`/`useQueries` calls where each level enables the next only after the previous completes successfully, avoiding race conditions and unnecessary fetches.

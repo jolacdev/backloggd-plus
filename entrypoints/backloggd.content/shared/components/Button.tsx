@@ -17,9 +17,10 @@ const Button = ({
       className,
       'btn h-auto border-transparent px-3 py-1.5 text-base leading-[normal] font-normal text-[#fff] shadow-none',
       {
-        'bg-[var(--back-pink-dk)]': variant === 'primary',
         'btn-disabled opacity-50': disabled,
-        'border-[var(--back-field-highlight)] bg-[var(--back-field-highlight)]':
+        'bg-[var(--back-pink-dk)] hover:bg-[var(--back-pink)]':
+          variant === 'primary',
+        'border-[var(--back-field-highlight)] bg-[var(--back-interact)] hover:bg-[var(--back-field-highlight)]':
           variant === 'secondary',
       },
     )}
