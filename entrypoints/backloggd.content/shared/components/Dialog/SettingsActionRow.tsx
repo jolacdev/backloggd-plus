@@ -1,4 +1,5 @@
 import Button from '../Button';
+import Heading from '../Heading';
 
 type SettingsActionRowProps = {
   buttonLabel: string;
@@ -18,9 +19,7 @@ const SettingsActionRow = ({
 }: SettingsActionRowProps) => (
   <article className="mx-[-15px] mb-[1rem] grid grid-cols-12">
     <div className="col-span-12 px-[15px] md:col-span-8 lg:col-span-9">
-      <h4 className="mb-[0.25rem] text-[1.5rem] leading-[1.2] font-[500] text-[#badefc]">
-        {title}
-      </h4>
+      <Heading type="h4">{title}</Heading>
       <p className="text-[1rem] leading-[1.5] font-[300] text-[#8f9ca7]">
         {description}
       </p>
