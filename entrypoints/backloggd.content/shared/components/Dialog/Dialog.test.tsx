@@ -7,7 +7,7 @@ import Dialog from './Dialog';
 describe('Dialog', () => {
   const defaultProps: ComponentProps<typeof Dialog> = {
     onClose: vi.fn(),
-    onSubmit: vi.fn(),
+    onConfirm: vi.fn(),
     title: 'Test Dialog',
     isOpen: true,
   };
@@ -75,7 +75,7 @@ describe('Dialog', () => {
       render(<Dialog {...defaultProps} />);
       const submitButton = screen.getByText(defaultKeys.submit);
       await userEvent.click(submitButton);
-      expect(defaultProps.onSubmit).toHaveBeenCalled();
+      expect(defaultProps.onConfirm).toHaveBeenCalled();
     });
 
     it('calls onClose when close button is clicked', async () => {

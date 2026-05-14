@@ -1,4 +1,5 @@
-import { createRoot, type Root } from 'react-dom/client';
+import { ContentScriptContext } from '#imports';
+import { createRoot } from 'react-dom/client';
 
 import i18n from '@globalShared/i18n';
 
@@ -11,6 +12,29 @@ import css from './style.css?inline'; // NOTE: Imports CSS file as a string.
 // TODO: Check if move to constants
 const INJECTED_ROOT_ELEMENT = 'backloggd-plus-ui';
 const SETTINGS_DATA_PATHNAME = '/settings/data/';
+
+const createUi = async (
+  ctx: ContentScriptContext,
+  options: { anchor: Element; username: string },
+) =>
+  await createShadowRootUi(ctx, {
+    anchor: options.anchor,
+    append: 'after',
+    css,
+    name: INJECTED_ROOT_ELEMENT,
+    position: 'inline', // NOTE: Adds inline styles to the container depending on the value.
+    onMount: (container) => {
+      // NOTE: Use container inline style by using `container.style`.
+
+      const root = createRoot(container);
+      root.render(<App username={options.username} />);
+
+      return root;
+    },
+    onRemove: (root) => {
+      root?.unmount();
+    },
+  });
 
 // TODO: Check support for development hot reload. Check ui.remove(); || ui = null;
 export default defineContentScript({
@@ -40,23 +64,9 @@ export default defineContentScript({
         return;
       }
 
-      const ui = await createShadowRootUi(ctx, {
+      const ui = await createUi(ctx, {
         anchor: dataManagementSubtitleRow,
-        append: 'after',
-        css,
-        name: INJECTED_ROOT_ELEMENT,
-        position: 'inline', // NOTE: Adds inline styles to the container depending on the value.
-        onMount: (container) => {
-          // NOTE: Use container inline style by using `container.style`.
-
-          const root = createRoot(container);
-          root.render(<App username={username} />);
-
-          return root;
-        },
-        onRemove: (root: Root | undefined) => {
-          root?.unmount();
-        },
+        username,
       });
 
       ui.mount();
@@ -75,7 +85,7 @@ export default defineContentScript({
         return;
       }
 
-      // TODO: When user navigates to a page already the injected UI is lost. [backloggd.com/games/lib/popular/] > [backloggd.com] > [backloggd.com/games/lib/popular/]
+      // TODO: Navigating to the same URL causes the UI to be unmounted. Check how to re-inject.
       if (hasUrlChanged(url)) {
         url = location.href;
         inject();

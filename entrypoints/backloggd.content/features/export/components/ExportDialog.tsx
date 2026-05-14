@@ -25,7 +25,6 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
 
   const isDialogDisabled = isExportEnabled && isFetching;
 
-  // TODO: Implement actual logic
   useEffect(() => {
     if (isExportTriggered && !isFetching && isSuccess) {
       console.debug('Exporting data:', { gameDetails });
@@ -46,6 +45,7 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
         }, 150);
       } else {
         // TODO: Add alert of no game found to export?
+        console.warn('No game details found to export.');
       }
 
       onClose();

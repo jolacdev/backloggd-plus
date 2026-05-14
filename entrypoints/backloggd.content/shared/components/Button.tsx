@@ -1,9 +1,13 @@
 import cx from 'classnames';
-import { ComponentPropsWithRef } from 'react';
+import { ComponentPropsWithoutRef, ReactNode } from 'react';
 
+/**
+ * Reusable button component with the Backloggd styling.
+ */
 type ButtonProps = {
+  children: ReactNode;
   variant?: 'primary' | 'secondary';
-} & ComponentPropsWithRef<'button'>;
+} & ComponentPropsWithoutRef<'button'>;
 
 const Button = ({
   children,
@@ -11,10 +15,9 @@ const Button = ({
   disabled,
   variant = 'primary',
   ...rest
-}: ButtonProps = {}) => (
+}: ButtonProps) => (
   <button
     className={cx(
-      className,
       'btn h-auto border-transparent px-3 py-1.5 text-base leading-[normal] font-normal text-[#fff] shadow-none',
       {
         'btn-disabled opacity-50': disabled,
@@ -23,6 +26,7 @@ const Button = ({
         'border-[var(--back-field-highlight)] bg-[var(--back-interact)] hover:bg-[var(--back-field-highlight)]':
           variant === 'secondary',
       },
+      className,
     )}
     disabled={disabled}
     {...rest}

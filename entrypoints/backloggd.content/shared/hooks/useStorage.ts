@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import type { WxtStorageItem } from 'wxt/utils/storage';
 
 const useStorage = <T, K extends Record<string, unknown>>(

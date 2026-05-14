@@ -3,5 +3,6 @@ minimumReleaseAge: 20160 # 2 Weeks
 # minimumReleaseAge: 10080 # 1 Week
 # minimumReleaseAge: 1440 # 1 Day
 
-minimumReleaseAgeExclude:
-  - axios@1.15.0
+# To exclude a package from the age policy:
+# minimumReleaseAgeExclude:
+#   - axios@1.15.0

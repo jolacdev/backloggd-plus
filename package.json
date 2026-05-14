@@ -18,7 +18,10 @@
     "tscheck": "tsc --noEmit",
     "lint": "pnpm tscheck && eslint --fix",
     "lint:errors": "pnpm tscheck && eslint --fix --quiet",
-    "lint:no-fix": "pnpm tscheck && eslint"
+    "lint:no-fix": "pnpm tscheck && eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@tanstack/react-query": "5.90.16",
