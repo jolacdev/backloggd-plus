@@ -1,5 +1,6 @@
-import cx from 'classnames';
 import { ComponentPropsWithoutRef, ReactNode } from 'react';
+
+import { cn } from '@globalShared/utils/cn';
 
 type HeadingType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
@@ -34,7 +35,7 @@ type HeadingProps = ComponentPropsWithoutRef<HeadingType> & {
 const Heading = ({ children, className, type: Tag, ...rest }: HeadingProps) => (
   <Tag
     {...rest}
-    className={cx(
+    className={cn(
       'leading-[1.2] font-[500] text-[#badefc]',
       SIZE_CLASSES[Tag],
       MARGIN_CLASSES[Tag],

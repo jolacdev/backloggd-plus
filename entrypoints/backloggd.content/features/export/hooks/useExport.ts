@@ -1,6 +1,5 @@
 /* eslint-disable perfectionist/sort-objects */
 import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query';
-import { useState } from 'react';
 
 import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
 

@@ -1,5 +1,6 @@
-import cx from 'classnames';
 import { ComponentPropsWithoutRef } from 'react';
+
+import { cn } from '@globalShared/utils/cn';
 
 type DropdownButtonProps = Omit<
   ComponentPropsWithoutRef<'button'>,
@@ -20,7 +21,7 @@ const DropdownButton = ({
 }: DropdownButtonProps) => (
   <button
     {...props}
-    className={cx(
+    className={cn(
       'w-full border-none bg-transparent px-[10px] py-[0.25rem]',
       'text-left text-[0.9rem] leading-[normal] font-extralight text-[var(--back-link)]',
       'hover:cursor-pointer hover:bg-[hsla(0,0%,100%,0.188)] hover:text-[#fff]',

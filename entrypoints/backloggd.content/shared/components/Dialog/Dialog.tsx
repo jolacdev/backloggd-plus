@@ -1,7 +1,7 @@
 import { MouseEvent, ReactNode, SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Button from '../Button';
+import Button from '@globalShared/components/Button';
 
 type DialogProps = {
   title: string;

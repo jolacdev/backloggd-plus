@@ -1,5 +1,5 @@
-import Button from '../Button';
-import Heading from '../Heading';
+import Button from '@globalShared/components/Button';
+import Typography from '@globalShared/components/Typography';
 
 type SettingsActionRowProps = {
   buttonLabel: string;
