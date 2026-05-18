@@ -1,11 +1,13 @@
-// TODO: Remove after testing.
-export const testExportLabelStorageItem = storage.defineItem<string>(
-  'local:testExportLabel',
+import { StatusFiltersState } from './hooks/useStatusFilters';
+
+export const filtersStorageItem = storage.defineItem<StatusFiltersState>(
+  'local:statusFilters',
   {
-    fallback: 'Export',
+    fallback: {
+      backlog: true,
+      completed: true,
+      playing: true,
+      wishlist: true,
+    },
   },
 );
-
-// TODO: Remove after testing.
-export const testValueStorageItem =
-  storage.defineItem<number>('local:testValue');
