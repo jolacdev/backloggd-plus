@@ -32,23 +32,24 @@ export type GameDetailsCSV = {
   // --- Flags ---
   game_liked: boolean;
   // Attributes from `playthroughs[0]`
+  // NOTE: For attributes with two types, the type `string` is used to handle missing values in the CSV export.
   // --- Time Played ---
-  hours_played: number;
-  mins_played: number;
-  hours_finished: number;
-  mins_finished: number;
-  hours_mastered: number;
-  mins_mastered: number;
+  hours_played: number | string;
+  mins_played: number | string;
+  hours_finished: number | string;
+  mins_finished: number | string;
+  hours_mastered: number | string;
+  mins_mastered: number | string;
   // --- Dates ---
   start_date: string;
   finish_date: string;
   // --- Flags ---
-  is_master: boolean;
-  is_replay: boolean;
+  is_master: boolean | string;
+  is_replay: boolean | string;
   // --- Review ---
-  rating: number;
+  rating: number | string;
   review: string;
-  review_spoilers: boolean;
+  review_spoilers: boolean | string;
 };
 
 /**

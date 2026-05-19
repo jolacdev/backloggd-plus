@@ -16,37 +16,40 @@ export const parseToGameDetailsCSV = ({
   game_log,
   playthroughs,
 }: GameDetails): GameDetailsCSV | undefined => {
-  if (!game_log || playthroughs.length === 0) {
-    // TODO: Logic excludes games without playthroughs. Confirm if Backlog/Wishlist should be ignored.
-    console.debug(
-      `Skipping game '${name}' (${id}) due to missing game log or playthroughs.`,
-    );
+  // The attribute game_log is required for games to appear in the user's game log.
+  if (!game_log) {
+    console.warn(`Skipping game '${name}' (${id}) due to missing game log.`);
     return;
   }
 
+  // Backloggd API returns `playthroughs` as an empty array `[]` for games without playthroughs, so we assign default values.
+  const firstPlaythrough = playthroughs[0] as
+    | (typeof playthroughs)[number]
+    | undefined;
+
   return {
     id: Number(id),
-    finish_date: playthroughs[0].finish_date ?? '',
+    finish_date: firstPlaythrough?.finish_date ?? '',
     game_liked: game_log.game_liked,
     total_hours: game_log.total_hours,
     total_minutes: game_log.total_minutes,
-    hours_finished: playthroughs[0].hours_finished,
-    hours_mastered: playthroughs[0].hours_mastered,
-    hours_played: playthroughs[0].hours_played,
+    hours_finished: firstPlaythrough?.hours_finished ?? '',
+    hours_mastered: firstPlaythrough?.hours_mastered ?? '',
+    hours_played: firstPlaythrough?.hours_played ?? '',
     is_backlog: game_log.is_backlog,
-    is_master: playthroughs[0].is_master,
+    is_master: firstPlaythrough?.is_master ?? '',
     is_play: game_log.is_play,
     is_playing: game_log.is_playing,
-    is_replay: playthroughs[0].is_replay,
+    is_replay: firstPlaythrough?.is_replay ?? '',
     is_wishlist: game_log.is_wishlist,
-    mins_finished: playthroughs[0].mins_finished,
-    mins_mastered: playthroughs[0].mins_mastered,
-    mins_played: playthroughs[0].mins_played,
+    mins_finished: firstPlaythrough?.mins_finished ?? '',
+    mins_mastered: firstPlaythrough?.mins_mastered ?? '',
+    mins_played: firstPlaythrough?.mins_played ?? '',
     name,
-    rating: playthroughs[0].rating,
-    review: playthroughs[0].review,
-    review_spoilers: playthroughs[0].review_spoilers,
-    start_date: playthroughs[0].start_date ?? '',
+    rating: firstPlaythrough?.rating ?? '',
+    review: firstPlaythrough?.review ?? '',
+    review_spoilers: firstPlaythrough?.review_spoilers ?? '',
+    start_date: firstPlaythrough?.start_date ?? '',
     url,
   };
 };
