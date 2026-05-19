@@ -26,9 +26,7 @@ const Dialog = ({
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
-    if (!dialogRef.current) {
-      return;
-    }
+    if (!dialogRef.current) return;
 
     if (isOpen) {
       dialogRef.current.showModal();

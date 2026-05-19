@@ -147,8 +147,8 @@ export default [
       // [ESLINT RULES]
       // Enforces the use of `===` and `!==`.
       eqeqeq: 2,
-      // Enforces the use of curly {} in block statements (if, else, for, while...).
-      curly: [2, 'all'],
+      // Enforces curly braces {} in block statements (if, else, for, while...), but allows omitting them in true single-line statements.
+      curly: [2, 'multi-line'],
       // Disallows the use of undeclared variables.
       'no-undef': 2,
       // Enforces no braces when they can be omitted. Incorrect: const foo = (x) => { return x; } Correct: const foo = (x) => x;

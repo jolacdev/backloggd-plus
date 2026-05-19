@@ -13,9 +13,7 @@ type UseExportProps = {
 
 // TODO: Move to utils?
 const getTotalPages = (profileGamesPage?: ProfileGamesPageScrapeResponse) => {
-  if (!profileGamesPage) {
-    return 0;
-  }
+  if (!profileGamesPage) return 0;
 
   const { games, totalGames } = profileGamesPage;
   return Math.ceil(totalGames / games.length) || 1;
@@ -120,9 +118,7 @@ const useExport = ({ username }: UseExportProps) => {
 
   const fetchData = () => {
     // Prevent fetching if username has no value.
-    if (!username) {
-      return;
-    }
+    if (!username) return;
 
     if (!isExportEnabled) {
       setIsExportEnabled(true);

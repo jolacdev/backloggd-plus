@@ -45,14 +45,10 @@ export default defineContentScript({
     i18n.options.defaultNS = 'content'; // NOTE: Set 'content' as default namespace for this entrypoint.
 
     const inject = async () => {
-      if (!isCurrentPathname(SETTINGS_DATA_PATHNAME)) {
-        return;
-      }
+      if (!isCurrentPathname(SETTINGS_DATA_PATHNAME)) return;
 
       const username = getLoggedInUsername();
-      if (!username) {
-        return;
-      }
+      if (!username) return;
 
       const injectedRootElement = document.querySelector(INJECTED_ROOT_ELEMENT);
       const dataManagementSubtitleRow = document.querySelector(
@@ -60,9 +56,7 @@ export default defineContentScript({
       );
 
       // Avoid duplicate injections or missing anchor.
-      if (injectedRootElement || !dataManagementSubtitleRow) {
-        return;
-      }
+      if (injectedRootElement || !dataManagementSubtitleRow) return;
 
       const ui = await createUi(ctx, {
         anchor: dataManagementSubtitleRow,
@@ -81,9 +75,7 @@ export default defineContentScript({
     let url = location.href;
 
     const monitorChanges = () => {
-      if (ctx.isInvalid) {
-        return;
-      }
+      if (ctx.isInvalid) return;
 
       // TODO: Navigating to the same URL causes the UI to be unmounted. Check how to re-inject.
       if (hasUrlChanged(url)) {

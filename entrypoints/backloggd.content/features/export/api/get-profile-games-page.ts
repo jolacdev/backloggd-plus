@@ -35,9 +35,7 @@ const getTotalGamesCount = (doc: Document): number => {
     ...doc.querySelectorAll('.subtitle-text'),
   ].find((el) => el.textContent?.includes('Games'));
 
-  if (!totalGamesByStatusElement) {
-    return 0;
-  }
+  if (!totalGamesByStatusElement) return 0;
 
   const match = totalGamesByStatusElement.textContent.match(/(\d+)\s+Games/);
   return match ? parseInt(match[1], 10) : 0;

@@ -3,9 +3,7 @@
  */
 export const getLoggedInUsername = (): null | string => {
   const dropdown = document.getElementById('navbarDropdown');
-  if (!dropdown) {
-    return null;
-  }
+  if (!dropdown) return null;
 
   return dropdown.childNodes?.[0]?.textContent?.trim() || null;
 };

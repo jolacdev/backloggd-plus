@@ -145,10 +145,10 @@ Backloggd uses [Hotwire Turbo](https://turbo.hotwired.dev/) for client-side navi
 ```typescript
 // index.tsx
 const monitorChanges = () => {
-  if (ctx.isInvalid) { return; }         // Stop if extension context invalidated
+  if (ctx.isInvalid) return; // Stop if extension context invalidated
   if (hasUrlChanged(url)) {
     url = location.href;
-    inject();                             // Re-inject UI on navigation
+    inject(); // Re-inject UI on navigation
   }
   ctx.requestAnimationFrame(monitorChanges);
 };

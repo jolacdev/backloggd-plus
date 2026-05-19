@@ -11,9 +11,7 @@ import esShared from './locales/es/shared.json';
 const FALLBACK_LANGUAGE = 'en';
 
 const getInitialLanguage = () => {
-  if (typeof window === 'undefined') {
-    return FALLBACK_LANGUAGE;
-  }
+  if (typeof window === 'undefined') return FALLBACK_LANGUAGE;
 
   const navigatorLanguage = window.navigator.language.split('-')[0];
   return navigatorLanguage || FALLBACK_LANGUAGE;
