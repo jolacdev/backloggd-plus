@@ -1,6 +1,6 @@
 import { filtersStorageItem } from '@globalShared/storage';
 
-export type StatusKey = 'backlog' | 'completed' | 'playing' | 'wishlist';
+export type StatusKey = 'backlog' | 'played' | 'playing' | 'wishlist';
 
 export type StatusFiltersState = Record<StatusKey, boolean>;
 

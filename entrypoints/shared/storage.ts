@@ -5,7 +5,7 @@ export const filtersStorageItem = storage.defineItem<StatusFiltersState>(
   {
     fallback: {
       backlog: true,
-      completed: true,
+      played: true,
       playing: true,
       wishlist: true,
     },

@@ -5,7 +5,7 @@
         "title": "Estados activos",
         "status": {
           "backlog": "Por jugar",
-          "completed": "Completados",
+          "played": "Jugados",
           "playing": "Jugando",
           "wishlist": "Lista de deseos"
         }

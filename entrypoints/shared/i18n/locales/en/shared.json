@@ -5,7 +5,7 @@
         "title": "Active statuses",
         "status": {
           "backlog": "Backlog",
-          "completed": "Completed",
+          "played": "Played",
           "playing": "Playing",
           "wishlist": "Wishlist"
         }
