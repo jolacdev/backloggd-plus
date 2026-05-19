@@ -6,9 +6,11 @@ import { useStatusFilters } from '@globalShared/hooks/useStatusFilters';
 
 const App = () => {
   const { t } = useTranslation();
-  const { filters, toggleStatusFilter } = useStatusFilters({
+  const { filters, toggleStatusFilter, hasLoadedStatuses } = useStatusFilters({
     canEditStorage: true,
   });
+
+  if (!hasLoadedStatuses) return;
 
   return (
     <div className="bg-[#16181c] px-4 py-6 text-white">

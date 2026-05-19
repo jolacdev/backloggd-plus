@@ -2,6 +2,8 @@
 import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query';
 
 import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
+import { StatusFiltersState } from '@globalShared/hooks/useStatusFilters';
+import { filtersStorageItem } from '@globalShared/storage';
 
 import { createGameDetailsQueryOptions } from '../api/get-game-log-details';
 import { createProfileGamesPageQueryOptions } from '../api/get-profile-games-page';
@@ -45,6 +47,9 @@ const combineGamesDetails = (
 // TODO: Separate into multiple hooks? useProfileGamesPagesExport, useGameLogDetailsExport, etc.
 const useExport = ({ username }: UseExportProps) => {
   const [isExportEnabled, setIsExportEnabled] = useState(false);
+  const [selectedStatuses, setSelectedStatuses] = useState<StatusFiltersState>(
+    filtersStorageItem.fallback,
+  );
 
   const {
     data: firstPageGamesData,
@@ -54,7 +59,7 @@ const useExport = ({ username }: UseExportProps) => {
     isStale: isFirstPageStale,
   } = useQuery(
     createProfileGamesPageQueryOptions(
-      { pageNumber: 1, username },
+      { pageNumber: 1, username, selectedStatuses },
       { enabled: isExportEnabled },
     ),
   );
@@ -84,6 +89,7 @@ const useExport = ({ username }: UseExportProps) => {
         {
           pageNumber,
           username,
+          selectedStatuses,
         },
         { enabled: canQueryPages },
       ),
@@ -116,11 +122,12 @@ const useExport = ({ username }: UseExportProps) => {
     ),
   });
 
-  const fetchData = () => {
+  const fetchData = (selectedFilters: StatusFiltersState) => {
     // Prevent fetching if username has no value.
     if (!username) return;
 
     if (!isExportEnabled) {
+      setSelectedStatuses(selectedFilters);
       setIsExportEnabled(true);
     }
 

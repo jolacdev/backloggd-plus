@@ -14,16 +14,29 @@ export const useStatusFilters = ({
   const [filters, setFilters] = useState<StatusFiltersState>(
     filtersStorageItem.fallback,
   );
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadStoredFilters = async () => {
       const storedFilters = await filtersStorageItem.getValue();
-      if (storedFilters) {
-        setFilters(storedFilters);
+
+      // Only update state if the component is still actively mounted
+      if (isMounted) {
+        if (storedFilters) {
+          setFilters(storedFilters);
+        }
+        setHasLoaded(true);
       }
     };
 
     loadStoredFilters();
+
+    // Cleanup flag when unmounting
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const toggleStatusFilter = (key: StatusKey) => {
@@ -37,5 +50,5 @@ export const useStatusFilters = ({
     }
   };
 
-  return { filters, toggleStatusFilter };
+  return { filters, toggleStatusFilter, hasLoadedStatuses: hasLoaded };
 };

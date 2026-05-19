@@ -4,6 +4,7 @@ import { cn } from '@globalShared/utils/cn';
 
 const DEFAULT_VARIANT_MAPPING = {
   body1: 'p',
+  body2: 'p',
   h1: 'h1',
   h2: 'h2',
   h3: 'h3',
@@ -20,6 +21,7 @@ type VariantTagMap = typeof DEFAULT_VARIANT_MAPPING;
 
 const VARIANT_CLASSES: Record<keyof typeof DEFAULT_VARIANT_MAPPING, string> = {
   body1: 'mb-0 text-[1rem] leading-[1.5] font-[200] text-[#fff]',
+  body2: 'mb-0 text-[1rem] leading-[1.5] font-[400] text-[#fff]',
   h1: 'mb-[1rem] text-[4.5rem] leading-[1.2] font-[500] text-[var(--back-text,#badefc)]',
   h2: 'mb-[0.5rem] text-[2rem] leading-[1.2] font-[500] text-[var(--back-text,#badefc)]',
   h3: 'mb-[0.25rem] text-[1.75rem] leading-[1.2] font-[500] text-[var(--back-text,#badefc)]',

@@ -6,23 +6,33 @@ import {
   StatusFiltersState,
   StatusKey,
 } from '@globalShared/hooks/useStatusFilters';
+import { cn } from '@globalShared/utils/cn';
 
 type StatusFiltersProps = {
   filters: StatusFiltersState;
+  direction?: 'column' | 'row';
   onChange: (key: StatusKey) => void;
 };
 
-const StatusFilters = ({ filters, onChange }: StatusFiltersProps) => {
+const StatusFilters = ({
+  direction = 'column',
+  filters,
+  onChange,
+}: StatusFiltersProps) => {
   const { t } = useTranslation('shared', {
     keyPrefix: 'features.export.filters',
   });
 
   return (
     <fieldset>
-      <Typography as="legend" className="mb-4" variant="h6">
+      <Typography as="legend" className="mb-2" variant="h6">
         {t('title')}
       </Typography>
-      <div className="flex flex-col gap-2">
+      <div
+        className={cn('flex gap-4', {
+          'flex-col gap-2': direction === 'column',
+        })}
+      >
         {(Object.entries(filters) as [StatusKey, boolean][]).map(
           ([key, checked]) => (
             <Typography

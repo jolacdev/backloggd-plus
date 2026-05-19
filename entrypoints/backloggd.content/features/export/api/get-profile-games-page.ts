@@ -2,8 +2,26 @@ import { queryOptions, UseQueryOptions } from '@tanstack/react-query';
 
 import { api } from '@content/lib/axios';
 import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
+import {
+  StatusFiltersState,
+  StatusKey,
+} from '@globalShared/hooks/useStatusFilters';
 
 import { queryKeys } from './keys';
+
+const createFetchProfileGamesPageUrl = (
+  username: string,
+  selectedStatuses: StatusFiltersState,
+) => {
+  // Extract keys where the value is true (e.g., ['played', 'backlog'])
+  const activeStatuses = Object.keys(selectedStatuses).filter(
+    (key) => selectedStatuses[key as StatusKey],
+  );
+
+  if (activeStatuses.length === 0) return `/u/${username}/games`;
+
+  return `/u/${username}/games/added/type:${activeStatuses.join(',')}/`;
+};
 
 /**
  * Fetches a user's profile games page and returns the parsed HTML document.
@@ -11,16 +29,13 @@ import { queryKeys } from './keys';
 const fetchProfileGamesPage = async (
   username: string,
   pageNumber: number,
+  selectedStatuses: StatusFiltersState,
 ): Promise<Document> => {
   try {
-    // TODO: Add UI option to include/exclude fetching specific game statuses (played, playing, backlog, wishlist).
-    // TODO: Remove - Basic fetch by completed status: `/u/${username}/games`
-    const result = await api.get<string>(
-      `/u/${username}/games/added/type:played,playing,backlog,wishlist/`,
-      {
-        params: { page: pageNumber },
-      },
-    );
+    const url = createFetchProfileGamesPageUrl(username, selectedStatuses);
+    const result = await api.get<string>(url, {
+      params: { page: pageNumber },
+    });
 
     const parser = new DOMParser();
     return parser.parseFromString(result, 'text/html');
@@ -70,6 +85,7 @@ const parseProfileGamesPage = (
 
 type ProfileGamesPageParams = {
   pageNumber: number;
+  selectedStatuses: StatusFiltersState;
   username: string;
 };
 
@@ -77,7 +93,7 @@ export const createProfileGamesPageQueryOptions = <
   TError = Error,
   TData = ProfileGamesPageScrapeResponse,
 >(
-  { pageNumber, username }: ProfileGamesPageParams,
+  { pageNumber, selectedStatuses, username }: ProfileGamesPageParams,
   options?: Omit<
     UseQueryOptions<Document, TError, TData>,
     'queryFn' | 'queryKey' | 'select'
@@ -86,6 +102,7 @@ export const createProfileGamesPageQueryOptions = <
   queryOptions({
     ...options,
     queryKey: queryKeys.profileGamesPage(username, pageNumber),
-    queryFn: () => fetchProfileGamesPage(username, pageNumber),
+    queryFn: () =>
+      fetchProfileGamesPage(username, pageNumber, selectedStatuses),
     select: (data) => parseProfileGamesPage(data),
   });

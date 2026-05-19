@@ -1,6 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
 import Dialog from '@content/shared/components/Dialog/Dialog';
+import StatusFilters from '@globalShared/components/StatusFilters';
+import Typography from '@globalShared/components/Typography';
+import { useStatusFilters } from '@globalShared/hooks/useStatusFilters';
 
 import useExport from '../hooks/useExport';
 import { downloadGameDetailsCSV, parseToGameDetailsCSV } from '../utils/csv';
@@ -17,6 +20,13 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
   });
 
   const [isExportTriggered, setIsExportTriggered] = useState(false);
+  const {
+    filters: selectedStatuses,
+    toggleStatusFilter,
+    hasLoadedStatuses,
+  } = useStatusFilters({
+    canEditStorage: false,
+  });
 
   const { fetchData, gameDetails, isExportEnabled, isFetching, isSuccess } =
     useExport({
@@ -54,9 +64,11 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
 
   const handleExport = () => {
     setIsExportTriggered(true);
-    fetchData();
+    fetchData(selectedStatuses);
     // TODO: Should await for fetchData logic to hide modal + show alert.
   };
+
+  if (!hasLoadedStatuses) return;
 
   return (
     <Dialog
@@ -67,7 +79,14 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
       onClose={onClose}
       onConfirm={handleExport}
     >
-      <p>{t('description')}</p>
+      <Typography className="mb-4" variant="body2">
+        {t('description')}
+      </Typography>
+      <StatusFilters
+        direction="row"
+        filters={selectedStatuses}
+        onChange={toggleStatusFilter}
+      />
     </Dialog>
   );
 };
