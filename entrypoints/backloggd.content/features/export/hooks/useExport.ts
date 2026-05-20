@@ -3,26 +3,15 @@ import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query';
 
 import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
 import { StatusFiltersState } from '@globalShared/hooks/useStatusFilters';
-import { filtersStorageItem } from '@globalShared/storage';
 
 import { createGameDetailsQueryOptions } from '../api/get-game-log-details';
 import { createProfileGamesPageQueryOptions } from '../api/get-profile-games-page';
+import { getPageNumbers, getTotalPages } from '../api/utils';
 import { GameDetails } from '../types';
 
 type UseExportProps = {
   username: string;
 };
-
-// TODO: Move to utils?
-const getTotalPages = (profileGamesPage?: ProfileGamesPageScrapeResponse) => {
-  if (!profileGamesPage) return 0;
-
-  const { games, totalGames } = profileGamesPage;
-  return Math.ceil(totalGames / games.length) || 1;
-};
-
-const getPageNumbers = (totalPages: number) =>
-  Array.from({ length: totalPages }, (_, index) => index + 1);
 
 const combineProfileGameResults = (
   results: UseQueryResult<ProfileGamesPageScrapeResponse, Error>[],
@@ -44,12 +33,10 @@ const combineGamesDetails = (
   refetch: () => results.forEach((result) => result.refetch()),
 });
 
-// TODO: Separate into multiple hooks? useProfileGamesPagesExport, useGameLogDetailsExport, etc.
 const useExport = ({ username }: UseExportProps) => {
   const [isExportEnabled, setIsExportEnabled] = useState(false);
-  const [selectedStatuses, setSelectedStatuses] = useState<StatusFiltersState>(
-    filtersStorageItem.fallback,
-  );
+  const [selectedStatuses, setSelectedStatuses] =
+    useState<StatusFiltersState>(); // Default `undefined` to rely on the truthiness of the object to check if the filters have been set.
 
   const {
     data: firstPageGamesData,
@@ -59,8 +46,8 @@ const useExport = ({ username }: UseExportProps) => {
     isStale: isFirstPageStale,
   } = useQuery(
     createProfileGamesPageQueryOptions(
-      { pageNumber: 1, username, selectedStatuses },
-      { enabled: isExportEnabled },
+      { pageNumber: 1, username, selectedStatuses: selectedStatuses! },
+      { enabled: isExportEnabled && !!selectedStatuses },
     ),
   );
 
@@ -89,23 +76,21 @@ const useExport = ({ username }: UseExportProps) => {
         {
           pageNumber,
           username,
-          selectedStatuses,
+          selectedStatuses: selectedStatuses!,
         },
-        { enabled: canQueryPages },
+        { enabled: canQueryPages && !!selectedStatuses },
       ),
     ),
   });
 
-  // TODO: Update name and add a combine
   const canQueryGamesDetails =
     !arePagesStale &&
     !!pagesGamesData.length &&
     arePagesSuccess &&
     !arePagesFetching;
 
-  const filteredPagesGamesData = pagesGamesData
-    .slice(0, 3) // TODO: ⚠️ TEMP Remove slice, used only for testing purposes.
-    .filter(({ id }) => Boolean(id)); // TODO: Check filter logic.
+  // Wait for the previous queries to finish before creating the game data to query details.
+  const filteredPagesGamesData = canQueryGamesDetails ? pagesGamesData : [];
 
   const {
     data: gamesDetailsData,
