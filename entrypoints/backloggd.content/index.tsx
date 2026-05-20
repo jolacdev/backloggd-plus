@@ -4,12 +4,11 @@ import { createRoot } from 'react-dom/client';
 import i18n from '@globalShared/i18n';
 
 import App from './App';
-import { hasUrlChanged, isCurrentPathname } from './shared/utils/url';
+import { isCurrentPathname } from './shared/utils/url';
 import { getLoggedInUsername } from './shared/utils/user';
 
 import css from './style.css?inline'; // NOTE: Imports CSS file as a string.
 
-// TODO: Check if move to constants
 const INJECTED_ROOT_ELEMENT = 'backloggd-plus-ui';
 const SETTINGS_DATA_PATHNAME = '/settings/data/';
 
@@ -36,7 +35,6 @@ const createUi = async (
     },
   });
 
-// TODO: Check support for development hot reload. Check ui.remove(); || ui = null;
 export default defineContentScript({
   // NOTE: Matches all pages to trigger on SPA navigation. Injection conditions are handled separately.
   matches: ['*://backloggd.com/*', '*://*.backloggd.com/*'],
@@ -69,23 +67,18 @@ export default defineContentScript({
     // Initial injection
     inject();
 
-    // NOTE: Backloggd uses Turbo, so we could listen to 'turbo:render' to detect page changes, refresh UI injections, etc.
-    // If content uses event listeners, it should check context invalidations to clean them up accordingly.
-
-    let url = location.href;
-
-    const monitorChanges = () => {
-      if (ctx.isInvalid) return;
-
-      // TODO: Navigating to the same URL causes the UI to be unmounted. Check how to re-inject.
-      if (hasUrlChanged(url)) {
-        url = location.href;
-        inject();
+    // NOTE: Backloggd uses Turbo, so we listen to 'turbo:load' to detect when a new page is loaded.
+    const handlePageChange = () => {
+      // Safety check: Exit if the extension context is dead
+      if (ctx.isInvalid) {
+        document.removeEventListener('turbo:load', handlePageChange);
+        return;
       }
 
-      ctx.requestAnimationFrame(monitorChanges);
+      // If Turbo re-renders, the DOM elements are replaced even if the URL is identical, therefore, we proceed to re-inject.
+      inject();
     };
 
-    ctx.requestAnimationFrame(monitorChanges);
+    document.addEventListener('turbo:load', handlePageChange);
   },
 });

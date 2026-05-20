@@ -140,21 +140,9 @@ const ui = await createShadowRootUi(ctx, {
 
 ### Turbo-Aware Navigation Monitoring
 
-Backloggd uses [Hotwire Turbo](https://turbo.hotwired.dev/) for client-side navigation, which means the page doesn't fully reload on route changes. The content script handles this with a `requestAnimationFrame` loop that monitors `location.href` for changes:
+Backloggd uses [Hotwire Turbo](https://turbo.hotwired.dev/) for client-side navigation, which means the page doesn't fully reload on route changes. The content script handles re-injections by listening to `turbo:load` events.
 
-```typescript
-// index.tsx
-const monitorChanges = () => {
-  if (ctx.isInvalid) return; // Stop if extension context invalidated
-  if (hasUrlChanged(url)) {
-    url = location.href;
-    inject(); // Re-inject UI on navigation
-  }
-  ctx.requestAnimationFrame(monitorChanges);
-};
-```
-
-The `ctx.isInvalid` check ensures the monitoring loop is cleaned up when the extension is disabled, updated, or unloaded — preventing orphaned listeners.
+The `ctx.isInvalid` check ensures the monitoring loop is cleaned up when the extension is disabled, updated, or unloaded; preventing orphaned listeners.
 
 ---
 
