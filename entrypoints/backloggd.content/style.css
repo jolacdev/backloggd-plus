@@ -1,5 +1,11 @@
 @import 'tailwindcss';
-/* TODO: Check if `root: ':host'` is the correct value to use for Shadow DOM */
+
+/*
+  NOTE: Shadow DOM Compatibility: By setting `root: ':host'`, it forces DaisyUI to define 
+  its CSS variables to the `:host` (`where(:host)`) selector.
+
+  This ensures that DaisyUI classes are rendered correctly inside the Shadow DOM.
+*/
 @plugin 'daisyui' {
   root: ':host';
 }

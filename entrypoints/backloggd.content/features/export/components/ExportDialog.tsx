@@ -62,7 +62,6 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
   const handleExport = () => {
     isExportTriggered.current = true;
     fetchData(selectedStatuses);
-    // TODO: Should await for fetchData logic to hide modal + show alert.
   };
 
   if (!hasLoadedStatuses) return;
