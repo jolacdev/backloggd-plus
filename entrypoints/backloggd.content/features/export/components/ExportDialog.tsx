@@ -19,7 +19,8 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
     keyPrefix: 'features.export.dialog',
   });
 
-  const [isExportTriggered, setIsExportTriggered] = useState(false);
+  const isExportTriggered = useRef(false);
+
   const {
     filters: selectedStatuses,
     toggleStatusFilter,
@@ -27,7 +28,6 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
   } = useStatusFilters({
     canEditStorage: false,
   });
-
   const { fetchData, gameDetails, isExportEnabled, isFetching, isSuccess } =
     useExport({
       username, // NOTE: username truthiness is checked inside useExport
@@ -36,11 +36,8 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
   const isDialogDisabled = isExportEnabled && isFetching;
 
   useEffect(() => {
-    if (isExportTriggered && !isFetching && isSuccess) {
-      console.debug('Exporting data:', { gameDetails });
-
-      // Reset the trigger after export
-      setIsExportTriggered(false);
+    if (isExportTriggered.current && !isFetching && isSuccess) {
+      isExportTriggered.current = false;
 
       if (gameDetails.length > 0) {
         const gamesDetailsCSV = gameDetails
@@ -60,10 +57,10 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
 
       onClose();
     }
-  }, [gameDetails, onClose, isExportTriggered, isFetching, isSuccess]);
+  }, [gameDetails, onClose, isFetching, isSuccess]);
 
   const handleExport = () => {
-    setIsExportTriggered(true);
+    isExportTriggered.current = true;
     fetchData(selectedStatuses);
     // TODO: Should await for fetchData logic to hide modal + show alert.
   };
