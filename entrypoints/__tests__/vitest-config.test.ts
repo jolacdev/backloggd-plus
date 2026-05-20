@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-// TODO: Remove after test.
+// NOTE: Demo test file to check `vitest.config.ts` options `mockReset` and `restoreMocks`.
 describe('vitest config: mockReset & restoreMocks', () => {
   it('spies Math.random calls', () => {
     const spy = vi.spyOn(Math, 'random').mockReturnValue(0.5);

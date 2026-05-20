@@ -47,6 +47,7 @@ describe('Typography', () => {
       string
     > = {
       body1: 'P',
+      body2: 'P',
       h1: 'H1',
       h2: 'H2',
       h3: 'H3',
