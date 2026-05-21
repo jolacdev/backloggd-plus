@@ -10,6 +10,10 @@
         "title": "Exportar tus juegos registrados",
         "description": "Descarga un archivo CSV/JSON con los detalles de los juegos que has registrado.",
         "submit": "Exportar"
+      },
+      "toast": {
+        "dataExported": "Tu colección de juegos se ha exportado correctamente.",
+        "noGamesFound": "No se encontraron registros de juegos para exportar."
       }
     }
   },

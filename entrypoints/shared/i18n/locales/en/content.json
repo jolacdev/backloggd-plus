@@ -10,6 +10,10 @@
         "title": "Export your logged games",
         "description": "Download a CSV/JSON file containing your logged game details.",
         "submit": "Export"
+      },
+      "toast": {
+        "dataExported": "Your game collection has been successfully exported.",
+        "noGamesFound": "No logged games found to export."
       }
     }
   },

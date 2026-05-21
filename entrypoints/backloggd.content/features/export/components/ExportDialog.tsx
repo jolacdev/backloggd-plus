@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 import Dialog from '@content/shared/components/Dialog/Dialog';
@@ -50,14 +51,15 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
           const gamesDetailsJSON = gameDetails.map(parseToGameDetailsJSON);
           downloadGameDetailsJSON(gamesDetailsJSON);
         }, 150);
+
+        toast(t('features.export.toast.dataExported', { keyPrefix: '' }));
       } else {
-        // TODO: Add alert of no game found to export?
-        console.warn('No game details found to export.');
+        toast.error(t('features.export.toast.noGamesFound', { keyPrefix: '' }));
       }
 
       onClose();
     }
-  }, [gameDetails, onClose, isFetching, isSuccess]);
+  }, [isFetching, isSuccess, gameDetails, t, onClose]);
 
   const handleExport = () => {
     isExportTriggered.current = true;

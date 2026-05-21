@@ -47,7 +47,8 @@ const useExport = ({ username }: UseExportProps) => {
   } = useQuery(
     createProfileGamesPageQueryOptions(
       { pageNumber: 1, username, selectedStatuses: selectedStatuses! },
-      { enabled: isExportEnabled && !!selectedStatuses },
+      // Set staleTime to 0 to prevent caching of the same pages data across different requests.
+      { enabled: isExportEnabled && !!selectedStatuses, staleTime: 0 },
     ),
   );
 
@@ -78,7 +79,8 @@ const useExport = ({ username }: UseExportProps) => {
           username,
           selectedStatuses: selectedStatuses!,
         },
-        { enabled: canQueryPages && !!selectedStatuses },
+        // Set staleTime to 0 to prevent caching of the same pages data across different requests.
+        { enabled: canQueryPages && !!selectedStatuses, staleTime: 0 },
       ),
     ),
   });

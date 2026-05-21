@@ -11,7 +11,7 @@
 }
 
 @layer base {
-  * {
+  body {
     font-family: Roboto, sans-serif;
     color: #ffffff;
   }
