@@ -1,3 +1,14 @@
-# WXT + React
+# Backloggd Plus
 
-This template should help get you started developing with React in WXT.
+## Description
+
+Browser extension for Backloggd built with WXT + React.
+
+## License
+Copyright (c) 2026 jolacdev
+
+This project is licensed under the GNU GPL v3.
+
+## Branding
+
+Project name, logo and branding are not included in the GPL license.
