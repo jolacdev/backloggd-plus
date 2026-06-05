@@ -13,6 +13,8 @@ type UseExportProps = {
   username: string;
 };
 
+const SEQUENTIAL_DELAY_MS = 500; // MS to wait between requests to avoid 429.
+
 const combineProfileGameResults = (
   results: UseQueryResult<ProfileGamesPageScrapeResponse, Error>[],
 ) => ({
@@ -20,17 +22,16 @@ const combineProfileGameResults = (
   isFetching: results.some((result) => result.isFetching),
   isStale: results.some((result) => result.isStale),
   isSuccess: !!results.length && results.every((result) => result.isSuccess),
-  refetch: () => results.forEach((result) => result.refetch()),
 });
 
 const combineGamesDetails = (
   results: UseQueryResult<GameDetails | undefined, Error>[],
 ) => ({
   data: results.flatMap(({ data }) => (data ? [data] : [])),
+  rawResults: results,
   isFetching: results.some((result) => result.isFetching),
   isStale: results.some((result) => result.isStale),
   isSuccess: !!results.length && results.every((result) => result.isSuccess),
-  refetch: () => results.forEach((result) => result.refetch()),
 });
 
 const useExport = ({ username }: UseExportProps) => {
@@ -38,26 +39,30 @@ const useExport = ({ username }: UseExportProps) => {
   const [selectedStatuses, setSelectedStatuses] =
     useState<StatusFiltersState>(); // Default `undefined` to rely on the truthiness of the object to check if the filters have been set.
 
+  // Sequential index tracker for rate-limited fetching.
+  const [activeDetailIndex, setActiveDetailIndex] = useState(0);
+
+  // 1. Fetch the first page to get the total games count.
   const {
     data: firstPageGamesData,
-    refetch: refetchFirstPage,
     isFetching: isFirstPageFetching,
     isSuccess: isFirstPageSuccess,
     isStale: isFirstPageStale,
   } = useQuery(
     createProfileGamesPageQueryOptions(
       { pageNumber: 1, username, selectedStatuses: selectedStatuses! },
-      // Set staleTime to 0 to prevent caching of the same pages data across different requests.
-      { enabled: isExportEnabled && !!selectedStatuses, staleTime: 0 },
+      {
+        enabled: isExportEnabled && !!selectedStatuses,
+        staleTime: 0,
+        gcTime: 0,
+      },
     ),
   );
 
-  // 2. Calculate total pages and generate an array of page numbers.
+  // 2. Fetch all pages based on the total games count from the first page.
   const totalPages = getTotalPages(firstPageGamesData);
   const pageNumbers = getPageNumbers(totalPages);
 
-  // 3. Fetch all pages available.
-  // The first page could be skipped, but is requested (from cache) for simplicity and consistency with the combine logic.
   const canQueryPages =
     !isFirstPageStale &&
     !!pageNumbers.length &&
@@ -67,7 +72,6 @@ const useExport = ({ username }: UseExportProps) => {
   const {
     data: pagesGamesData,
     isFetching: arePagesFetching,
-    refetch: refetchPages,
     isSuccess: arePagesSuccess,
     isStale: arePagesStale,
   } = useQueries({
@@ -79,12 +83,16 @@ const useExport = ({ username }: UseExportProps) => {
           username,
           selectedStatuses: selectedStatuses!,
         },
-        // Set staleTime to 0 to prevent caching of the same pages data across different requests.
-        { enabled: canQueryPages && !!selectedStatuses, staleTime: 0 },
+        {
+          enabled: canQueryPages && !!selectedStatuses,
+          staleTime: 0,
+          gcTime: 0,
+        },
       ),
     ),
   });
 
+  // 3. Fetch game details for all the games retrieved from the previous page fetches. (sequential, rate-limited).
   const canQueryGamesDetails =
     !arePagesStale &&
     !!pagesGamesData.length &&
@@ -96,34 +104,65 @@ const useExport = ({ username }: UseExportProps) => {
 
   const {
     data: gamesDetailsData,
+    rawResults: rawDetailQueriesResults,
     isFetching: areDetailsFetching,
-    refetch: refetchDetails,
     isSuccess: areDetailsSuccess,
-    isStale: areDetailsStale,
   } = useQueries({
     combine: combineGamesDetails,
-    queries: filteredPagesGamesData.map((profileGame) =>
+    queries: filteredPagesGamesData.map((profileGame, index) =>
       createGameDetailsQueryOptions(profileGame, {
-        enabled: canQueryGamesDetails,
+        // Only enable next query once the previous one has settled.
+        enabled: canQueryGamesDetails && index <= activeDetailIndex,
       }),
     ),
   });
+
+  // Advance to the next detail query after a delay once the current one settles.
+  const currentDetailResult = rawDetailQueriesResults?.[activeDetailIndex];
+  const isCurrentDetailSettled =
+    Boolean(currentDetailResult) &&
+    (currentDetailResult.isSuccess || currentDetailResult.isError);
+
+  // TODO: Check if needed.
+  useEffect(() => {
+    // Check if page requests have completed and if the current detail query has settled before enabling the next one.
+    if (!canQueryGamesDetails || !isCurrentDetailSettled) return;
+
+    // Avoid moving to the next query if it is the last query.
+    if (activeDetailIndex >= filteredPagesGamesData.length - 1) return;
+
+    const timer = setTimeout(() => {
+      setActiveDetailIndex((prev) => prev + 1);
+    }, SEQUENTIAL_DELAY_MS);
+
+    return () => clearTimeout(timer);
+  }, [
+    canQueryGamesDetails,
+    isCurrentDetailSettled,
+    activeDetailIndex,
+    filteredPagesGamesData.length,
+  ]);
+
+  const isBatchComplete =
+    isExportEnabled && // NOTE: Guard: Only evaluate completeness if an export is actually active
+    areDetailsSuccess &&
+    !areDetailsFetching &&
+    !arePagesFetching &&
+    !isFirstPageFetching;
+
+  // Derived: true from the moment the user triggers export until all queries settle.
+  const isBatchFetching = isExportEnabled && !isBatchComplete;
 
   const fetchData = (selectedFilters: StatusFiltersState) => {
     // Prevent fetching if username has no value.
     if (!username) return;
 
+    // TODO: Check if needed.
+    setActiveDetailIndex(0); // Reset index at the start of a new fetch.
+
     if (!isExportEnabled) {
       setSelectedStatuses(selectedFilters);
       setIsExportEnabled(true);
-    }
-
-    const isStale = isFirstPageStale || arePagesStale || areDetailsStale;
-
-    if (isStale) {
-      refetchFirstPage();
-      refetchPages();
-      refetchDetails();
     }
   };
 
@@ -131,7 +170,7 @@ const useExport = ({ username }: UseExportProps) => {
     fetchData,
     gameDetails: gamesDetailsData,
     isExportEnabled,
-    isFetching: isFirstPageFetching || arePagesFetching || areDetailsFetching,
+    isFetching: isBatchFetching,
     isSuccess: isFirstPageSuccess && arePagesSuccess && areDetailsSuccess,
   };
 };

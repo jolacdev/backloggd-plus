@@ -101,7 +101,11 @@ export const createProfileGamesPageQueryOptions = <
 ) =>
   queryOptions({
     ...options,
-    queryKey: queryKeys.profileGamesPage(username, pageNumber),
+    queryKey: queryKeys.profileGamesPage(
+      username,
+      pageNumber,
+      selectedStatuses,
+    ),
     queryFn: () =>
       fetchProfileGamesPage(username, pageNumber, selectedStatuses),
     select: (data) => parseProfileGamesPage(data),
