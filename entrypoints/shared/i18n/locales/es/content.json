@@ -9,7 +9,11 @@
       "dialog": {
         "title": "Exportar tus juegos registrados",
         "description": "Descarga un archivo CSV/JSON con los detalles de los juegos que has registrado.",
-        "submit": "Exportar"
+        "submit": "Exportar",
+        "progress": {
+          "analyzingLibrary": "Analizando biblioteca...",
+          "exportingGames": "Exportando... {{current}} / {{total}}"
+        }
       },
       "toast": {
         "dataExported": "Tu colección de juegos se ha exportado correctamente.",

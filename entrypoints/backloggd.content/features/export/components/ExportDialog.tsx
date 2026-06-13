@@ -9,6 +9,7 @@ import { useStatusFilters } from '@globalShared/hooks/useStatusFilters';
 import useExport from '../hooks/useExport';
 import { downloadGameDetailsCSV, parseToGameDetailsCSV } from '../utils/csv';
 import { downloadGameDetailsJSON, parseToGameDetailsJSON } from '../utils/json';
+import ExportProgressIndicator from './ExportProgressIndicator';
 
 type ExportDialogProps = {
   username: string;
@@ -88,6 +89,7 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
         isDisabled={isDialogDisabled}
         onChange={toggleStatusFilter}
       />
+      {isDialogDisabled && <ExportProgressIndicator progress={progress} />}
     </Dialog>
   );
 };
