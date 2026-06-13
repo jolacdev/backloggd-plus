@@ -10,7 +10,7 @@ const SOURCE_DIR = resolve(ROOT, 'skills');
 const MIRROR_ROOTS = [
   '.github/skills', // GitHub Copilot
   '.agents/skills', // Antigravity
-  // '.claude/skills', // Claude
+  '.claude/skills', // Claude
   // '.cursor/skills', // Cursor
   // '.windsurf/skills', // Windsurf
 ];
