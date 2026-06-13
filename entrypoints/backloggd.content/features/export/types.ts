@@ -5,6 +5,29 @@ import {
 } from '@content/shared/types/api';
 
 /**
+ * The lifecycle phase of an export run.
+ *
+ * - `idle`: no export in progress.
+ * - `analyzing`: resolving how many pages/games exist (profile page scraping).
+ * - `exporting`: fetching per-game details (main data for creating the CSV/JSON).
+ * - `complete`: every game-detail query has settled (success or error).
+ * - `error`: the game list could not be fetched, so there is nothing to export.
+ * Note: Only profile-page fetches can reach 'error'; individual game-detail failures are tolerated.
+ */
+export type ExportPhase =
+  | 'analyzing'
+  | 'complete'
+  | 'error'
+  | 'exporting'
+  | 'idle';
+
+export type ExportProgress = {
+  phase: ExportPhase;
+  current: number;
+  total: number;
+};
+
+/**
  * This type is used to provide comprehensive details about each game in the user's backlog.
  *
  * It includes all the attributes from both request responses {@link ProfileGameScrapeResponse} and {@link GameLogDetailsResponse}

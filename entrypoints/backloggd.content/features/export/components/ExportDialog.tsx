@@ -29,37 +29,39 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
   } = useStatusFilters({
     canEditStorage: false,
   });
-  const { fetchData, gameDetails, isExportEnabled, isFetching, isSuccess } =
-    useExport({
-      username, // NOTE: username truthiness is checked inside useExport
-    });
+  const { fetchData, gameDetails, progress, isComplete, isError } = useExport({
+    username, // NOTE: username truthiness is checked inside useExport
+  });
 
-  const isDialogDisabled = isExportEnabled && isFetching;
+  const isDialogDisabled =
+    progress.phase === 'analyzing' || progress.phase === 'exporting';
 
   useEffect(() => {
-    if (isExportTriggered.current && !isFetching && isSuccess) {
-      isExportTriggered.current = false;
+    if (!isExportTriggered.current || (!isComplete && !isError)) return;
 
-      if (gameDetails.length > 0) {
-        const gamesDetailsCSV = gameDetails
-          .map(parseToGameDetailsCSV)
-          .filter((game) => !!game);
-        downloadGameDetailsCSV(gamesDetailsCSV); // TODO: Handle promise with await?
+    isExportTriggered.current = false;
 
-        // Delay second download (~150ms) to register both downloads correctly and prevent them from being swallowed by the browser.
-        setTimeout(() => {
-          const gamesDetailsJSON = gameDetails.map(parseToGameDetailsJSON);
-          downloadGameDetailsJSON(gamesDetailsJSON);
-        }, 150);
-
-        toast(t('features.export.toast.dataExported', { keyPrefix: '' }));
-      } else {
-        toast.error(t('features.export.toast.noGamesFound', { keyPrefix: '' }));
-      }
-
+    // The game list could not be fetched, so there is nothing to export.
+    if (isError || gameDetails.length === 0) {
+      toast.error(t('features.export.toast.noGamesFound', { keyPrefix: '' }));
       onClose();
+      return;
     }
-  }, [isFetching, isSuccess, gameDetails, t, onClose]);
+
+    const gamesDetailsCSV = gameDetails
+      .map(parseToGameDetailsCSV)
+      .filter((game) => !!game);
+    downloadGameDetailsCSV(gamesDetailsCSV); // TODO: Handle promise with await?
+
+    // Delay second download (~150ms) to register both downloads correctly and prevent them from being swallowed by the browser.
+    setTimeout(() => {
+      const gamesDetailsJSON = gameDetails.map(parseToGameDetailsJSON);
+      downloadGameDetailsJSON(gamesDetailsJSON);
+    }, 150);
+
+    toast(t('features.export.toast.dataExported', { keyPrefix: '' }));
+    onClose();
+  }, [isComplete, isError, gameDetails, t, onClose]);
 
   const handleExport = () => {
     isExportTriggered.current = true;
