@@ -4,11 +4,11 @@ import SettingsActionRow from '@content/shared/components/Dialog/SettingsActionR
 
 import ExportDialog from './ExportDialog';
 
-type ExportProps = {
+type ExportSectionProps = {
   username: string;
 };
 
-const ExportSection = ({ username }: ExportProps) => {
+const ExportSection = ({ username }: ExportSectionProps) => {
   const { t } = useTranslation(undefined, {
     keyPrefix: 'features.export.settingsAction',
   });
