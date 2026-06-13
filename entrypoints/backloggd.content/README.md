@@ -1,6 +1,6 @@
 # Backloggd Plus — Content Script (`backloggd.content`)
 
-> A WXT content script that injects a React-powered UI directly into the [Backloggd](https://backloggd.com) website, enabling authenticated users to export their full game library, which includes ratings, time tracking, etc. as a downloadable CSV file.
+> A WXT content script that injects a React-powered UI directly into the [Backloggd](https://backloggd.com) website, enabling authenticated users to export their game library, which includes ratings, time tracking, etc., as downloadable **CSV and JSON** files, optionally filtered by play status.
 
 ---
 
@@ -29,10 +29,11 @@
 The content script's core purpose is to **enhance the Backloggd website with features that the platform does not natively offer**. Currently, the primary feature is **Game Library Export**:
 
 1. **Authentication Detection** — Reads the `#navbarDropdown` DOM element to determine if a user is logged in and extract their username.
-2. **UI Injection** — Injects an "Export" button into the site's navigation dropdown menu, visually matching Backloggd's own styling.
-3. **Data Scraping** — Fetches the user's paginated game library pages from Backloggd by making HTTP requests and parsing the returned HTML with `DOMParser`.
-4. **Detail Enrichment** — For each game discovered, fetches detailed log data (playthroughs, ratings, time played, statuses) from Backloggd's internal JSON API endpoint (`/log/edit/:gameId`).
-5. **CSV Generation & Download** — Transforms the aggregated data into a CSV file via PapaParse and triggers a browser download.
+2. **UI Injection** — Injects an export section into the **Settings → Data Management** page (`/settings/data/`) only, anchored to the data-management subtitle row and visually matching Backloggd's own styling.
+3. **Status Filtering** — The user selects which play statuses (played, playing, backlog, wishlist) to include. The selection is persisted in `chrome.storage.local` (`local:statusFilters`) and shared with the extension popup.
+4. **Data Scraping** — Fetches the user's paginated game library pages from Backloggd in parallel, by making HTTP requests and parsing the returned HTML with `DOMParser`.
+5. **Detail Enrichment** — For each game discovered, fetches detailed log data (playthroughs, ratings, time played, statuses) from Backloggd's internal JSON API endpoint (`/log/edit/:gameId`). These requests are issued **sequentially and rate-limited** (one at a time) to avoid `429` responses.
+6. **CSV & JSON Generation & Download** — Transforms the aggregated data into **both** a CSV (via PapaParse) and a JSON file, triggering two browser downloads (the JSON download is delayed ~150ms so the browser registers both). There is no format toggle; every run produces both files. Progress is surfaced through a phase-based lifecycle (`idle → analyzing → exporting → complete`, or `error`).
 
 > **⚠️ Important:** The APIs consumed are **internal, undocumented Backloggd endpoints** and are subject to breakage at any time without notice. See [`shared/types/api.ts`](./shared/types/api.ts) for the full response type documentation.
 
@@ -44,19 +45,22 @@ The content script's core purpose is to **enhance the Backloggd website with fea
 
 ```mermaid
 flowchart TD
-    A["User clicks Export button"] --> B["useExport hook triggers fetch cascade"]
-    B --> C["1. Fetch first profile games page"]
+    A["User selects statuses, clicks Export"] --> B["useExport hook triggers fetch cascade"]
+    B --> C["useProfileGames · 1. Fetch first profile games page"]
     C --> D["Calculate total pages from game count"]
-    D --> E["2. Fetch all remaining profile pages in parallel"]
+    D --> E["useProfileGames · 2. Fetch all remaining profile pages in parallel"]
     E --> F["Parse HTML → Extract game IDs, names, URLs"]
-    F --> G["3. Fetch /log/edit/:gameId for each game"]
+    F --> G["useGameDetails · 3. Fetch /log/edit/:gameId sequentially (rate-limited)"]
     G --> H["Parse JSON → Extract playthroughs, ratings, time"]
-    H --> I["Combine into GameDetailsCSV array"]
-    I --> J["PapaParse → CSV string"]
-    J --> K["Blob → anchor download"]
+    H --> I["Combine into GameDetails array"]
+    I --> J["parseToGameDetailsCSV → PapaParse → CSV string"]
+    I --> K["parseToGameDetailsJSON → JSON string"]
+    J --> L["Blob → anchor download (.csv)"]
+    K --> M["Blob → anchor download (.json, ~150ms later)"]
 
     style A fill:#7c3aed,color:#fff
-    style K fill:#059669,color:#fff
+    style L fill:#059669,color:#fff
+    style M fill:#059669,color:#fff
 ```
 
 ### Directory Structure
@@ -64,25 +68,25 @@ flowchart TD
 ```
 📦 backloggd.content/
 ┣ 📜 index.tsx          → WXT entry point: defineContentScript, Shadow Root, React mount
-┣ 📜 App.tsx            → Root React component: receives username, renders features
+┣ 📜 App.tsx            → Root component: wraps features in QueryClient + Toaster providers
 ┣ 📜 style.css          → Tailwind + DaisyUI scoped to Shadow DOM (:host)
 ┃
 ┣ 📂 features/          → Feature modules (vertically sliced)
 ┃ ┗ 📂 export/          → Game Library Export feature
-┃   ┣ 📂 api/           → React Query options factories + fetch functions
-┃   ┣ 📂 components/    → UI components (Export)
-┃   ┣ 📂 hooks/         → useExport — orchestrates the multi-step fetch cascade
-┃   ┣ 📂 utils/         → CSV generation and download logic
-┃   ┗ 📜 types.ts       → Feature-specific types (GameDetailsCSV, GameDetailsJSON)
+┃   ┣ 📂 api/           → React Query options factories, fetch functions, keys, pagination utils
+┃   ┣ 📂 components/    → ExportSection, ExportDialog, ExportProgressIndicator
+┃   ┣ 📂 hooks/         → useExport (orchestrator) + useProfileGames, useGameDetails (stages)
+┃   ┣ 📂 utils/         → csv.ts, json.ts, download.ts
+┃   ┗ 📜 types.ts       → Feature types (ExportPhase, ExportProgress, GameDetails, GameDetailsCSV, GameDetailsJSON)
 ┃
 ┣ 📂 lib/               → Third-party library configurations (scoped to content)
 ┃ ┣ 📜 axios.ts         → Axios instance with backloggd.com base URL + interceptors
 ┃ ┣ 📜 papaparse.ts     → CSV serialization wrapper
-┃ ┗ 📜 react-query.ts   → QueryClient with default stale time
+┃ ┗ 📜 react-query.ts   → QueryClient: stale time, gc time, refetch-on-focus/reconnect disabled
 ┃
 ┗ 📂 shared/            → Code shared across ALL features within content
-  ┣ 📂 components/      → Reusable UI (Button, Dialog, DropdownButton)
-  ┣ 📂 hooks/           → useStorage — WXT storage item React binding
+  ┣ 📂 components/      → Dialog/ (Dialog, SettingsActionRow), DropdownButton
+  ┣ 📂 providers/       → BackloggdToasterProvider — react-hot-toast, Backloggd-styled
   ┣ 📂 types/           → API response types + Axios module augmentation
   ┗ 📂 utils/           → url.ts (navigation detection), user.ts (auth detection)
 ```
@@ -113,25 +117,25 @@ The entry file [`index.tsx`](./index.tsx) exports a `defineContentScript()` call
 The UI is injected via WXT's `createShadowRootUi()` helper, which creates a [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM) boundary:
 
 ```typescript
-// index.tsx
+// index.tsx — anchored to the Settings → Data Management subtitle row
 const ui = await createShadowRootUi(ctx, {
-  anchor: navbarDropdownDividerAnchor,
+  anchor: dataManagementSubtitleRow,
   append: 'after',
   css,                              // Tailwind + DaisyUI, inlined as string
   name: INJECTED_ROOT_ELEMENT,      // <backloggd-plus-ui> custom element
   position: 'inline',
   onMount: (container) => {
     const root = createRoot(container);
-    root.render(
-      <QueryClientProvider client={queryClient}>
-        <App username={username} />
-      </QueryClientProvider>,
-    );
+    root.render(<App username={username} />);
     return root;
   },
   onRemove: (root) => root?.unmount(),
 });
 ```
+
+> **Provider placement:** The `QueryClientProvider` and `BackloggdToasterProvider` are no
+> longer wired in `onMount`. They live inside [`App.tsx`](./App.tsx), which wraps the
+> feature tree. `index.tsx` only renders `<App username={…} />`.
 
 **Why Shadow DOM?**
 - **Style Encapsulation** — Backloggd's CSS cannot leak into the extension UI, and the extension's Tailwind/DaisyUI classes cannot break the host page.
@@ -152,13 +156,14 @@ The `ctx.isInvalid` check ensures the monitoring loop is cleaned up when the ext
 |------------|---------|----------|
 | **WXT** | Extension framework — entry point routing, Shadow Root helpers, auto-imports, storage API | `index.tsx` |
 | **React 19** | Component rendering inside Shadow DOM | `App.tsx`, `features/`, `shared/components/` |
-| **React Query (TanStack)** | Server state management — caching, parallel queries, stale/refetch control | `lib/react-query.ts`, `features/export/api/` |
+| **React Query (TanStack)** | Server state management — caching, parallel queries, stale/refetch control (refetch-on-focus/reconnect disabled) | `lib/react-query.ts`, `features/export/api/` |
 | **Axios** | HTTP client with response interceptors that unwrap `response.data` | `lib/axios.ts` |
 | **PapaParse** | CSV serialization from JS objects | `lib/papaparse.ts` |
+| **react-hot-toast** | Toast notifications, wrapped in a Backloggd-styled `BackloggdToasterProvider` | `shared/providers/` |
 | **Tailwind CSS v4** | Utility-first styling (via Vite plugin) | `style.css` |
 | **DaisyUI v5** | Component library (buttons, modals, dialogs) scoped to `:host` | `style.css` |
 | **react-i18next** | Internationalization — `content` namespace for all content script strings | Components via `useTranslation()` |
-| **classnames** | Conditional CSS class merging | `Button.tsx`, `DropdownButton.tsx` |
+| **clsx + tailwind-merge** | Conditional CSS class merging + Tailwind conflict resolution (via the `cn` helper) | `@globalShared/utils/cn` |
 
 ---
 
@@ -166,10 +171,10 @@ The `ctx.isInvalid` check ensures the monitoring loop is cleaned up when the ext
 
 ### Path Aliases
 
-Path aliases are configured in **two places** that must stay in sync:
+Path aliases are defined **once** in the root **`tsconfig.json`** and consumed by both tools, so there is no second alias list to keep in sync:
 
-1. **`tsconfig.json`** (root) — For TypeScript type checking and IDE autocomplete
-2. **`wxt.config.ts`** — For Vite's build-time module resolution
+1. **TypeScript** reads them directly for type checking and IDE autocomplete.
+2. **Vite (build time)** reads the same `tsconfig.json` paths through the `vite-tsconfig-paths` plugin registered in **`wxt.config.ts`** (the previous manual `resolve.alias` block is no longer needed).
 
 | Alias | Resolves To | Architectural Purpose | Example |
 |-------|-------------|----------------------|---------|
@@ -187,7 +192,7 @@ import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
 
 // ✅ CORRECT — Using alias for cross-entrypoint shared code
 import i18n from '@globalShared/i18n';
-import { testExportLabelStorageItem } from '@globalShared/storage';
+import { filtersStorageItem } from '@globalShared/storage';
 
 // ✅ CORRECT — Relative imports for same-feature sibling files
 import { queryKeys } from './keys';
@@ -277,10 +282,10 @@ The content script uses a **layered state management** approach:
 | Layer | Tool | Purpose | Example |
 |-------|------|---------|---------|
 | **Server State** | React Query (`useQuery`, `useQueries`) | API responses, caching, stale management, parallel fetching | `useExport` hook — cascading queries |
-| **Local UI State** | React `useState` | Component-level toggles (modal open, export triggered) | `Export` — `isModalOpen`, `ExportDialog` - `isExportTriggered` |
-| **Persistent State** | WXT `storage` API + `useStorage` hook | Cross-context values persisted in `chrome.storage.local` | `testExportLabelStorageItem` — popup ↔ content sync |
+| **Local UI State** | React `useState` | Component-level toggles (dialog open, export triggered) | `ExportSection` — dialog open, `ExportDialog` — `isExportTriggered` |
+| **Persistent State** | WXT `storage` API + `useStatusFilters` hook | Cross-context values persisted in `chrome.storage.local` | `filtersStorageItem` (`local:statusFilters`) — popup ↔ content sync |
 
-The `useExport` hook demonstrates the **cascading query pattern**: it chains three levels of `useQuery`/`useQueries` calls where each level enables the next only after the previous completes successfully, avoiding race conditions and unnecessary fetches.
+The `useExport` hook demonstrates the **cascading query pattern**: it composes `useProfileGames` (stages 1–2) and `useGameDetails` (stage 3), where each stage enables the next only after the previous settles successfully, avoiding race conditions and unnecessary fetches. Individual game-detail failures are tolerated so a single broken game does not abort the whole export.
 
 ---
 
