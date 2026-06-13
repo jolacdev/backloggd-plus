@@ -1,7 +1,30 @@
 {
   "features": {
     "export": {
-      "buttonText": "Exportar"
+      "settingsAction": {
+        "title": "Exportar juegos",
+        "description": "Exportar tu colección de juegos.",
+        "button": "Exportar"
+      },
+      "dialog": {
+        "title": "Exportar tus juegos registrados",
+        "description": "Descarga un archivo CSV/JSON con los detalles de los juegos que has registrado.",
+        "submit": "Exportar",
+        "progress": {
+          "analyzingLibrary": "Analizando biblioteca...",
+          "exportingGames": "Exportando... {{current}} / {{total}}"
+        }
+      },
+      "toast": {
+        "dataExported": "Tu colección de juegos se ha exportado correctamente.",
+        "noGamesFound": "No se encontraron registros de juegos para exportar."
+      }
+    }
+  },
+  "common": {
+    "dialog": {
+      "submit": "Aceptar",
+      "close": "Cerrar"
     }
   }
 }

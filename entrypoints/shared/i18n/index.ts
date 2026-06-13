@@ -3,15 +3,15 @@ import { initReactI18next } from 'react-i18next';
 
 import enContent from './locales/en/content.json';
 import enPopup from './locales/en/popup.json';
+import enShared from './locales/en/shared.json';
 import esContent from './locales/es/content.json';
 import esPopup from './locales/es/popup.json';
+import esShared from './locales/es/shared.json';
 
 const FALLBACK_LANGUAGE = 'en';
 
 const getInitialLanguage = () => {
-  if (typeof window === 'undefined') {
-    return FALLBACK_LANGUAGE;
-  }
+  if (typeof window === 'undefined') return FALLBACK_LANGUAGE;
 
   const navigatorLanguage = window.navigator.language.split('-')[0];
   return navigatorLanguage || FALLBACK_LANGUAGE;
@@ -29,10 +29,12 @@ i18n.use(initReactI18next).init({
     en: {
       content: enContent,
       popup: enPopup,
+      shared: enShared,
     },
     es: {
       content: esContent,
       popup: esPopup,
+      shared: esShared,
     },
   },
 });

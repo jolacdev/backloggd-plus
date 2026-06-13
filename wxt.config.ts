@@ -1,9 +1,6 @@
-/// <reference types="vitest/config" />
 import tailwindcss from '@tailwindcss/vite';
-import path from 'path';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'wxt';
-
-// TODO: in case of TS error check if there are multiple vite versions installed: https://github.com/sveltejs/kit/issues/13102
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
@@ -12,24 +9,10 @@ export default defineConfig({
     permissions: ['storage'],
   },
   vite: () => ({
-    plugins: [tailwindcss()],
-    // TODO: Check build config
-    // build: {
-    //   assetsDir: '',
-    //   emptyOutDir: true,
-    //   outDir: '../frontend_dist',
-    //   sourcemap: false,
-    // },
-
-    // NOTE: Module resolution at build and runtime.
-    resolve: {
-      alias: {
-        '@background': path.resolve(__dirname, './entrypoints/background'),
-        '@content': path.resolve(__dirname, './entrypoints/backloggd.content'),
-        '@globalShared': path.resolve(__dirname, './entrypoints/shared'),
-        '@popup': path.resolve(__dirname, './entrypoints/popup'),
-      },
-    },
+    plugins: [tailwindcss(), tsconfigPaths()],
+    // Manual mode resolution for build and runtime is not needed as it is handled by by vite-tsconfig-paths.
+    // Read its docs to know the limitations (e.g. CSS imports).
+    // resolve: { alias: { '@background': path.resolve(__dirname, './entrypoints/background') } },
     server: {
       port: 3000,
     },

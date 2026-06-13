@@ -1,4 +1,15 @@
+# TODO: Update `allowBuilds` in case that there is any error during the build process.
+allowBuilds:
+  '@tailwindcss/oxide': false
+  esbuild: false
+  spawn-sync: false
+  unrs-resolver: false
+
 minimumReleaseAge: 20160 # 2 Weeks
 # minimumReleaseAge: 43800 # 1 Month
 # minimumReleaseAge: 10080 # 1 Week
 # minimumReleaseAge: 1440 # 1 Day
+
+# To exclude a package from the age policy:
+# minimumReleaseAgeExclude:
+#   - axios@1.15.0

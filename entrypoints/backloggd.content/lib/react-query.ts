@@ -1,16 +1,15 @@
 import { QueryClient } from '@tanstack/react-query';
 
-// TODO: https://github.com/alan2207/bulletproof-react/blob/master/apps/react-vite/src/lib/api-client.ts
-
 const STALE_TIME = 1000 * 60 * 1; // 1 minute
-
-// TODO: Remove when not needed.
-const TEST_STALE_TIME = 1000 * 5; // 5 seconds
+const GARBAGE_COLLECTION_TIME = 1000 * 60 * 1; // 1 minute
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: STALE_TIME,
+      gcTime: GARBAGE_COLLECTION_TIME, // Time until data is removed from cache memory.
+      refetchOnReconnect: false, // Prevents re-fetching already-settled queries after a brief network disconnection.
+      refetchOnWindowFocus: false, // Prevents re-fetching already-settled queries when the user switches tabs.
+      staleTime: STALE_TIME, // Time until data is considered stale.
     },
   },
 });

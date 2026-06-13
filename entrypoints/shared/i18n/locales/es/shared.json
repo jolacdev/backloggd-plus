@@ -1,0 +1,15 @@
+{
+  "features": {
+    "export": {
+      "filters": {
+        "title": "Estados activos",
+        "status": {
+          "backlog": "Por jugar",
+          "played": "Jugados",
+          "playing": "Jugando",
+          "wishlist": "Lista de deseos"
+        }
+      }
+    }
+  }
+}

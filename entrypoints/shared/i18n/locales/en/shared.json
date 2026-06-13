@@ -1,0 +1,15 @@
+{
+  "features": {
+    "export": {
+      "filters": {
+        "title": "Active statuses",
+        "status": {
+          "backlog": "Backlog",
+          "played": "Played",
+          "playing": "Playing",
+          "wishlist": "Wishlist"
+        }
+      }
+    }
+  }
+}

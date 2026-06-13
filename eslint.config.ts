@@ -47,7 +47,7 @@ export default [
   ...tseslint.configs.recommended,
   react.configs.flat.recommended,
   react.configs.flat['jsx-runtime'], // Disables some React recommended rules like `react-in-jsx-scope` not needed in React 17+.
-  reactHooks.configs['recommended-latest'], // TODO: Update to v7+ and change 'recommended-latest' to 'recommended'.
+  reactHooks.configs.flat.recommended,
   jsxA11y.flatConfigs.recommended,
   prettierRecommended,
   importPlugin.flatConfigs.recommended,
@@ -73,7 +73,7 @@ export default [
       globals: {
         ...autoImports.languageOptions.globals,
         ...globals.browser,
-        ...globals.jest,
+        ...globals.vitest,
         ...globals.node,
       },
     },
@@ -147,8 +147,8 @@ export default [
       // [ESLINT RULES]
       // Enforces the use of `===` and `!==`.
       eqeqeq: 2,
-      // Enforces the use of curly {} in block statements (if, else, for, while...).
-      curly: [2, 'all'],
+      // Enforces curly braces {} in block statements (if, else, for, while...), but allows omitting them in true single-line statements.
+      curly: [2, 'multi-line'],
       // Disallows the use of undeclared variables.
       'no-undef': 2,
       // Enforces no braces when they can be omitted. Incorrect: const foo = (x) => { return x; } Correct: const foo = (x) => x;

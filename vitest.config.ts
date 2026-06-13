@@ -1,13 +1,17 @@
+import tsConfigPath from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 import { WxtVitest } from 'wxt/testing';
 
 // NOTE: Mock Considerations - https://wxt.dev/guide/essentials/unit-testing
 export default defineConfig({
-  plugins: [WxtVitest()],
+  plugins: [WxtVitest(), tsConfigPath()],
 
   test: {
-    include: ['**/__tests__/**/*.ts', '**/*.{test,spec}.ts'],
+    environment: 'jsdom',
+    globals: true,
+    include: ['**/__tests__/**/*.{ts,tsx}', '**/*.{test,spec}.{ts,tsx}'],
     mockReset: true,
     restoreMocks: true,
+    setupFiles: ['vitest.setup.ts'],
   },
 });

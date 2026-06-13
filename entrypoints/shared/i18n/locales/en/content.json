@@ -1,7 +1,30 @@
 {
   "features": {
     "export": {
-      "buttonText": "Export"
+      "settingsAction": {
+        "title": "Export games",
+        "description": "Export your game collection.",
+        "button": "Export"
+      },
+      "dialog": {
+        "title": "Export your logged games",
+        "description": "Download a CSV/JSON file containing your logged game details.",
+        "submit": "Export",
+        "progress": {
+          "analyzingLibrary": "Analyzing library...",
+          "exportingGames": "Exporting... {{current}} / {{total}}"
+        }
+      },
+      "toast": {
+        "dataExported": "Your game collection has been successfully exported.",
+        "noGamesFound": "No logged games found to export."
+      }
+    }
+  },
+  "common": {
+    "dialog": {
+      "submit": "Submit",
+      "close": "Close"
     }
   }
 }

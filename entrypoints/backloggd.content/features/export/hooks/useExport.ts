@@ -1,134 +1,84 @@
-import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query';
-import { useState } from 'react';
+/* eslint-disable perfectionist/sort-objects */
+import { StatusFiltersState } from '@globalShared/hooks/useStatusFilters';
 
-import { ProfileGamesPageResponseScrape } from '@content/types/api';
-
-import { createProfileGamesPageQueryOptions } from '../api/get-profile-games-page';
+import { ExportPhase, ExportProgress } from '../types';
+import useGameDetails from './useGameDetails';
+import useProfileGames from './useProfileGames';
 
 type UseExportProps = {
   username: string;
 };
 
-// TODO: Move to utils?
-const getTotalPages = (profileGamesPage?: ProfileGamesPageResponseScrape) => {
-  if (!profileGamesPage) {
-    return 0;
-  }
-
-  const { games, totalGames } = profileGamesPage;
-  return Math.ceil(totalGames / games.length) || 1;
+// Resolve the export lifecycle phase by priority (highest first).
+const resolvePhase = ({
+  areDetailsComplete,
+  areProfilePagesReady,
+  hasProfileError,
+  isExportEnabled,
+}: {
+  areDetailsComplete: boolean;
+  areProfilePagesReady: boolean;
+  hasProfileError: boolean;
+  isExportEnabled: boolean;
+}): ExportPhase => {
+  if (!isExportEnabled) return 'idle';
+  if (hasProfileError) return 'error';
+  if (areDetailsComplete) return 'complete';
+  if (areProfilePagesReady) return 'exporting'; // Pages resolved -> fetching details.
+  return 'analyzing';
 };
 
-const getPageNumbers = (totalPages: number) =>
-  Array.from({ length: totalPages }, (_, index) => index + 1);
-
-// TODO: Check if has to be removed.
-// const getGameNamesById = (
-//   games: ProfileGamesPageResponseScrape['games'],
-// ): Record<string, string> =>
-//   games.reduce<Record<string, string>>((acc, { id, name }) => {
-//     if (id) {
-//       acc[id] = name;
-//     }
-//     return acc;
-//   }, {});
-
-const combineProfileGameResults = (
-  results: UseQueryResult<ProfileGamesPageResponseScrape, Error>[],
-) => ({
-  data: results.flatMap(({ data }) => (data ? data.games : [])),
-  fetching: results.some((result) => result.isFetching),
-  pending: results.some((result) => result.isPending),
-  isStale: results.some((result) => result.isStale),
-  refetch: () => results.forEach((result) => result.refetch()),
-});
-
-// const combineGamesDetails = (
-//   results: UseQueryResult<GameLogDetailsResponse, Error>[],
-// ) => ({
-//   data: results.flatMap(({ data }) => (data?.game_log ? data : [])),
-//   fetching: results.some((result) => result.isFetching),
-//   pending: results.some((result) => result.isPending),
-//   isStale: results.some((result) => result.isStale),
-//   refetch: () => results.forEach((result) => result.refetch()),
-// });
-
-// TODO: Separate into multiple hooks? useProfileGamesPagesExport, useGameLogDetailsExport, etc.
 const useExport = ({ username }: UseExportProps) => {
   const [isExportEnabled, setIsExportEnabled] = useState(false);
+  const [selectedStatuses, setSelectedStatuses] =
+    useState<StatusFiltersState>(); // Default `undefined` to rely on the truthiness of the object to check if the filters have been set.
 
-  const {
-    data: firstProfileGamesPage,
-    refetch: refetchFirstPage,
-    isFetching: isFirstQueryFetching,
-    isStale: isQueryStale,
-  } = useQuery(
-    createProfileGamesPageQueryOptions(
-      { pageNumber: 1, username },
-      { enabled: isExportEnabled },
-    ),
-  );
-
-  // 2. Calculate total pages and generate an array of page numbers.
-  const totalPages = getTotalPages(firstProfileGamesPage);
-  const pageNumbers = getPageNumbers(totalPages);
-
-  // 3. Fetch all pages available.
-  // The first page could be skipped, but is requested (from cache) for simplicity and consistency with the combine logic.
-  const {
-    data: allProfileGames,
-    fetching: areQueriesFetching,
-    refetch: refetchAllPages,
-    isStale: areQueriesStale,
-  } = useQueries({
-    combine: combineProfileGameResults,
-    queries: pageNumbers.map((pageNumber) =>
-      createProfileGamesPageQueryOptions({
-        pageNumber,
-        username,
-      }),
-    ),
+  // Stages 1 and 2: resolve the full list of games to export.
+  const profilePagesData = useProfileGames({
+    username,
+    selectedStatuses,
+    enabled: isExportEnabled && !!selectedStatuses,
   });
 
-  // // TODO: Update name and add a combine
-  // const queries = useQueries({
-  //   combine: combineGamesDetails,
-  //   queries: allProfileGames
-  //     .slice(0, 3) // TODO: ⚠️ TEMP Remove slice, used only for testing purposes.
-  //     .filter(({ id }) => Boolean(id)) // TODO: Check filter logic.
-  //     .map(({ id }) =>
-  //       createGameLogDetailsQueryOptions({
-  //         gameId: id,
-  //       }),
-  //     ),
-  // });
+  // Stage 3: fetch each game's details sequentially, gated on the game list.
+  const gameDetailsData = useGameDetails({
+    profileGames: profilePagesData.games,
+    enabled: profilePagesData.isReady,
+  });
 
-  // console.log({ queries });
+  // Single source of truth for the export lifecycle.
+  const phase = resolvePhase({
+    isExportEnabled,
+    hasProfileError: profilePagesData.isError,
+    areDetailsComplete: gameDetailsData.isComplete,
+    areProfilePagesReady: profilePagesData.isReady,
+  });
 
-  // const gameNamesById = getGameNamesById(allProfileGames);
+  const progress: ExportProgress = {
+    phase,
+    current: gameDetailsData.settledCount,
+    total: gameDetailsData.total,
+  };
 
-  const isStale = isQueryStale || areQueriesStale;
-
-  const fetchData = () => {
+  const fetchData = (selectedFilters: StatusFiltersState) => {
     // Prevent fetching if username has no value.
-    if (!username) {
-      return;
-    }
+    if (!username) return;
+
+    gameDetailsData.reset(); // Reset sequential index at the start of a new fetch.
 
     if (!isExportEnabled) {
+      setSelectedStatuses(selectedFilters);
       setIsExportEnabled(true);
-    } else if (isStale) {
-      refetchFirstPage();
-      refetchAllPages();
     }
   };
 
   return {
     fetchData,
-    profileGames: allProfileGames,
+    gameDetails: gameDetailsData.details,
     isExportEnabled,
-    isFetching: isFirstQueryFetching || areQueriesFetching,
-    isStale,
+    isComplete: phase === 'complete',
+    isError: phase === 'error',
+    progress,
   };
 };
 

@@ -1,56 +1,64 @@
-import { QueryClientProvider } from '@tanstack/react-query';
-import { createRoot, type Root } from 'react-dom/client';
+import { ContentScriptContext } from '#imports';
+import { createRoot } from 'react-dom/client';
 
 import i18n from '@globalShared/i18n';
 
 import App from './App';
-import { queryClient } from './lib/react-query';
-import { hasUrlChanged } from './utils/url';
-import { isCurrentUserProfilePage } from './utils/user';
+import { isCurrentPathname } from './shared/utils/url';
+import { getLoggedInUsername } from './shared/utils/user';
+
+import css from './style.css?inline'; // NOTE: Imports CSS file as a string.
+
+const INJECTED_ROOT_ELEMENT = 'backloggd-plus-ui';
+const SETTINGS_DATA_PATHNAME = '/settings/data/';
+
+const createUi = async (
+  ctx: ContentScriptContext,
+  options: { anchor: Element; username: string },
+) =>
+  await createShadowRootUi(ctx, {
+    anchor: options.anchor,
+    append: 'after',
+    css,
+    name: INJECTED_ROOT_ELEMENT,
+    position: 'inline', // NOTE: Adds inline styles to the container depending on the value.
+    onMount: (container) => {
+      // NOTE: Use container inline style by using `container.style`.
+
+      const root = createRoot(container);
+      root.render(<App username={options.username} />);
+
+      return root;
+    },
+    onRemove: (root) => {
+      root?.unmount();
+    },
+  });
 
 export default defineContentScript({
-  // TODO: Check if specifically filter profile pages here.
-  // If so, remove from isCurrentUserProfilePage logic
+  // NOTE: Matches all pages to trigger on SPA navigation. Injection conditions are handled separately.
   matches: ['*://backloggd.com/*', '*://*.backloggd.com/*'],
 
   main(ctx) {
     i18n.options.defaultNS = 'content'; // NOTE: Set 'content' as default namespace for this entrypoint.
 
-    const inject = () => {
-      // Restrict to the logged-in user that is in their own profile pages.
-      if (!isCurrentUserProfilePage()) {
-        return;
-      }
+    const inject = async () => {
+      if (!isCurrentPathname(SETTINGS_DATA_PATHNAME)) return;
 
-      const testElement = document.getElementById('testButton');
-      const anchor = document.getElementById('add-a-game');
+      const username = getLoggedInUsername();
+      if (!username) return;
+
+      const injectedRootElement = document.querySelector(INJECTED_ROOT_ELEMENT);
+      const dataManagementSubtitleRow = document.querySelector(
+        '#settings-navigation + div > #log-in .row.mb-4',
+      );
 
       // Avoid duplicate injections or missing anchor.
-      if (testElement || !anchor) {
-        return;
-      }
+      if (injectedRootElement || !dataManagementSubtitleRow) return;
 
-      const ui = createIntegratedUi(ctx, {
-        anchor,
-        append: 'after',
-        position: 'inline', // NOTE: Adds inline styles to the container depending on the value.
-        onMount: (container) => {
-          // Container inline styles.
-          container.style.display = 'inline-flex';
-          container.style.marginLeft = '10px';
-
-          const root = createRoot(container);
-          root.render(
-            <QueryClientProvider client={queryClient}>
-              <App />
-            </QueryClientProvider>,
-          );
-
-          return root;
-        },
-        onRemove: (root: Root | undefined) => {
-          root?.unmount();
-        },
+      const ui = await createUi(ctx, {
+        anchor: dataManagementSubtitleRow,
+        username,
       });
 
       ui.mount();
@@ -59,24 +67,18 @@ export default defineContentScript({
     // Initial injection
     inject();
 
-    // NOTE: Backloggd uses Turbo, so we could listen to 'turbo:render' to detect page changes, refresh UI injections, etc.
-    // If content uses event listeners, it should check context invalidations to clean them up accordingly.
-
-    let url = location.href;
-
-    const monitorChanges = () => {
+    // NOTE: Backloggd uses Turbo, so we listen to 'turbo:load' to detect when a new page is loaded.
+    const handlePageChange = () => {
+      // Safety check: Exit if the extension context is dead
       if (ctx.isInvalid) {
+        document.removeEventListener('turbo:load', handlePageChange);
         return;
       }
 
-      if (hasUrlChanged(url)) {
-        url = location.href;
-        inject();
-      }
-
-      ctx.requestAnimationFrame(monitorChanges);
+      // If Turbo re-renders, the DOM elements are replaced even if the URL is identical, therefore, we proceed to re-inject.
+      inject();
     };
 
-    ctx.requestAnimationFrame(monitorChanges);
+    document.addEventListener('turbo:load', handlePageChange);
   },
 });

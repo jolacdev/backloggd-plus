@@ -1,8 +1,12 @@
-import { queryOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { queryOptions, UseQueryOptions } from '@tanstack/react-query';
 
 import { api } from '@content/lib/axios';
-import { GameLogDetailsResponse } from '@content/types/api';
+import {
+  GameLogDetailsResponse,
+  ProfileGameScrapeResponse,
+} from '@content/shared/types/api';
 
+import { GameDetails } from '../types';
 import { queryKeys } from './keys';
 
 /**
@@ -13,24 +17,23 @@ export const fetchGameLogDetails = async (
 ): Promise<GameLogDetailsResponse> =>
   await api.get<GameLogDetailsResponse>(`/log/edit/${gameId}`);
 
-export const gameLogDetailsQueryOptions = (gameId: string) =>
-  queryOptions({
-    queryKey: queryKeys.gameLogDetails(gameId),
-    queryFn: () => fetchGameLogDetails(gameId),
-  });
+const parseToGameDetails = (
+  profileGame: ProfileGameScrapeResponse,
+  gameLogDetails: GameLogDetailsResponse,
+): GameDetails => ({
+  ...profileGame,
+  ...gameLogDetails,
+});
 
-export const useGameLogDetails = (gameId: string) =>
-  useQuery(gameLogDetailsQueryOptions(gameId));
-
-type GameLogDetailsParams = {
-  gameId: string;
-};
-
-export const createGameLogDetailsQueryOptions = <
+/**
+ * Creates query options that return the combined {@link ProfileGameScrapeResponse} and {@link GameLogDetailsResponse}
+ * as {@link GameDetails}.
+ */
+export const createGameDetailsQueryOptions = <
   TError = Error,
-  TData = GameLogDetailsResponse,
+  TData = GameDetails,
 >(
-  { gameId }: GameLogDetailsParams,
+  profileGame: ProfileGameScrapeResponse,
   options?: Omit<
     UseQueryOptions<GameLogDetailsResponse, TError, TData>,
     'queryFn' | 'queryKey' | 'select'
@@ -38,7 +41,8 @@ export const createGameLogDetailsQueryOptions = <
 ) =>
   queryOptions({
     ...options,
-    queryKey: queryKeys.gameLogDetails(gameId),
-    queryFn: () => fetchGameLogDetails(gameId),
-    select: (data) => data,
+    queryKey: queryKeys.gameLogDetails(profileGame.id),
+    queryFn: () => fetchGameLogDetails(profileGame.id),
+    select: (data: GameLogDetailsResponse): GameDetails =>
+      parseToGameDetails(profileGame, data),
   });

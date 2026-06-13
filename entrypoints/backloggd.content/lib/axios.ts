@@ -21,17 +21,13 @@ const getErrorMessage = (error: unknown): string => {
     return apiResponseMessage || error.message || UNKNOWN_ERROR_MESSAGE;
   }
 
-  if (error instanceof Error) {
-    return error.message || UNKNOWN_ERROR_MESSAGE;
-  }
+  if (error instanceof Error) return error.message || UNKNOWN_ERROR_MESSAGE;
 
   return UNKNOWN_ERROR_MESSAGE;
 };
 
 const getErrorStatus = (error: unknown): number => {
-  if (!axios.isAxiosError(error)) {
-    return UNKNOWN_ERROR_STATUS;
-  }
+  if (!axios.isAxiosError(error)) return UNKNOWN_ERROR_STATUS;
 
   return error.response?.status || error.status || UNKNOWN_ERROR_STATUS;
 };
