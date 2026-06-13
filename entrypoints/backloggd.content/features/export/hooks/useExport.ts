@@ -34,37 +34,37 @@ const useExport = ({ username }: UseExportProps) => {
     useState<StatusFiltersState>(); // Default `undefined` to rely on the truthiness of the object to check if the filters have been set.
 
   // Stages 1 and 2: resolve the full list of games to export.
-  const profile = useProfileGames({
+  const profilePagesData = useProfileGames({
     username,
     selectedStatuses,
     enabled: isExportEnabled && !!selectedStatuses,
   });
 
   // Stage 3: fetch each game's details sequentially, gated on the game list.
-  const details = useGameDetails({
-    profileGames: profile.games,
-    enabled: profile.isReady,
+  const gameDetailsData = useGameDetails({
+    profileGames: profilePagesData.games,
+    enabled: profilePagesData.isReady,
   });
 
   // Single source of truth for the export lifecycle.
   const phase = resolvePhase({
     isExportEnabled,
-    hasProfileError: profile.isError,
-    areDetailsComplete: details.isComplete,
-    areProfilePagesReady: profile.isReady,
+    hasProfileError: profilePagesData.isError,
+    areDetailsComplete: gameDetailsData.isComplete,
+    areProfilePagesReady: profilePagesData.isReady,
   });
 
   const progress: ExportProgress = {
     phase,
-    current: details.settledCount,
-    total: details.total,
+    current: gameDetailsData.settledCount,
+    total: gameDetailsData.total,
   };
 
   const fetchData = (selectedFilters: StatusFiltersState) => {
     // Prevent fetching if username has no value.
     if (!username) return;
 
-    details.reset(); // Reset sequential index at the start of a new fetch.
+    gameDetailsData.reset(); // Reset sequential index at the start of a new fetch.
 
     if (!isExportEnabled) {
       setSelectedStatuses(selectedFilters);
@@ -74,7 +74,7 @@ const useExport = ({ username }: UseExportProps) => {
 
   return {
     fetchData,
-    gameDetails: details.details,
+    gameDetails: gameDetailsData.details,
     isExportEnabled,
     isComplete: phase === 'complete',
     isError: phase === 'error',
