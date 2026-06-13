@@ -20,6 +20,7 @@ const Checkbox = ({ checked, onChange, ...rest }: CheckboxProps) => (
       'rounded-[4px] border border-[var(--back-field-border,#3b414e)]',
       'bg-[var(--back-field-background,#272c37)] text-[#fff]',
       'hover:border-[var(--back-field-border-hover,#3f4b64)]',
+      'disabled:opacity-40',
     )}
     type="checkbox"
     onChange={(e) => onChange(e.target.checked)}

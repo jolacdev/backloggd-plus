@@ -11,6 +11,7 @@ import { cn } from '@globalShared/utils/cn';
 type StatusFiltersProps = {
   filters: StatusFiltersState;
   direction?: 'column' | 'row';
+  isDisabled?: boolean;
   onChange: (key: StatusKey) => void;
 };
 
@@ -18,13 +19,14 @@ const StatusFilters = ({
   direction = 'column',
   filters,
   onChange,
+  isDisabled = false,
 }: StatusFiltersProps) => {
   const { t } = useTranslation('shared', {
     keyPrefix: 'features.export.filters',
   });
 
   return (
-    <fieldset>
+    <fieldset disabled={isDisabled}>
       <Typography as="legend" className="mb-2" variant="h6">
         {t('title')}
       </Typography>

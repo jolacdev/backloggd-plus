@@ -83,6 +83,7 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
       <StatusFilters
         direction="row"
         filters={selectedStatuses}
+        isDisabled={isDialogDisabled}
         onChange={toggleStatusFilter}
       />
     </Dialog>
