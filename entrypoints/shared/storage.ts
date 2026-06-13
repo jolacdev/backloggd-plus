@@ -7,7 +7,7 @@ export const filtersStorageItem = storage.defineItem<StatusFiltersState>(
       backlog: true,
       played: true,
       playing: true,
-      wishlist: true,
+      wishlist: false,
     },
   },
 );
