@@ -1,6 +1,6 @@
 {
   "name": "backloggd-plus",
-  "description": "manifest.json description",
+  "description": "Backloggd+ is a browser extension that enhances the features of Backloggd by allowing the user to export their game log.",
   "private": true,
   "version": "0.0.0",
   "type": "module",
