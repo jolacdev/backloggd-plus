@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 
-const STALE_TIME = 1000 * 60 * 1; // 1 minute
-const GARBAGE_COLLECTION_TIME = 1000 * 60 * 1; // 1 minute
+const STALE_TIME = 1000 * 60 * 5; // 5 minutes
+const GARBAGE_COLLECTION_TIME = 1000 * 60 * 5; // 5 minutes
 
 export const queryClient = new QueryClient({
   defaultOptions: {

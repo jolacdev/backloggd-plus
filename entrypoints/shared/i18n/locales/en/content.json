@@ -17,6 +17,7 @@
       },
       "toast": {
         "dataExported": "Your game collection has been successfully exported.",
+        "exportFailed": "Something went wrong while exporting your game collection.",
         "noGamesFound": "No logged games found to export."
       }
     }

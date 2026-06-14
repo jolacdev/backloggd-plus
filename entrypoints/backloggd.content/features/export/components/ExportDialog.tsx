@@ -8,6 +8,7 @@ import { useStatusFilters } from '@globalShared/hooks/useStatusFilters';
 
 import useExport from '../hooks/useExport';
 import { downloadGameDetailsCSV, parseToGameDetailsCSV } from '../utils/csv';
+import { getFilename } from '../utils/filename';
 import { downloadGameDetailsJSON, parseToGameDetailsJSON } from '../utils/json';
 import ExportProgressIndicator from './ExportProgressIndicator';
 
@@ -49,20 +50,32 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
       return;
     }
 
-    const gamesDetailsCSV = gameDetails
-      .map(parseToGameDetailsCSV)
-      .filter((game) => !!game);
-    downloadGameDetailsCSV(gamesDetailsCSV); // TODO: Handle promise with await?
+    const exportFiles = async () => {
+      const csvFilename = getFilename('csv', username);
+      const jsonFilename = getFilename('json', username);
 
-    // Delay second download (~150ms) to register both downloads correctly and prevent them from being swallowed by the browser.
-    setTimeout(() => {
-      const gamesDetailsJSON = gameDetails.map(parseToGameDetailsJSON);
-      downloadGameDetailsJSON(gamesDetailsJSON);
-    }, 150);
+      try {
+        const gamesDetailsCSV = gameDetails
+          .map(parseToGameDetailsCSV)
+          .filter((game) => !!game);
+        await downloadGameDetailsCSV(gamesDetailsCSV, csvFilename);
 
-    toast(t('features.export.toast.dataExported', { keyPrefix: '' }));
-    onClose();
-  }, [isComplete, isError, gameDetails, t, onClose]);
+        // Delay second download (~150ms) to register both downloads correctly and prevent them from being swallowed by the browser.
+        await new Promise((resolve) => setTimeout(resolve, 150));
+
+        const gamesDetailsJSON = gameDetails.map(parseToGameDetailsJSON);
+        downloadGameDetailsJSON(gamesDetailsJSON, jsonFilename);
+
+        toast(t('features.export.toast.dataExported', { keyPrefix: '' }));
+      } catch {
+        toast.error(t('features.export.toast.exportFailed', { keyPrefix: '' }));
+      } finally {
+        onClose();
+      }
+    };
+
+    void exportFiles();
+  }, [isComplete, isError, gameDetails, t, onClose, username]);
 
   const handleExport = () => {
     isExportTriggered.current = true;

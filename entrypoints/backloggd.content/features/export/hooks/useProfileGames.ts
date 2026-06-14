@@ -33,6 +33,9 @@ const combineProfileGameResults = (
   isSuccess: !!results.length && results.every((result) => result.isSuccess),
 });
 
+// NOTE: Intentional cache to prevent stuck queries due to stale state when there is more than 1 page to fetch.
+const CACHE_TIME_MS = 1000 * 60 * 1; // 1 minute cache time for profile game pages.
+
 /**
  * Stages 1 and 2 of the export pipeline: fetch the first profile games page to
  * learn the total count, then fetch every page. Exposes the flattened game list
@@ -55,8 +58,8 @@ const useProfileGames = ({
       { pageNumber: 1, username, selectedStatuses: selectedStatuses! },
       {
         enabled: enabled && !!selectedStatuses,
-        staleTime: 0,
-        gcTime: 0,
+        staleTime: CACHE_TIME_MS,
+        gcTime: CACHE_TIME_MS,
       },
     ),
   );
@@ -65,12 +68,16 @@ const useProfileGames = ({
   const totalPages = getTotalPages(firstPageData);
   const pageNumbers = getPageNumbers(totalPages);
 
-  const canQueryPages =
-    isStageReady({
-      isSuccess: isFirstPageSuccess,
-      isFetching: isFirstPageFetching,
-      isStale: isFirstPageStale,
-    }) && pageNumbers.length > 0;
+  const isFirstPageReady = isStageReady({
+    isSuccess: isFirstPageSuccess,
+    isFetching: isFirstPageFetching,
+    isStale: isFirstPageStale,
+  });
+
+  const canQueryPages = isFirstPageReady && pageNumbers.length > 0;
+
+  // No pages to paginate, flag as empty so the export doesn't hang in "analyzing".
+  const isEmpty = isFirstPageReady && totalPages === 0;
 
   const {
     data: games,
@@ -89,8 +96,8 @@ const useProfileGames = ({
         },
         {
           enabled: canQueryPages && !!selectedStatuses,
-          staleTime: 0,
-          gcTime: 0,
+          staleTime: CACHE_TIME_MS,
+          gcTime: CACHE_TIME_MS,
         },
       ),
     ),
@@ -108,6 +115,7 @@ const useProfileGames = ({
     games,
     isFetching: isFirstPageFetching || arePagesFetching,
     isReady,
+    isEmpty,
     isError: isFirstPageError || arePagesError,
   };
 };

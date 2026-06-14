@@ -3,7 +3,7 @@ import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
 /**
  * Calculates the total number of pages based on the total number of games and the number of games per page.
  * @param profileGamesPage - The scraped profile games page data.
- * @returns The total number of pages (at least 1 if data exists, or 0 if no data is provided).
+ * @returns The total number of pages, or 0 if the page data is absent or contains no games.
  */
 export const getTotalPages = (
   profileGamesPage?: ProfileGamesPageScrapeResponse,
@@ -11,7 +11,10 @@ export const getTotalPages = (
   if (!profileGamesPage) return 0;
 
   const { games, totalGames } = profileGamesPage;
-  return Math.ceil(totalGames / games.length) || 1;
+
+  if (totalGames === 0 || games.length === 0) return 0;
+
+  return Math.ceil(totalGames / games.length);
 };
 
 /**
