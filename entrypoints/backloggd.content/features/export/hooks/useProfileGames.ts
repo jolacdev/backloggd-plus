@@ -68,12 +68,16 @@ const useProfileGames = ({
   const totalPages = getTotalPages(firstPageData);
   const pageNumbers = getPageNumbers(totalPages);
 
-  const canQueryPages =
-    isStageReady({
-      isSuccess: isFirstPageSuccess,
-      isFetching: isFirstPageFetching,
-      isStale: isFirstPageStale,
-    }) && pageNumbers.length > 0;
+  const isFirstPageReady = isStageReady({
+    isSuccess: isFirstPageSuccess,
+    isFetching: isFirstPageFetching,
+    isStale: isFirstPageStale,
+  });
+
+  const canQueryPages = isFirstPageReady && pageNumbers.length > 0;
+
+  // No pages to paginate, flag as empty so the export doesn't hang in "analyzing".
+  const isEmpty = isFirstPageReady && totalPages === 0;
 
   const {
     data: games,
@@ -111,6 +115,7 @@ const useProfileGames = ({
     games,
     isFetching: isFirstPageFetching || arePagesFetching,
     isReady,
+    isEmpty,
     isError: isFirstPageError || arePagesError,
   };
 };

@@ -15,15 +15,18 @@ const resolvePhase = ({
   areProfilePagesReady,
   hasProfileError,
   isExportEnabled,
+  isProfileEmpty,
 }: {
   areDetailsComplete: boolean;
   areProfilePagesReady: boolean;
   hasProfileError: boolean;
   isExportEnabled: boolean;
+  isProfileEmpty: boolean;
 }): ExportPhase => {
   if (!isExportEnabled) return 'idle';
   if (hasProfileError) return 'error';
-  if (areDetailsComplete) return 'complete';
+  // No games to export also resolves as complete; the dialog surfaces the empty result.
+  if (areDetailsComplete || isProfileEmpty) return 'complete';
   if (areProfilePagesReady) return 'exporting'; // Pages resolved -> fetching details.
   return 'analyzing';
 };
@@ -52,6 +55,7 @@ const useExport = ({ username }: UseExportProps) => {
     hasProfileError: profilePagesData.isError,
     areDetailsComplete: gameDetailsData.isComplete,
     areProfilePagesReady: profilePagesData.isReady,
+    isProfileEmpty: profilePagesData.isEmpty,
   });
 
   const progress: ExportProgress = {
