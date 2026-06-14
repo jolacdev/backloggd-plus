@@ -11,7 +11,7 @@ type UseGameDetailsProps = {
   profileGames: ProfileGameScrapeResponse[];
 };
 
-const SEQUENTIAL_DELAY_MS = 500; // MS to wait between requests to avoid 429.
+const SEQUENTIAL_DELAY_MS = 100; // MS to wait between requests to avoid 429.
 
 const combineGamesDetails = (
   results: UseQueryResult<GameDetails | undefined, Error>[],
