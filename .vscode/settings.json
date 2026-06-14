@@ -32,5 +32,11 @@
   // Code Spell Checker Extension
   "cSpell.language": "en,en-GB,es",
   // Project Specific Words
-  "cSpell.words": ["backloggd", "Backloggd", "Playthrough", "playthroughs"]
+  "cSpell.words": [
+    "backloggd",
+    "Backloggd",
+    "playthrough",
+    "Playthrough",
+    "playthroughs"
+  ]
 }
