@@ -34,7 +34,7 @@ const combineProfileGameResults = (
 });
 
 // NOTE: Intentional cache to prevent stuck queries due to stale state when there is more than 1 page to fetch.
-const CACHE_TIME_MS = 20000; // 20s cache time for profile game pages.
+const CACHE_TIME_MS = 1000 * 60 * 1; // 1 minute cache time for profile game pages.
 
 /**
  * Stages 1 and 2 of the export pipeline: fetch the first profile games page to
