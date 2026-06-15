@@ -7,6 +7,15 @@ export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   manifest: {
     permissions: ['storage'],
+    browser_specific_settings: {
+      // `data_collection_permissions` is required by Firefox but not yet in WXT's manifest types.
+      gecko: {
+        id: 'backloggd-plus@jolacdev',
+        data_collection_permissions: {
+          required: ['none'],
+        },
+      },
+    },
   },
   vite: () => ({
     plugins: [tailwindcss(), tsconfigPaths()],
