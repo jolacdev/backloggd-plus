@@ -24,10 +24,16 @@ export type ProfileGameScrapeResponse = {
  * JSON response from Backloggd internal, undocumented endpoint.
  *
  * ⚠️ Internal, undocumented, and subject to breakage.
+ *
+ * A non-logged game returns empty defaults (`game_log` is omitted):
+ * @example
+ * ```json
+ * { "most_recent_playthrough_id": null, "playthroughs": {} }
+ * ```
  */
 export type GameLogDetailsResponse = {
-  // Inner attributes without comment default to their default type value or null (if nullable).
-  playthroughs: PlaythroughResponse[];
+  most_recent_playthrough_id: null | number;
+  playthroughs: Record<string, PlaythroughResponse>; // Keyed by playthrough id.
   game_log?: GameLogResponse;
 };
 
@@ -40,6 +46,7 @@ type GameLogResponse = {
   is_play: boolean;
   is_playing: boolean;
   is_wishlist: boolean;
+  last_edited_at: null | unknown; // Unable to verify `unknown` type.
   override_cover_id: null | number;
   rating: number;
   status: string; // Appears always as "completed". Can be ignored.
@@ -53,6 +60,7 @@ type PlaythroughResponse = {
   id: number; // Default to generated id.
   created_at: string; // Defaults to date string.
   edition_id: null | number;
+  edition_type: null | unknown; // Unable to verify `unknown` type.
   finish_date: null | string;
   hours_finished: number;
   hours_mastered: number;
