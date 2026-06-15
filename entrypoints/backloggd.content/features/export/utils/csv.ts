@@ -22,10 +22,9 @@ export const parseToGameDetailsCSV = ({
     return;
   }
 
-  // Backloggd API returns `playthroughs` as an empty array `[]` for games without playthroughs, so we assign default values.
-  const firstPlaythrough = playthroughs[0] as
-    | (typeof playthroughs)[number]
-    | undefined;
+  // Backloggd API returns `playthroughs` as an empty object `{}` for games without playthroughs, so we assign default values.
+  const firstPlaythrough: GameDetails['playthroughs'][string] | undefined =
+    Object.values(playthroughs)[0];
 
   return {
     id: Number(id),
