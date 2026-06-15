@@ -2,7 +2,7 @@
   "name": "backloggd-plus",
   "description": "Backloggd+ is a browser extension that enhances the features of Backloggd by allowing the user to export their game log.",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
