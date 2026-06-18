@@ -44,8 +44,8 @@
     "@types/react-dom": "19.2.3",
     "@typescript-eslint/eslint-plugin": "8.46.1",
     "@typescript-eslint/parser": "8.46.1",
-    "@vitest/browser": "4.0.17",
-    "@vitest/ui": "4.0.17",
+    "@vitest/browser": "4.1.8",
+    "@vitest/ui": "4.1.8",
     "@wxt-dev/module-react": "1.1.5",
     "clsx": "2.1.1",
     "daisyui": "5.5.0",
@@ -70,7 +70,7 @@
     "typescript": "5.9.3",
     "typescript-eslint": "8.45.0",
     "vite-tsconfig-paths": "6.1.1",
-    "vitest": "4.0.17",
+    "vitest": "4.1.8",
     "wxt": "0.20.26"
   }
 }
