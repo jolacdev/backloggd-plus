@@ -56,14 +56,10 @@ export const perfectionistSortTypes = {
 
 export const perfectionistSortObjects = {
   ...perfectionistSortTypes,
-  objectDeclarations: true,
   customGroups: [
     perfectionistSortObjectCustomGroups.id,
     perfectionistSortObjectCustomGroups.flag,
   ],
-  destructuredObjects: {
-    groups: true,
-  },
   groups: [
     perfectionistSortObjectCustomGroups.id.groupName,
     'property',

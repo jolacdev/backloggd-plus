@@ -231,7 +231,7 @@ export default [
           ],
 
           // NOTE: Default values explicitly set for clarity.
-          newlinesBetween: 'always',
+          newlinesBetween: 1,
           order: 'asc',
           ignoreCase: true,
           groups: [
@@ -240,14 +240,14 @@ export default [
             // Example: import type { TFunction } from 'i18next';
             ['builtin', 'external'],
             { newlinesBetween: 0 }, // NOTE: No newlines are allowed.
-            ['builtin-type', 'external-type'],
+            ['type-builtin', 'type-external'],
             { newlinesBetween: 1 },
 
             // Internal modules and types that are not in the same or parent directory.
             // Example: import Button from '~/components/Button' || import type { ButtonProps } from '~/components/Button'
             'internal',
             { newlinesBetween: 0 },
-            'internal-type',
+            'type-internal',
             { newlinesBetween: 1 },
 
             // Parent or current directory modules and types.
@@ -255,7 +255,7 @@ export default [
             // Example: import type { FooProps } from '../utils/foo' || './foo' || '.'
             ['parent', 'sibling', 'index'],
             { newlinesBetween: 0 },
-            ['parent-type', 'sibling-type', 'index-type'],
+            ['type-parent', 'type-sibling', 'type-index'],
             { newlinesBetween: 1 },
 
             // Side effect script files. Example: import './set-production-env.js'
