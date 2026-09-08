@@ -1,6 +1,6 @@
 # Backloggd Plus — Content Script (`backloggd.content`)
 
-> A WXT content script that injects a React-powered UI directly into the [Backloggd](https://backloggd.com) website, enabling authenticated users to export their game library, which includes ratings, time tracking, etc., as downloadable **CSV and JSON** files, optionally filtered by play status.
+> A WXT content script that injects a React-powered UI directly into the [Backloggd](https://backloggd.com) website. It currently ships two features: **Game Library Export** (CSV/JSON, for authenticated users) and **HowLongToBeat badges** on library game cards.
 
 ---
 
@@ -26,7 +26,18 @@
 
 ## Business Logic Overview
 
-The content script's core purpose is to **enhance the Backloggd website with features that the platform does not natively offer**. Currently, the primary feature is **Game Library Export**:
+The content script's core purpose is to **enhance the Backloggd website with features that the platform does not natively offer**.
+
+### Feature: HowLongToBeat Badges
+
+Shows completion times on every game card in a user's library (`/u/:username/games/*`, any sort or filter). No login required. The full design — game matching, caching, dynamic-DOM handling and the deliberate light-DOM rendering exception — is documented in [`features/hltb/README.md`](./features/hltb/README.md).
+
+Two points matter at this level:
+
+1. **It mounts a second, independent Shadow Root UI** anchored to `body`, separate from the export UI. Unlike the export UI it is mounted **once** and never torn down per route: the layer tracks the route itself and renders nothing off the library, so client-side navigation has no teardown to get wrong.
+2. **Its badges are the one place the extension renders outside the Shadow DOM.** They are portaled into Backloggd's own cards and styled by a small prefixed light-DOM stylesheet, because a shadow root per badge would mean hundreds of stylesheet copies on a large library. See [Shadow DOM & Style Isolation](#shadow-dom--style-isolation).
+
+### Feature: Game Library Export
 
 1. **Authentication Detection** — Reads the `#navbarDropdown` DOM element to determine if a user is logged in and extract their username.
 2. **UI Injection** — Injects an export section into the **Settings → Data Management** page (`/settings/data/`) only, anchored to the data-management subtitle row and visually matching Backloggd's own styling.
@@ -67,17 +78,23 @@ flowchart TD
 
 ```
 📦 backloggd.content/
-┣ 📜 index.tsx          → WXT entry point: defineContentScript, Shadow Root, React mount
-┣ 📜 App.tsx            → Root component: wraps features in QueryClient + Toaster providers
+┣ 📜 index.tsx          → WXT entry point: defineContentScript, two independent Shadow Root UIs
+┣ 📜 App.tsx            → Export feature root: QueryClient + Toaster providers
 ┣ 📜 style.css          → Tailwind + DaisyUI scoped to Shadow DOM (:host)
 ┃
 ┣ 📂 features/          → Feature modules (vertically sliced)
-┃ ┗ 📂 export/          → Game Library Export feature
-┃   ┣ 📂 api/           → React Query options factories, fetch functions, keys, pagination utils
-┃   ┣ 📂 components/    → ExportSection, ExportDialog, ExportProgressIndicator
-┃   ┣ 📂 hooks/         → useExport (orchestrator) + useProfileGames, useGameDetails (stages)
-┃   ┣ 📂 utils/         → csv.ts, json.ts, download.ts
-┃   ┗ 📜 types.ts       → Feature types (ExportPhase, ExportProgress, GameDetails, GameDetailsCSV, GameDetailsJSON)
+┃ ┣ 📂 export/          → Game Library Export feature
+┃ ┃ ┣ 📂 api/           → React Query options factories, fetch functions, keys, pagination utils
+┃ ┃ ┣ 📂 components/    → ExportSection, ExportDialog, ExportProgressIndicator
+┃ ┃ ┣ 📂 hooks/         → useExport (orchestrator) + useProfileGames, useGameDetails (stages)
+┃ ┃ ┣ 📂 utils/         → csv.ts, json.ts, download.ts
+┃ ┃ ┗ 📜 types.ts       → Feature types (ExportPhase, ExportProgress, GameDetails, …)
+┃ ┗ 📂 hltb/            → HowLongToBeat badges — see its own README.md
+┃   ┣ 📂 api/           → Resolution pipeline, background message, release-year lookup, cache, keys
+┃   ┣ 📂 components/    → HltbLayer (root), HltbCardBadge (portal), HltbTooltip, badge.css
+┃   ┣ 📂 hooks/         → useGameCards (MutationObserver registry), useIsProfileGamesPage, useIsNearViewport, useTooltipAnchor, useBadgeStylesheet
+┃   ┣ 📂 utils/         → cards.ts (ALL Backloggd selectors), match.ts, format.ts, tooltip.ts
+┃   ┗ 📜 types.ts       → Feature types (GameCardMeta, RegisteredCard, MatchOutcome, TooltipAnchor)
 ┃
 ┣ 📂 lib/               → Third-party library configurations (scoped to content)
 ┃ ┣ 📜 axios.ts         → Axios instance with backloggd.com base URL + interceptors
@@ -85,10 +102,10 @@ flowchart TD
 ┃ ┗ 📜 react-query.ts   → QueryClient: stale time, gc time, refetch-on-focus/reconnect disabled
 ┃
 ┗ 📂 shared/            → Code shared across ALL features within content
-  ┣ 📂 components/      → Dialog/ (Dialog, SettingsActionRow), DropdownButton
+  ┣ 📂 components/      → Dialog/ (Dialog, SettingsActionRow)
   ┣ 📂 providers/       → BackloggdToasterProvider — react-hot-toast, Backloggd-styled
   ┣ 📂 types/           → API response types + Axios module augmentation
-  ┗ 📂 utils/           → url.ts (navigation detection), user.ts (auth detection)
+  ┗ 📂 utils/           → url.ts (route matching), navigation.ts (Turbo page-change events), user.ts (auth detection)
 ```
 
 ---
@@ -137,6 +154,16 @@ const ui = await createShadowRootUi(ctx, {
 > longer wired in `onMount`. They live inside [`App.tsx`](./App.tsx), which wraps the
 > feature tree. `index.tsx` only renders `<App username={…} />`.
 
+> **⚠️ One documented exception — HLTB badges.** The badges rendered on library cards do
+> **not** live in a Shadow Root. They are rendered with `createPortal` into Backloggd's own
+> card markup and styled by [`features/hltb/components/badge.css`](./features/hltb/components/badge.css), a small
+> `bgpl-`-prefixed light-DOM stylesheet.
+>
+> A shadow root per badge would mean, on a 200-card page, 200 shadow roots, 200 React roots
+> and 200 copies of the Tailwind/DaisyUI stylesheet — and badges need to sit inside
+> Backloggd's grid to inherit its responsive behaviour. The HLTB **tooltip** does live in a
+> Shadow Root and keeps Tailwind; only the badges are portaled out.
+
 **Why Shadow DOM?**
 - **Style Encapsulation** — Backloggd's CSS cannot leak into the extension UI, and the extension's Tailwind/DaisyUI classes cannot break the host page.
 - **DOM Isolation** — The injected component tree lives inside a shadow root (`<backloggd-plus-ui>` custom element), keeping it invisible to Backloggd's own JavaScript and DOM queries.
@@ -147,6 +174,14 @@ const ui = await createShadowRootUi(ctx, {
 Backloggd uses [Hotwire Turbo](https://turbo.hotwired.dev/) for client-side navigation, which means the page doesn't fully reload on route changes. The content script handles re-injections by listening to `turbo:load` events.
 
 The `ctx.isInvalid` check ensures the monitoring loop is cleaned up when the extension is disabled, updated, or unloaded; preventing orphaned listeners.
+
+> **`turbo:load` is not sufficient on its own.** Backloggd sets
+> `<meta name="turbo-refresh-method" content="morph">`, so Turbo **patches nodes in place**
+> rather than replacing the document, and its sort/filter links are Turbo *frame*
+> navigations that never fire `turbo:load` at all. Two mechanisms cover this:
+> [`navigation.ts`](./shared/utils/navigation.ts) subscribes to all three Turbo events plus
+> `popstate`, and the HLTB feature adds a `MutationObserver` on top — see
+> [`useGameCards`](./features/hltb/hooks/useGameCards.ts).
 
 ---
 

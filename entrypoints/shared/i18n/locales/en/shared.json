@@ -10,6 +10,19 @@
           "wishlist": "Wishlist"
         }
       }
+    },
+    "hltb": {
+      "settings": {
+        "title": "HowLongToBeat",
+        "enable": "Show completion times",
+        "defaultCategory": "Default time",
+        "category": {
+          "main": "Main Story",
+          "plus": "Main + Extra",
+          "hundred": "Completionist",
+          "all": "All Styles"
+        }
+      }
     }
   }
 }

@@ -20,6 +20,15 @@
         "exportFailed": "Algo salió mal al exportar tu colección de juegos.",
         "noGamesFound": "No se encontraron registros de juegos para exportar."
       }
+    },
+    "hltb": {
+      "viewOnHltb": "Ver en HowLongToBeat",
+      "category": {
+        "main": "Historia principal",
+        "plus": "Principal + extras",
+        "hundred": "Completista",
+        "all": "Todos los estilos"
+      }
     }
   },
   "common": {

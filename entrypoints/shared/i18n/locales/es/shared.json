@@ -10,6 +10,19 @@
           "wishlist": "Lista de deseos"
         }
       }
+    },
+    "hltb": {
+      "settings": {
+        "title": "HowLongToBeat",
+        "enable": "Mostrar tiempos de finalización",
+        "defaultCategory": "Tiempo predeterminado",
+        "category": {
+          "main": "Historia principal",
+          "plus": "Principal + extras",
+          "hundred": "Completista",
+          "all": "Todos los estilos"
+        }
+      }
     }
   }
 }

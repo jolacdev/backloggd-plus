@@ -1,0 +1,83 @@
+/**
+ * Badge styles, deliberately NOT part of the Shadow DOM stylesheet.
+ *
+ * Badges are portaled into Backloggd's own cards so they inherit the site's responsive
+ * grid, which puts them in the light DOM where Tailwind is unavailable. Every class is
+ * `bgpl-` prefixed and every inherited property is reset explicitly, so Backloggd's styles
+ * cannot bleed in and these rules cannot leak out. Colors reference Backloggd's own custom
+ * properties, which inherit through the boundary, so the badge tracks its theme for free.
+ *
+ * Placement and stacking are dictated by Backloggd's own card layers, measured from its
+ * stylesheet:
+ *
+ *   .overlay / .game-text-centered  z-index 0-1  (title text, shown on card hover)
+ *   .cover-link                     z-index 5    (INVISIBLE, covers the whole card)
+ *   .quick-access-bar               z-index 10   (bottom 2%, max-width 85%, on hover)
+ *
+ * `.cover-link` is why the badge must clear z-index 5: below it the badge still paints,
+ * but the link swallows every pointer event and the tooltip can never open. Top-right
+ * rather than bottom-right because the bottom belongs to the quick-access bar, and because
+ * top-right is Backloggd's own corner convention (`.status-overlay` sits at top/right 3px).
+ */
+.bgpl-hltb-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 11;
+
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 1px 6px;
+
+  border: 1px solid rgb(0 0 0 / 35%);
+  border-radius: 4px;
+  background-color: rgb(11 13 18 / 88%);
+  color: var(--back-text, #badefc);
+
+  font-family: Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 16px;
+  letter-spacing: 0.2px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: none;
+  white-space: nowrap;
+
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease;
+}
+
+.bgpl-hltb-badge:hover,
+.bgpl-hltb-badge:focus-visible {
+  background-color: rgb(11 13 18 / 97%);
+  border-color: var(--back-text, #badefc);
+}
+
+.bgpl-hltb-badge:focus-visible {
+  outline: 2px solid var(--back-text, #badefc);
+  outline-offset: 1px;
+}
+
+/* Backloggd renders a smaller grid on narrow viewports; keep the badge proportional. */
+@media (max-width: 575px) {
+  .bgpl-hltb-badge {
+    top: 2px;
+    right: 2px;
+    padding: 0 4px;
+    font-size: 10px;
+    line-height: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bgpl-hltb-badge {
+    transition: none;
+  }
+}

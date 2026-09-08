@@ -20,6 +20,15 @@
         "exportFailed": "Something went wrong while exporting your game collection.",
         "noGamesFound": "No logged games found to export."
       }
+    },
+    "hltb": {
+      "viewOnHltb": "View on HowLongToBeat",
+      "category": {
+        "main": "Main Story",
+        "plus": "Main + Extra",
+        "hundred": "Completionist",
+        "all": "All Styles"
+      }
     }
   },
   "common": {
