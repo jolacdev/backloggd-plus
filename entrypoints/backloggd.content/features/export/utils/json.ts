@@ -1,5 +1,6 @@
+import { triggerBlobDownload } from '@content/shared/utils/download';
+
 import { GameDetails, GameDetailsJSON } from '../types';
-import { triggerBlobDownload } from './download';
 
 /**
  * Transforms a {@link GameDetails} object into a {@link GameDetailsJSON}.

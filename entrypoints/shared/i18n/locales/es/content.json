@@ -20,6 +20,18 @@
         "exportFailed": "Algo salió mal al exportar tu colección de juegos.",
         "noGamesFound": "No se encontraron registros de juegos para exportar."
       }
+    },
+    "listExport": {
+      "button": "Exportar lista",
+      "progress": {
+        "analyzing": "Exportando...",
+        "exporting": "Exportando... {{current}} / {{total}}"
+      },
+      "toast": {
+        "listExported": "Tu lista se ha exportado correctamente.",
+        "exportFailed": "Algo salió mal al exportar tu lista.",
+        "noEntriesFound": "No se encontraron juegos en esta lista para exportar."
+      }
     }
   },
   "common": {

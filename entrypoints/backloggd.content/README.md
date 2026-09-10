@@ -1,6 +1,6 @@
 # Backloggd Plus — Content Script (`backloggd.content`)
 
-> A WXT content script that injects a React-powered UI directly into the [Backloggd](https://backloggd.com) website, enabling authenticated users to export their game library, which includes ratings, time tracking, etc., as downloadable **CSV and JSON** files, optionally filtered by play status.
+> A WXT content script that injects a React-powered UI directly into the [Backloggd](https://backloggd.com) website. It lets authenticated users export their **game library** (ratings, time tracking, etc.) as **CSV and JSON**, optionally filtered by play status, and export any of their **own lists** as **JSON**.
 
 ---
 
@@ -26,7 +26,9 @@
 
 ## Business Logic Overview
 
-The content script's core purpose is to **enhance the Backloggd website with features that the platform does not natively offer**. Currently, the primary feature is **Game Library Export**:
+The content script's core purpose is to **enhance the Backloggd website with features that the platform does not natively offer**.
+
+### Game Library Export
 
 1. **Authentication Detection** — Reads the `#navbarDropdown` DOM element to determine if a user is logged in and extract their username.
 2. **UI Injection** — Injects an export section into the **Settings → Data Management** page (`/settings/data/`) only, anchored to the data-management subtitle row and visually matching Backloggd's own styling.
@@ -34,6 +36,24 @@ The content script's core purpose is to **enhance the Backloggd website with fea
 4. **Data Scraping** — Fetches the user's paginated game library pages from Backloggd in parallel, by making HTTP requests and parsing the returned HTML with `DOMParser`.
 5. **Detail Enrichment** — For each game discovered, fetches detailed log data (playthroughs, ratings, time played, statuses) from Backloggd's internal JSON API endpoint (`/log/edit/:gameId`). These requests are issued **sequentially and rate-limited** (one at a time) to avoid `429` responses.
 6. **CSV & JSON Generation & Download** — Transforms the aggregated data into **both** a CSV (via PapaParse) and a JSON file, triggering two browser downloads (the JSON download is delayed ~150ms so the browser registers both). There is no format toggle; every run produces both files. Progress is surfaced through a phase-based lifecycle (`idle → analyzing → exporting → complete`, or `error`).
+
+### List Export
+
+The second feature exports a single Backloggd list as JSON.
+
+1. **Ownership Detection** — The button is injected only when the URL owner matches the logged-in user, on either list route: `/u/:username/list/:slug/` (plus its sort/display variants) or `/u/:username/list/goty/:year/`. Other users' lists, plus the `/edit/` and `/likes/` sub-routes, are excluded.
+2. **UI Injection** — A full-width **Export list** button anchored after Backloggd's own edit link, which it renders for the owner only. The route is read when the button is *clicked*, not when it mounts: changing the sort is a Turbo frame navigation, which rewrites the URL under a button that never re-renders. Standard lists keep that link in the desktop sidebar (`#desktop-detail-sidebar`); GOTY pages have no sidebar and keep it in the header block (`.goty-list-creation-info`). It runs on click; there is no dialog, because the export takes no options.
+3. **Data Scraping** — Backloggd serves two very different list pages, told apart by the `data-route` it stamps on `<body>`:
+   - **Standard** (`list#list`) — fetches `/u/:username/list/:slug/<sort>/grid/?page=N`, paginated. The sort is whichever one the page is showing (`user`, `popularity`, `user:asc`, …), falling back to `user` — the author's own ordering — when the URL carries none, so the export matches what the user is looking at. `grid` renders ranked and unranked lists with identical markup, carrying entry notes and played-status overlays inline. The bare list URL is a fallback, and the detail-view selectors are kept alongside the grid ones in case it is taken.
+   - **GOTY** (`list#goty_list`) — fetches `/u/:username/list/goty/:year/` as-is. There are no sort or display variants, no `"N Games"` counter and no pagination: the page is one primary pick (`#primary-goty-entry`) plus a handful of supporting ones, each a `.goty-list-entry` carrying its own category.
+
+   The cover card, game link and note markup are identical on both, so only the entry container, the game-name selector and the category source differ.
+4. **Stats Scraping** — Reads the viewer's progress panel from the same page: games played, per-status counts (completed, retired, shelved, abandoned, played) and the average rating they gave games in this list. Each entry also carries its own `status`, lowercased to match those keys, so the totals can be attributed back to individual games. Backloggd renders this panel twice, for mobile and the desktop sidebar, with duplicate ids — only the first is read. GOTY pages render no such panel, so their stats are `null`.
+5. **JSON Generation & Download** — One object: `exportedAt`, `list` (title, kind, owner, url, description, totalGames), `stats`, and `entries`. `kind` is `standard` or `goty`, which disambiguates a GOTY list whose title is a bare year, and `sort` records the ordering `position` reflects. Every entry carries the same keys — `position`, `id`, `name`, `status`, `category`, `note`, `coverUrl`, `url` — with absent values normalised to `null` rather than omitted.
+
+> **⚠️ The status overlay lies.** Backloggd renders a `.status-overlay` reading "Completed" on *every* card that has any log at all, including games that are only backlogged or wishlisted. It only means what it says on cards Backloggd also fades, so the status is read through `.fade-played .status-overlay` and ignored otherwise.
+
+> **⚠️ Unverified markup:** The parser was written against an unranked list in Detail view. It never detects the list *type* — notes are read by trying each known note container in turn, and GOTY categories come from the headings between entries. See [`CHECKLIST.md`](../../CHECKLIST.md).
 
 > **⚠️ Important:** The APIs consumed are **internal, undocumented Backloggd endpoints** and are subject to breakage at any time without notice. See [`shared/types/api.ts`](./shared/types/api.ts) for the full response type documentation.
 
@@ -68,16 +88,21 @@ flowchart TD
 ```
 📦 backloggd.content/
 ┣ 📜 index.tsx          → WXT entry point: defineContentScript, Shadow Root, React mount
-┣ 📜 App.tsx            → Root component: wraps features in QueryClient + Toaster providers
+┣ 📜 App.tsx            → Provider stack (QueryClient + Toaster) wrapped around each feature
 ┣ 📜 style.css          → Tailwind + DaisyUI scoped to Shadow DOM (:host)
 ┃
 ┣ 📂 features/          → Feature modules (vertically sliced)
-┃ ┗ 📂 export/          → Game Library Export feature
-┃   ┣ 📂 api/           → React Query options factories, fetch functions, keys, pagination utils
-┃   ┣ 📂 components/    → ExportSection, ExportDialog, ExportProgressIndicator
-┃   ┣ 📂 hooks/         → useExport (orchestrator) + useProfileGames, useGameDetails (stages)
-┃   ┣ 📂 utils/         → csv.ts, json.ts, download.ts
-┃   ┗ 📜 types.ts       → Feature types (ExportPhase, ExportProgress, GameDetails, GameDetailsCSV, GameDetailsJSON)
+┃ ┣ 📂 export/          → Game Library Export feature
+┃ ┃ ┣ 📂 api/           → React Query options factories, fetch functions, keys
+┃ ┃ ┣ 📂 components/    → ExportSection, ExportDialog, ExportProgressIndicator
+┃ ┃ ┣ 📂 hooks/         → useExport (orchestrator) + useProfileGames, useGameDetails (stages)
+┃ ┃ ┣ 📂 utils/         → csv.ts, json.ts
+┃ ┃ ┗ 📜 types.ts       → ExportPhase, ExportProgress, GameDetails, GameDetailsCSV, GameDetailsJSON
+┃ ┗ 📂 list-export/     → List Export feature (flat: one file per concern)
+┃   ┣ 📜 list-dom.ts    → Every list selector + the standard/GOTY/stats parsers
+┃   ┣ 📜 useListExport.ts → Fetching, pagination and the export lifecycle
+┃   ┣ 📜 json.ts        → downloadListJSON
+┃   ┗ 📜 ListExportButton.tsx → The injected button
 ┃
 ┣ 📂 lib/               → Third-party library configurations (scoped to content)
 ┃ ┣ 📜 axios.ts         → Axios instance with backloggd.com base URL + interceptors
@@ -88,7 +113,8 @@ flowchart TD
   ┣ 📂 components/      → Dialog/ (Dialog, SettingsActionRow), DropdownButton
   ┣ 📂 providers/       → BackloggdToasterProvider — react-hot-toast, Backloggd-styled
   ┣ 📂 types/           → API response types + Axios module augmentation
-  ┗ 📂 utils/           → url.ts (navigation detection), user.ts (auth detection)
+  ┗ 📂 utils/           → url.ts (route detection), user.ts (auth), navigation.ts (Turbo events),
+                          pagination.ts, download.ts, filename.ts
 ```
 
 ---
@@ -144,7 +170,9 @@ const ui = await createShadowRootUi(ctx, {
 
 ### Turbo-Aware Navigation Monitoring
 
-Backloggd uses [Hotwire Turbo](https://turbo.hotwired.dev/) for client-side navigation, which means the page doesn't fully reload on route changes. The content script handles re-injections by listening to `turbo:load` events.
+Backloggd uses [Hotwire Turbo](https://turbo.hotwired.dev/) for client-side navigation, which means the page doesn't fully reload on route changes. `shared/utils/navigation.ts` exposes `subscribeToPageChanges()`, and `index.tsx` re-runs injection on every event it reports.
+
+> **⚠️ `turbo:load` alone is not enough.** Backloggd's sort and display dropdowns navigate a Turbo *frame*, which emits only `turbo:frame-load`. Back/forward through those emits neither, so `popstate` is covered too.
 
 The `ctx.isInvalid` check ensures the monitoring loop is cleaned up when the extension is disabled, updated, or unloaded; preventing orphaned listeners.
 

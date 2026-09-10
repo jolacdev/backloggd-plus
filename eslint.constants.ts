@@ -90,7 +90,7 @@ type Zone = {
 };
 
 const entrypoints: string[] = ['backloggd.content', 'background', 'popup'];
-const features: string[] = ['export'];
+const features: string[] = ['export', 'list-export'];
 
 const entrypointImportRestrictions: Zone[] = entrypoints.map((entrypoint) => ({
   except: [`./${entrypoint}`, './shared'], // Allow imports from the current entrypoint and entrypoints-level shared files.

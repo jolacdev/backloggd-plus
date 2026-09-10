@@ -98,3 +98,42 @@ type PlayDate = {
   status: null | unknown; // Unable to verify `unknown` type.
   tags: string[];
 };
+
+/**
+ * Source: GET /u/:username/list/:slug/:sort/detail/ (text/html)
+ *
+ * Parsed data scraped from a list page rendered in "Detail" display mode, which
+ * is the only mode that renders entry notes inline (Grid mode hides them behind
+ * the `#list-note-modal` dialog).
+ *
+ * ⚠️ Internal, undocumented, and subject to breakage.
+ */
+export type ListPageScrapeResponse = {
+  description: string; // #list-desc .collapse-text-body
+  entries: ListEntryScrapeResponse[];
+  title: string; // .list-title h1 — holds the year on GOTY lists.
+  totalGames: number; // "N Games" in .subtitle-text
+  stats?: ListStatsScrapeResponse; // Absent when the progress panel is not rendered.
+};
+
+export type ListEntryScrapeResponse = {
+  id: string; // .detail-list-entry .card.game-cover[game_id] (IGDB id)
+  name: string; // .game-name h4 || .card img.card-img (alt)
+  url: string; // https://backloggd.com + a[href^="/games/"] (href)
+  category?: string; // Heading of the GOTY category the entry falls under.
+  coverUrl?: string; // .card img.card-img (src)
+  note?: string; // .readmore-content || .note-content || .list-detail-note
+  status?: string; // .fade-played .status-overlay, lowercased ("completed", "shelved", ...).
+};
+
+/**
+ * The viewer's own progress through the list, as shown in the list sidebar.
+ *
+ * These are the logged-in user's numbers, not the list author's, and Backloggd
+ * renders the same panel twice (mobile + desktop) — only the first is read.
+ */
+export type ListStatsScrapeResponse = {
+  averageRating: null | number; // #avg-rating
+  playedGames: null | number; // #list-progress-label ("You've played N / M games")
+  statuses: Record<string, number>; // .list-progress-type-label ("1 Completed"), keyed by lowercased status.
+};

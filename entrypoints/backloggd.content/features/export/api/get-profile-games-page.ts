@@ -2,6 +2,7 @@ import { queryOptions, UseQueryOptions } from '@tanstack/react-query';
 
 import { api } from '@content/lib/axios';
 import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
+import { getTotalGamesCount } from '@content/shared/utils/dom';
 import {
   StatusFiltersState,
   StatusKey,
@@ -43,17 +44,6 @@ const fetchProfileGamesPage = async (
     console.error(`Failed to fetch page ${pageNumber} for user ${username}`);
     throw error;
   }
-};
-
-const getTotalGamesCount = (doc: Document): number => {
-  const totalGamesByStatusElement = [
-    ...doc.querySelectorAll('.subtitle-text'),
-  ].find((el) => el.textContent?.includes('Games'));
-
-  if (!totalGamesByStatusElement) return 0;
-
-  const match = totalGamesByStatusElement.textContent.match(/(\d+)\s+Games/);
-  return match ? parseInt(match[1], 10) : 0;
 };
 
 const parseProfileGamesPage = (

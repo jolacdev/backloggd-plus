@@ -2,10 +2,13 @@
 import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query';
 
 import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
+import {
+  getPageNumbers,
+  getTotalPages,
+} from '@content/shared/utils/pagination';
 import { StatusFiltersState } from '@globalShared/hooks/useStatusFilters';
 
 import { createProfileGamesPageQueryOptions } from '../api/get-profile-games-page';
-import { getPageNumbers, getTotalPages } from '../api/utils';
 
 const isStageReady = ({
   isSuccess,
@@ -65,7 +68,10 @@ const useProfileGames = ({
   );
 
   // 2. Fetch all pages to collect the full list of games to export.
-  const totalPages = getTotalPages(firstPageData);
+  const totalPages = getTotalPages(
+    firstPageData?.totalGames ?? 0,
+    firstPageData?.games.length ?? 0,
+  );
   const pageNumbers = getPageNumbers(totalPages);
 
   const isFirstPageReady = isStageReady({

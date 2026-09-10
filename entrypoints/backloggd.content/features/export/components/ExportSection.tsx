@@ -18,7 +18,7 @@ const ExportSection = ({ username }: ExportSectionProps) => {
   const handleCloseDialog = () => setIsModalOpen(false);
 
   return (
-    <>
+    <section id="game-transfer-section">
       <SettingsActionRow
         buttonLabel={t('button')}
         description={t('description')}
@@ -28,7 +28,7 @@ const ExportSection = ({ username }: ExportSectionProps) => {
       {isModalOpen && (
         <ExportDialog username={username} onClose={handleCloseDialog} />
       )}
-    </>
+    </section>
   );
 };
 

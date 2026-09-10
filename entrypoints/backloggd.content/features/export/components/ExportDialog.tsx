@@ -2,13 +2,13 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 import Dialog from '@content/shared/components/Dialog/Dialog';
+import { getFilename } from '@content/shared/utils/filename';
 import StatusFilters from '@globalShared/components/StatusFilters';
 import Typography from '@globalShared/components/Typography';
 import { useStatusFilters } from '@globalShared/hooks/useStatusFilters';
 
 import useExport from '../hooks/useExport';
 import { downloadGameDetailsCSV, parseToGameDetailsCSV } from '../utils/csv';
-import { getFilename } from '../utils/filename';
 import { downloadGameDetailsJSON, parseToGameDetailsJSON } from '../utils/json';
 import ExportProgressIndicator from './ExportProgressIndicator';
 

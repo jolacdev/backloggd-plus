@@ -1,8 +1,8 @@
 /* eslint-disable perfectionist/sort-objects */
 import { toCSVString } from '@content/lib/papaparse';
+import { triggerBlobDownload } from '@content/shared/utils/download';
 
 import { GameDetails, GameDetailsCSV } from '../types';
-import { triggerBlobDownload } from './download';
 
 /**
  * Transforms a {@link GameDetails} object into a {@link GameDetailsCSV}.
