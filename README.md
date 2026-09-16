@@ -70,6 +70,10 @@ The core feature lives in the **content script**, which is documented in depth (
 
 📖 **[Content Script Documentation →](entrypoints/backloggd.content/README.md)**
 
+## Roadmap / TODO
+
+- Add export support for Backloggd 1.18's **Library** section (`/u/{username}/library/`), including its platform-grouped library entries. This is separate from the classic games-log export fixed for 1.18.
+
 ## License
 
 Copyright (c) 2026 jolacdev

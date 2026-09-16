@@ -46,28 +46,32 @@ const fetchProfileGamesPage = async (
 };
 
 const getTotalGamesCount = (doc: Document): number => {
-  const totalGamesByStatusElement = [
-    ...doc.querySelectorAll('.subtitle-text'),
-  ].find((el) => el.textContent?.includes('Games'));
+  for (const element of doc.querySelectorAll('.subtitle-text')) {
+    const match = element.textContent?.match(/([\d,]+)\s+games\b/i);
+    if (match) return Number(match[1].replace(/,/g, ''));
+  }
 
-  if (!totalGamesByStatusElement) return 0;
-
-  const match = totalGamesByStatusElement.textContent.match(/(\d+)\s+Games/);
-  return match ? parseInt(match[1], 10) : 0;
+  return 0;
 };
 
-const parseProfileGamesPage = (
+export const parseProfileGamesPage = (
   doc: Document,
 ): ProfileGamesPageScrapeResponse => {
+  // Backloggd 1.18 moved game cards to #user_games; scope the selector to
+  // exclude Turbo placeholders while retaining the legacy container fallback.
   const gameCards = [
-    ...doc.querySelectorAll('#user-games-library-container .card.game-cover'),
+    ...doc.querySelectorAll(
+      '#user_games .card.game-cover[game_id], #user-games-library-container .card.game-cover[game_id]',
+    ),
   ];
 
   const scrapedGames: ProfileGamesPageScrapeResponse['games'] = gameCards.map(
     (card) => {
       const id = card.getAttribute('game_id')!; // Attribute game_id should always exist.
       const name =
-        card.querySelector('.game-text-centered')?.textContent?.trim() ?? '';
+        card.querySelector('.game-text-centered')?.textContent?.trim() ??
+        card.querySelector('img.card-img')?.getAttribute('alt')?.trim() ??
+        '';
       const path = card.querySelector('a.cover-link')?.getAttribute('href');
       const url = path ? `https://backloggd.com${path}` : '';
       const rating = card.getAttribute('data-rating') || undefined;
