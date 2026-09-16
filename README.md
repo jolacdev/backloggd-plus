@@ -6,7 +6,7 @@
 
 **Own your game library: export your Backloggd logs as CSV & JSON.**
 
-![Version](https://img.shields.io/badge/Version-1.0.0-brightgreen)
+![Version](https://img.shields.io/badge/Version-1.0.2-brightgreen)
 ![License](https://img.shields.io/badge/License-GPL%20v3-blue)
 ![Framework WXT](https://img.shields.io/badge/Framework-WXT-67217A)
 ![React 19](https://img.shields.io/badge/React-19-149ECA)
