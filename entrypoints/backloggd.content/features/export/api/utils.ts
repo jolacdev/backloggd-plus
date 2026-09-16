@@ -1,4 +1,23 @@
-import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
+import {
+  ProfileGameScrapeResponse,
+  ProfileGamesPageScrapeResponse,
+} from '@content/shared/types/api';
+
+/**
+ * Removes repeated games while preserving their first occurrence and order.
+ * This is a resilience safeguard; Backloggd pages are not expected to overlap.
+ */
+export const deduplicateProfileGames = (
+  games: ProfileGameScrapeResponse[],
+): ProfileGameScrapeResponse[] => {
+  const gamesById = new Map<string, ProfileGameScrapeResponse>();
+
+  games.forEach((game) => {
+    if (!gamesById.has(game.id)) gamesById.set(game.id, game);
+  });
+
+  return [...gamesById.values()];
+};
 
 /**
  * Calculates the total number of pages based on the total number of games and the number of games per page.

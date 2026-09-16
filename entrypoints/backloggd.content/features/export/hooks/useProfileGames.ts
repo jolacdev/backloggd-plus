@@ -5,7 +5,11 @@ import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
 import { StatusFiltersState } from '@globalShared/hooks/useStatusFilters';
 
 import { createProfileGamesPageQueryOptions } from '../api/get-profile-games-page';
-import { getPageNumbers, getTotalPages } from '../api/utils';
+import {
+  deduplicateProfileGames,
+  getPageNumbers,
+  getTotalPages,
+} from '../api/utils';
 
 const isStageReady = ({
   isSuccess,
@@ -26,7 +30,9 @@ type UseProfileGamesProps = {
 const combineProfileGameResults = (
   results: UseQueryResult<ProfileGamesPageScrapeResponse, Error>[],
 ) => ({
-  data: results.flatMap(({ data }) => (data ? data.games : [])),
+  data: deduplicateProfileGames(
+    results.flatMap(({ data }) => (data ? data.games : [])),
+  ),
   isFetching: results.some((result) => result.isFetching),
   isStale: results.some((result) => result.isStale),
   isError: results.some((result) => result.isError),

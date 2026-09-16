@@ -24,6 +24,7 @@ export type ProfileGameScrapeResponse = {
  * JSON response from Backloggd internal, undocumented endpoint.
  *
  * ⚠️ Internal, undocumented, and subject to breakage.
+ * Verified unchanged against Backloggd 1.18.0 on 2026-09-16.
  *
  * A non-logged game returns empty defaults (`game_log` is omitted):
  * @example

@@ -6,7 +6,7 @@
 
 **Own your game library: export your Backloggd logs as CSV & JSON.**
 
-![Version](https://img.shields.io/badge/Version-1.0.0-brightgreen)
+![Version](https://img.shields.io/badge/Version-1.0.2-brightgreen)
 ![License](https://img.shields.io/badge/License-GPL%20v3-blue)
 ![Framework WXT](https://img.shields.io/badge/Framework-WXT-67217A)
 ![React 19](https://img.shields.io/badge/React-19-149ECA)
@@ -69,6 +69,10 @@ Run `pnpm test` for the test suite and `pnpm lint` to type-check and lint.
 The core feature lives in the **content script**, which is documented in depth (data flow, WXT specifics, import boundaries, and the API layer) in its dedicated README:
 
 📖 **[Content Script Documentation →](entrypoints/backloggd.content/README.md)**
+
+## Roadmap / TODO
+
+- Add export support for Backloggd 1.18's **Library** section (`/u/{username}/library/`), including its platform-grouped library entries. This is separate from the classic games-log export fixed for 1.18.
 
 ## License
 
