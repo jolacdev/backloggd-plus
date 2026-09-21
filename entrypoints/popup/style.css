@@ -10,57 +10,48 @@
 @plugin 'daisyui/theme' {
   name: 'business';
   default: true;
-  --color-primary: #209a58;
-}
-
-/* DaisyUI Business Theme Classes Customizations */
-/* https://daisyui.com/docs/themes/#how-to-add-custom-styles-for-a-specific-theme */
-[data-theme='business'] {
-  .btn {
-    &:active,
-    &.btn-active {
-      translate: 0 1px;
-    }
-  }
-
-  .btn-ghost {
-    border-width: 0;
-    box-shadow: none;
-    background: transparent;
-  }
+  --color-primary: #ea377a;
+  --color-base-100: #101216;
 }
 
 @theme {
-  --color-charcoal-50: #f1f1f1;
-  --color-charcoal-100: #e2e2e2;
-  --color-charcoal-200: #c9c9c9;
-  --color-charcoal-300: #aeaeae;
-  --color-charcoal-400: #969696;
-  --color-charcoal-500: #7c7c7c;
-  --color-charcoal-600: #666666;
-  --color-charcoal-700: #4e4e4e;
-  --color-charcoal-800: #393939;
-  --color-charcoal-900: #242424;
-  --color-charcoal-950: #151515;
-
-  --color-leaf-50: #e9ffef;
-  --color-leaf-100: #c5fed6;
-  --color-leaf-200: #83feaf;
-  --color-leaf-300: #39f58f;
-  --color-leaf-400: #35e887;
-  --color-leaf-500: #31d97e;
-  --color-leaf-600: #2dc975;
-  --color-leaf-700: #2abd6d;
-  --color-leaf-800: #25ae64;
-  --color-leaf-900: #22a25d;
-  --color-leaf-950: #209a58;
+  /* Brand pink matches the plus in public/icon/128.png. */
+  --color-brand: #fc6399;
+  --color-action: #ea377a;
+  --color-popup: #16181c;
+  --color-popup-frame: #101216;
+  --color-popup-surface: #1c1f25;
+  --color-popup-control: #20242c;
+  --color-popup-border: #303642;
+  --color-popup-muted: #a9b1bd;
+  --color-popup-text: #e2e5eb;
+  --color-popup-error: #ffadc9;
 }
 
 @layer base {
+  html {
+    /* Let the body determine the browser popup's intrinsic width. */
+    width: max-content;
+    border-radius: 12px;
+    color-scheme: dark;
+    background: var(--color-popup-frame);
+  }
+
   body {
     margin: 0;
-    width: 320px;
-    min-height: 200px;
+    /* Viewport-relative caps can lock a popup into its initial narrow measurement. */
+    width: 360px;
+    min-width: 360px;
+    border: 0;
+    background: var(--color-popup-frame);
+    color: var(--color-popup-text);
+    font-size: 14px;
+    line-height: 1.5;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  }
+
+  :is(button, input):focus-visible {
+    outline: 2px solid #ff9cc1;
+    outline-offset: 3px;
   }
 }
