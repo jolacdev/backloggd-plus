@@ -7,6 +7,7 @@ type BackloggdToasterProviderProps = {
   children: ReactNode;
 };
 
+/** Provides toast notifications styled for Backloggd. */
 const BackloggdToasterProvider = ({
   children,
 }: BackloggdToasterProviderProps) => {

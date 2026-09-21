@@ -13,6 +13,7 @@ type DialogProps = {
   onConfirm: () => void;
 };
 
+/** Renders the Backloggd-style modal shell and footer actions. */
 const Dialog = ({
   children = undefined,
   onClose,

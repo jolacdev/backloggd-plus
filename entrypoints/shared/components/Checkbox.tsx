@@ -10,6 +10,7 @@ type CheckboxProps = Omit<
   onChange: (value: boolean) => void;
 };
 
+/** Renders a controlled checkbox with shared Backloggd styling. */
 const Checkbox = ({ checked, onChange, ...rest }: CheckboxProps) => (
   <input
     // eslint-disable-next-line react/jsx-props-no-spreading

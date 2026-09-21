@@ -17,6 +17,7 @@ type ExportDialogProps = {
   onClose: () => void;
 };
 
+/** Collects per-export statuses and starts the game collection export. */
 const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
   const { t } = useTranslation(undefined, {
     keyPrefix: 'features.export.dialog',

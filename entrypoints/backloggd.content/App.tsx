@@ -8,6 +8,7 @@ type AppProps = {
   username: string;
 };
 
+/** Mounts the export feature with its data and toast providers. */
 const App = ({ username }: AppProps) => (
   <QueryClientProvider client={queryClient}>
     <BackloggdToasterProvider>

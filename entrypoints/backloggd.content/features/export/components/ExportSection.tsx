@@ -8,6 +8,7 @@ type ExportSectionProps = {
   username: string;
 };
 
+/** Adds the export action to Backloggd's data settings page. */
 const ExportSection = ({ username }: ExportSectionProps) => {
   const { t } = useTranslation(undefined, {
     keyPrefix: 'features.export.settingsAction',

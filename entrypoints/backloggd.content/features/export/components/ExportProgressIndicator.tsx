@@ -8,6 +8,7 @@ type ExportProgressIndicatorProps = {
   progress: ExportProgress;
 };
 
+/** Reports the active export phase and completed game count. */
 const ExportProgressIndicator = ({
   progress: { current, phase, total },
 }: ExportProgressIndicatorProps) => {
