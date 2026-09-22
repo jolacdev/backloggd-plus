@@ -19,21 +19,20 @@ export const useStatusFilters = ({
   useEffect(() => {
     let isMounted = true;
 
-    const loadStoredFilters = async () => {
-      const storedFilters = await filtersStorageItem.getValue();
+    void filtersStorageItem
+      .getValue()
+      .then((storedFilters) => {
+        if (!isMounted) return;
 
-      // Only update state if the component is still actively mounted
-      if (isMounted) {
-        if (storedFilters) {
-          setFilters(storedFilters);
-        }
-        setHasLoaded(true);
-      }
-    };
+        setFilters(storedFilters);
+      })
+      .catch(() => {
+        // Keep the default filters when saved preferences are unavailable.
+      })
+      .finally(() => {
+        if (isMounted) setHasLoaded(true);
+      });
 
-    loadStoredFilters();
-
-    // Cleanup flag when unmounting
     return () => {
       isMounted = false;
     };
