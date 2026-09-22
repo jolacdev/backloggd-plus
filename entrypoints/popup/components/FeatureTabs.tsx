@@ -1,6 +1,7 @@
 import { KeyboardEvent, ReactNode } from 'react';
 
 import Icon, { IconName } from '@globalShared/components/Icon';
+import Typography from '@globalShared/components/Typography';
 import { cn } from '@globalShared/utils/cn';
 
 type FeatureTab = {
@@ -67,7 +68,7 @@ const FeatureTabs = ({ 'aria-label': ariaLabel, tabs }: FeatureTabsProps) => {
             aria-selected={id === activeTabId}
             className={cn(
               'flex shrink-0 cursor-pointer items-center gap-2 border-b-2 px-2 py-1.5',
-              'text-[13px] leading-5 font-medium whitespace-nowrap outline-offset-[-3px]',
+              'outline-offset-[-3px]',
               id === activeTabId
                 ? 'border-brand text-brand'
                 : 'text-popup-muted hover:text-popup-text border-transparent',
@@ -80,7 +81,13 @@ const FeatureTabs = ({ 'aria-label': ariaLabel, tabs }: FeatureTabsProps) => {
             onKeyDown={(event) => handleTabKeyDown(event, index)}
           >
             {icon && <Icon name={icon} size={16} />}
-            {label}
+            <Typography
+              as="span"
+              className="font-medium whitespace-nowrap"
+              variant="bodySmall"
+            >
+              {label}
+            </Typography>
           </button>
         ))}
       </div>

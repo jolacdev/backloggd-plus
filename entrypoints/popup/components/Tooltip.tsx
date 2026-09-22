@@ -1,4 +1,5 @@
 import Icon, { IconName } from '@globalShared/components/Icon';
+import Typography from '@globalShared/components/Typography';
 import { cn } from '@globalShared/utils/cn';
 
 type TooltipProps = {
@@ -93,8 +94,8 @@ const Tooltip = ({
       {isOpen && (
         <span
           className={cn(
-            'absolute bottom-[calc(100%+8px)] z-10 w-max max-w-[min(16.5rem,calc(100vw-16px))] rounded-md p-3',
-            'text-popup-text border border-[#515c6e] bg-[#272c37] text-xs leading-[18px] font-normal shadow-[0_6px_18px_#0006]',
+            'absolute bottom-[calc(100%+8px)] z-10 w-max max-w-[min(16.5rem,calc(100vw-16px))] rounded-md p-2',
+            'text-popup-text border border-[#515c6e] bg-[#272c37] shadow-[0_6px_18px_#0006]',
             // Tooltip arrow.
             'before:absolute before:-bottom-[5px] before:size-2 before:rotate-45',
             "before:border-r before:border-b before:border-[#515c6e] before:bg-inherit before:content-['']",
@@ -107,7 +108,9 @@ const Tooltip = ({
           )}
           role="tooltip"
         >
-          {text}
+          <Typography as="span" variant="caption">
+            {text}
+          </Typography>
         </span>
       )}
     </span>

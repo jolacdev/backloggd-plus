@@ -48,6 +48,8 @@ describe('Typography', () => {
     > = {
       body1: 'P',
       body2: 'P',
+      bodySmall: 'P',
+      caption: 'P',
       h1: 'H1',
       h2: 'H2',
       h3: 'H3',
@@ -55,6 +57,7 @@ describe('Typography', () => {
       h5: 'H5',
       h6: 'H6',
       label: 'LABEL',
+      labelSmall: 'LABEL',
       subtitle: 'P',
     };
 
