@@ -50,6 +50,16 @@ describe('Dialog', () => {
       const submitButton = screen.getByText(defaultKeys.submit);
       expect(submitButton.closest('button')).toHaveProperty('disabled', true);
     });
+
+    it('can disable submit without disabling close', () => {
+      render(<Dialog {...defaultProps} isSubmitDisabled={true} />);
+      expect(
+        screen.getByText(defaultKeys.submit).closest('button'),
+      ).toBeDisabled();
+      expect(
+        screen.getByText(defaultKeys.close).closest('button'),
+      ).toBeEnabled();
+    });
   });
 
   describe('Visibility', () => {

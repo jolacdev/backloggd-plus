@@ -2,13 +2,16 @@ import { MouseEvent, ReactNode, SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Button from '@globalShared/components/Button';
+import { cn } from '@globalShared/utils/cn';
 
 type DialogProps = {
   title: string;
   children?: ReactNode;
+  closeText?: string;
   submitText?: string;
   isOpen: boolean;
   isDisabled?: boolean;
+  isSubmitDisabled?: boolean;
   onClose: () => void;
   onConfirm: () => void;
 };
@@ -16,12 +19,14 @@ type DialogProps = {
 /** Renders the Backloggd-style modal shell and footer actions. */
 const Dialog = ({
   children = undefined,
+  closeText = undefined,
   onClose,
   onConfirm,
   submitText = undefined,
   title,
   isDisabled = false,
   isOpen,
+  isSubmitDisabled = false,
 }: DialogProps) => {
   const { t } = useTranslation(undefined, { keyPrefix: 'common.dialog' });
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -47,7 +52,12 @@ const Dialog = ({
 
   return (
     <dialog ref={dialogRef} className="modal" onClose={handleClose}>
-      <div className="modal-box border border-[var(--back-secondary)] bg-[var(--back-primary)] p-0">
+      <div
+        className={cn(
+          'modal-box w-[calc(100vw-2rem)] max-w-[36rem] rounded-lg p-0',
+          'border border-[var(--back-secondary,#242832)] bg-[var(--back-primary,#16181c)] shadow-2xl',
+        )}
+      >
         {/* Main content area */}
         <section className="p-4">
           <h4 className="mb-4 text-2xl font-medium">{title}</h4>
@@ -55,13 +65,16 @@ const Dialog = ({
         </section>
 
         {/* Footer section for actions */}
-        <footer className="modal-action m-0 bg-[var(--back-secondary)] px-4 py-2">
+        <footer className="modal-action m-0 bg-[var(--back-secondary,#242832)] px-4 py-2">
           <form method="dialog">
             <div className="flex gap-4">
               <Button disabled={isDisabled} variant="secondary">
-                {t('close')}
+                {closeText ?? t('close')}
               </Button>
-              <Button disabled={isDisabled} onClick={handleSubmit}>
+              <Button
+                disabled={isDisabled || isSubmitDisabled}
+                onClick={handleSubmit}
+              >
                 {submitText ?? t('submit')}
               </Button>
             </div>
