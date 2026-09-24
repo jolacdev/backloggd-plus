@@ -10,13 +10,13 @@
 @plugin 'daisyui/theme' {
   name: 'business';
   default: true;
-  --color-primary: #ea377a;
+  --color-primary: #ea377a; /* Primary actions and accents. */
+  --color-secondary: #4a5e8d; /* Secondary actions and accents. */
   --color-base-100: #101216;
   --color-error: #ffadc9; /* Error messages and retry actions. */
 }
 
 @theme {
-  --color-brand: #fc6399; /* Brand accents and focus outlines, matching the plus in public/icon/128.png. */
   --color-background: #16181c; /* Main popup background. */
   --color-section: #1c1f25; /* Feature section backgrounds. */
   --color-border: #303642; /* Borders separating cards and controls. */
@@ -46,7 +46,7 @@
   }
 
   :is(button, input):focus-visible {
-    outline: 2px solid var(--color-brand);
+    outline: 2px solid var(--color-content);
     outline-offset: 3px;
   }
 }

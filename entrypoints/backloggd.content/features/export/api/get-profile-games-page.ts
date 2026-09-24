@@ -5,7 +5,7 @@ import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
 import {
   StatusFiltersState,
   StatusKey,
-} from '@globalShared/hooks/useStatusFilters';
+} from '@globalShared/hooks/useExportStatusFilters';
 
 import { queryKeys } from './keys';
 
@@ -18,7 +18,9 @@ const createFetchProfileGamesPageUrl = (
     (key) => selectedStatuses[key as StatusKey],
   );
 
-  if (activeStatuses.length === 0) return `/u/${username}/games`;
+  if (activeStatuses.length === 0) {
+    throw new Error('Select at least one status before exporting');
+  }
 
   return `/u/${username}/games/added/type:${activeStatuses.join(',')}/`;
 };

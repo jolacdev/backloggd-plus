@@ -1,3 +1,26 @@
 {
-  "title": "Backloggd+"
+  "gameCollection": {
+    "title": "Game collection",
+    "description": "Export your tracked games from Data settings.",
+    "action": "Go to export page",
+    "opening": "Opening...",
+    "instructionsBefore": "On that page, click",
+    "exportLabel": "Export",
+    "instructionsAfter": "to choose your options and download.",
+    "navigationError": "Couldn't open the export page. Try “Go to export page” again.",
+    "loading": "Loading preferences...",
+    "loadError": "Couldn't load your preferences.",
+    "retry": "Retry",
+    "save": {
+      "idle": "Changes save automatically",
+      "saving": "Saving...",
+      "saved": "Preferences saved",
+      "error": "Couldn't save your changes. Your selections are still here."
+    },
+    "preferences": {
+      "title": "Default export statuses",
+      "description": "Preselected when you open the export dialog. You can change them for each export.",
+      "tooltip": "Saved for future exports. Changing a selection here does not start an export."
+    }
+  }
 }

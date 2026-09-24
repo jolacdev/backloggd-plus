@@ -8,6 +8,24 @@
 */
 @plugin 'daisyui' {
   root: ':host';
+  themes: business --default;
+  exclude: rootcolor; /* Prevent DaisyUI from painting the themed container. */
+}
+
+@plugin 'daisyui/theme' {
+  name: business;
+  default: true;
+  color-scheme: dark;
+  --color-primary: var(--back-pink-dk, #ea377a);
+  --color-secondary: var(--back-interact, #4a5e8d);
+}
+
+@theme {
+  --color-background: var(--back-primary, #16181c);
+  --color-section: var(--back-secondary, #242832);
+  --color-field: var(--back-field-background, #272c37);
+  --color-border: var(--back-field-border, #3b414e);
+  --color-content: var(--back-text, #badefc);
 }
 
 @layer base {

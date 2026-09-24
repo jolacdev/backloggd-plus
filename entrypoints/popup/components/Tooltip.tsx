@@ -75,7 +75,7 @@ const Tooltip = ({
       }}
     >
       <button
-        aria-label={ariaLabel}
+        aria-label={ariaLabel ?? text}
         className={cn(
           'inline-grid size-6 cursor-pointer place-items-center rounded',
           'text-content/75 hover:bg-border hover:text-content',
@@ -95,10 +95,10 @@ const Tooltip = ({
         <span
           className={cn(
             'absolute bottom-[calc(100%+8px)] z-10 w-max max-w-[min(16.5rem,calc(100vw-16px))] rounded-md p-2',
-            'text-content border border-[#515c6e] bg-[#272c37] shadow-[0_6px_18px_#0006]',
+            'text-content bg-border border-content/30 border shadow-lg',
             // Tooltip arrow.
             'before:absolute before:-bottom-[5px] before:size-2 before:rotate-45',
-            "before:border-r before:border-b before:border-[#515c6e] before:bg-inherit before:content-['']",
+            "before:border-content/30 before:border-r before:border-b before:bg-inherit before:content-['']",
             // Invisible area below the tooltip to keep it open while moving the pointer onto it.
             "after:absolute after:inset-x-0 after:top-full after:h-4 after:content-['']",
             // Position the tooltip and arrow on the side where it expands.

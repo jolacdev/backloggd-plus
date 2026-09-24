@@ -64,13 +64,12 @@ const FeatureTabs = ({ 'aria-label': ariaLabel, tabs }: FeatureTabsProps) => {
             ref={(element) => {
               buttons.current[index] = element;
             }}
-            aria-controls={`${id}-panel`}
             aria-selected={id === activeTabId}
             className={cn(
               'flex shrink-0 cursor-pointer items-center gap-2 border-b-2 px-2 py-1.5',
               'outline-offset-[-3px]',
               id === activeTabId
-                ? 'border-brand text-brand'
+                ? 'border-primary text-primary'
                 : 'text-content/75 hover:text-content border-transparent',
             )}
             id={`${id}-tab`}
@@ -99,7 +98,6 @@ const FeatureTabs = ({ 'aria-label': ariaLabel, tabs }: FeatureTabsProps) => {
           key={id}
           aria-labelledby={`${id}-tab`}
           hidden={id !== activeTabId}
-          id={`${id}-panel`}
           role="tabpanel"
         >
           {content}

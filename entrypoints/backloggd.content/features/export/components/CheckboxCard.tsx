@@ -7,13 +7,11 @@ import { cn } from '@globalShared/utils/cn';
 const CheckboxCard = ({ checked, children, onChange }: CheckboxCardProps) => (
   <CheckboxCardBase
     cardClassName={cn(
-      'min-h-12 gap-3 rounded-md px-3 py-2 text-base transition-colors hover:border-[#75839a]',
-      'focus-within:outline-[#91aaf0]',
-      checked
-        ? 'border-[#60708d] bg-[#30394a]'
-        : 'border-[var(--back-field-border,#3b414e)] bg-[var(--back-field-background,#272c37)]',
+      'min-h-12 gap-3 rounded-md px-3 py-2 text-base transition-colors',
+      'hover:border-content/50 focus-within:outline-content',
+      checked ? 'border-content/35 bg-secondary/35' : 'border-border bg-field',
     )}
-    checkboxClassName="size-5 checked:border-[#8fa9df] checked:bg-[#4a5e8d] checked:text-white"
+    checkboxClassName="size-5 border-border bg-field text-white hover:border-content/40 checked:border-content/60 checked:bg-secondary checked:text-white"
     checked={checked}
     onChange={onChange}
   >

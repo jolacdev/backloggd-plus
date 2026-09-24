@@ -4,7 +4,7 @@
 
 # Backloggd Plus
 
-**Own your game library: export your Backloggd logs as CSV & JSON.**
+**Own your game collection: export your Backloggd data as CSV & JSON.**
 
 ![Version](https://img.shields.io/badge/Version-1.0.2-brightgreen)
 ![License](https://img.shields.io/badge/License-GPL%20v3-blue)
@@ -19,16 +19,16 @@
 
 **Backloggd Plus** is a browser extension that enhances [Backloggd](https://backloggd.com) with features the platform doesn't offer natively.
 
-It injects a React-powered UI directly into the Backloggd website, visually matching the site's own styling, so authenticated users can **export their entire game library** (including ratings, play status, playthroughs, etc.) as downloadable **CSV and JSON** files. The JSON contains the full data; the CSV is more limited and contains only the first playthrough of each game.
+It injects a React-powered UI directly into the Backloggd website, visually matching the site's own styling, so authenticated users can **export their game collection** (including ratings, play status, playthroughs, etc.) as downloadable **CSV and JSON** files. The JSON contains the full data; the CSV is more limited and contains only the first playthrough of each game.
 
-The extension pulls your games from your profile, enriches each entry with log data from Backloggd's internal APIs, and hands you files you can use to back up, migrate, or analyze your library.
+The extension pulls your games from your profile, enriches each entry with log data from Backloggd's internal APIs, and hands you files you can use to back up, migrate, or analyze your game collection.
 
 > [!WARNING]
 > The export feature relies on **internal, undocumented Backloggd endpoints** that may change without notice. Their behavior is inferred, so issues like rate-limit errors or other unexpected behavior may occur.
 
 ## Key Features
 
-- **📤 Library export:** Export your full game log from **Settings → Data Management**.
+- **📤 Game collection export:** Export your game collection from **Settings → Data Management**.
 - **🎨 Native look & feel:** Injected via Shadow DOM for full style isolation, matching Backloggd's UI without leaking styles either way.
 - **🎯 Status filtering:** Choose which play statuses to include (played, playing, backlog, wishlist). Configure your preferred statuses in the extension popup; your selection is saved and automatically applied to future exports.
 - **🗂️ CSV & JSON output:** Every run produces both formats: a concise and more limited CSV and a complete JSON with all data to analyze or manage however you like.

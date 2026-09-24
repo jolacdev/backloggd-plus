@@ -15,8 +15,7 @@ describe('tooltip', () => {
     await user.hover(screen.getByRole('button', { name: 'Helpful text' }));
 
     expect(screen.getByRole('tooltip')).toHaveClass(
-      'w-max',
-      'max-w-[min(16.5rem,calc(100vw-16px))]',
+      'w-max max-w-[min(16.5rem,calc(100vw-16px))] bg-border',
     );
   });
 
@@ -41,7 +40,7 @@ describe('tooltip', () => {
       const user = userEvent.setup();
       render(<Tooltip text="Helpful text" />);
 
-      await user.hover(screen.getByRole('button'));
+      await user.hover(screen.getByRole('button', { name: 'Helpful text' }));
 
       expect(screen.getByRole('tooltip')).toHaveClass(directionClass);
     },

@@ -33,7 +33,10 @@ describe('Dialog', () => {
         </Dialog>,
       );
 
-      expect(screen.getByText(defaultProps.title)).toBeInTheDocument();
+      expect(screen.getByRole('dialog', { hidden: true })).toHaveAttribute(
+        'aria-label',
+        defaultProps.title,
+      );
       expect(screen.getByText(expectedContent)).toBeInTheDocument();
       expect(screen.getByText(defaultKeys.close)).toBeInTheDocument();
       expect(screen.getByText(defaultKeys.submit)).toBeInTheDocument();

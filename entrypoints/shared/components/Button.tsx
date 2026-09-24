@@ -7,7 +7,7 @@ type ButtonProps = {
   variant?: 'primary' | 'secondary';
 } & ComponentPropsWithoutRef<'button'>;
 
-/** Renders a Backloggd-styled button with primary or secondary colors. */
+/** Renders a themed button with primary or secondary colors. */
 const Button = ({
   children,
   className,
@@ -18,13 +18,12 @@ const Button = ({
   <button
     className={cn(
       'btn h-auto border-transparent px-3 py-1.5 shadow-none',
-      'text-base leading-[normal] font-normal text-[#fff]',
-      'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a6cfff]',
+      'text-base leading-[normal] font-normal text-white',
+      'focus-visible:outline-content focus-visible:outline-2 focus-visible:outline-offset-2',
       {
+        'bg-primary hover:brightness-110': variant === 'primary',
         'btn-disabled opacity-50': disabled,
-        'bg-[var(--back-pink-dk,#ea377a)] hover:bg-[var(--back-pink,#fc6399)]':
-          variant === 'primary',
-        'border-[var(--back-field-highlight,#3b4760)] bg-[var(--back-interact,#4a5e8d)] hover:bg-[var(--back-field-highlight,#3b4760)]':
+        'border-border bg-secondary hover:brightness-110':
           variant === 'secondary',
       },
       className,

@@ -10,7 +10,7 @@ type CheckboxProps = Omit<
   onChange: (value: boolean) => void;
 };
 
-/** Renders a controlled checkbox with shared Backloggd styling. */
+/** Renders a raw controlled checkbox. */
 const Checkbox = ({ checked, className, onChange, ...rest }: CheckboxProps) => (
   <input
     // eslint-disable-next-line react/jsx-props-no-spreading
@@ -18,9 +18,7 @@ const Checkbox = ({ checked, className, onChange, ...rest }: CheckboxProps) => (
     checked={checked} // NOTE: Using 'checked' instead of 'defaultChecked' to be a controlled component.
     className={cn(
       'checkbox shadow-none',
-      'rounded-[4px] border border-[var(--back-field-border,#3b414e)]',
-      'bg-[var(--back-field-background,#272c37)] text-[#fff]',
-      'hover:border-[var(--back-field-border-hover,#3f4b64)]',
+      'rounded border',
       'disabled:opacity-40',
       className,
     )}

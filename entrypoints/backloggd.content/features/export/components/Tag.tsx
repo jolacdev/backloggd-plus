@@ -12,7 +12,7 @@ const Tag = ({ children, className = undefined }: TagProps) => (
   <span
     className={cn(
       'inline-flex items-center rounded px-2 py-1',
-      'bg-[#3b4760] text-xs font-semibold tracking-wide',
+      'bg-secondary/60 text-xs font-semibold tracking-wide',
       className,
     )}
   >

@@ -4,13 +4,8 @@ export type StatusKey = 'backlog' | 'played' | 'playing' | 'wishlist';
 
 export type StatusFiltersState = Record<StatusKey, boolean>;
 
-type UseStatusFiltersParams = {
-  canEditStorage?: boolean;
-};
-
-export const useStatusFilters = ({
-  canEditStorage = false,
-}: UseStatusFiltersParams = {}) => {
+/** Loads saved defaults into a local selection for one export. */
+export const useExportStatusFilters = () => {
   const [filters, setFilters] = useState<StatusFiltersState>(
     filtersStorageItem.fallback,
   );
@@ -39,14 +34,7 @@ export const useStatusFilters = ({
   }, []);
 
   const toggleStatusFilter = (key: StatusKey) => {
-    const nextState = { ...filters, [key]: !filters[key] };
-
-    setFilters(nextState);
-
-    // Only save if allowed
-    if (canEditStorage) {
-      filtersStorageItem.setValue(nextState);
-    }
+    setFilters((current) => ({ ...current, [key]: !current[key] }));
   };
 
   return { filters, toggleStatusFilter, hasLoadedStatuses: hasLoaded };

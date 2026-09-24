@@ -1,22 +1,21 @@
 import { useTranslation } from 'react-i18next';
 
-import Checkbox from '@globalShared/components/Checkbox';
 import Typography from '@globalShared/components/Typography';
 import {
   StatusFiltersState,
   StatusKey,
-} from '@globalShared/hooks/useStatusFilters';
-import { cn } from '@globalShared/utils/cn';
+} from '@globalShared/hooks/useExportStatusFilters';
+
+import CheckboxCard from './CheckboxCard';
 
 type StatusFiltersProps = {
   filters: StatusFiltersState;
-  direction?: 'column' | 'row';
   isDisabled?: boolean;
   onChange: (key: StatusKey) => void;
 };
 
+/** Renders temporary per-export status choices as selectable cards. */
 const StatusFilters = ({
-  direction = 'column',
   filters,
   onChange,
   isDisabled = false,
@@ -26,25 +25,21 @@ const StatusFilters = ({
   });
 
   return (
-    <fieldset disabled={isDisabled}>
-      <Typography as="legend" className="mb-2" variant="h6">
-        {t('title')}
+    <fieldset className="group min-w-0" disabled={isDisabled}>
+      <legend className="mb-1 text-base font-semibold">{t('title')}</legend>
+      <Typography className="mb-3" variant="bodyCompact">
+        {t('description')}
       </Typography>
-      <div
-        className={cn('flex gap-4', {
-          'flex-col gap-2': direction === 'column',
-        })}
-      >
+      <div className="grid grid-cols-1 gap-2 min-[480px]:grid-cols-2">
         {(Object.entries(filters) as [StatusKey, boolean][]).map(
           ([key, checked]) => (
-            <Typography
+            <CheckboxCard
               key={key}
-              className="flex items-center gap-2"
-              variant="label"
+              checked={checked}
+              onChange={() => onChange(key)}
             >
-              <Checkbox checked={checked} onChange={() => onChange(key)} />
               {t(`status.${key}`)}
-            </Typography>
+            </CheckboxCard>
           ),
         )}
       </div>

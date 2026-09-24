@@ -1,4 +1,4 @@
-import { StatusFiltersState } from './hooks/useStatusFilters';
+import { StatusFiltersState } from './hooks/useExportStatusFilters';
 
 export const filtersStorageItem = storage.defineItem<StatusFiltersState>(
   'local:statusFilters',

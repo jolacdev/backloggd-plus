@@ -1,25 +1,30 @@
 import { useTranslation } from 'react-i18next';
 
-import StatusFilters from '@globalShared/components/StatusFilters';
-import Typography from '@globalShared/components/Typography';
-import { useStatusFilters } from '@globalShared/hooks/useStatusFilters';
+import FeatureTabs from './components/FeatureTabs';
+import GameCollection from './features/game-collection/GameCollection';
 
+/** Composes the popup title and available feature tabs. */
 const App = () => {
   const { t } = useTranslation();
-  const { filters, toggleStatusFilter, hasLoadedStatuses } = useStatusFilters({
-    canEditStorage: true,
-  });
-
-  if (!hasLoadedStatuses) return;
-
   return (
-    <div className="bg-[#16181c] px-4 py-6 text-white">
-      <header className="mb-6">
-        <Typography variant="h2">{t('title')}</Typography>
+    <div className="bg-background p-3">
+      <header className="text-content mb-2 text-lg leading-6 font-semibold">
+        <h1>
+          Backloggd<span className="text-primary">+</span>
+        </h1>
       </header>
 
       <main>
-        <StatusFilters filters={filters} onChange={toggleStatusFilter} />
+        <FeatureTabs
+          tabs={[
+            {
+              id: 'game-collection',
+              content: <GameCollection />,
+              icon: 'download',
+              label: t('gameCollection.title'),
+            },
+          ]}
+        />
       </main>
     </div>
   );

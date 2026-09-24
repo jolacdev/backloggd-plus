@@ -13,8 +13,8 @@ const BackloggdToasterProvider = ({
 }: BackloggdToasterProviderProps) => {
   const baseBackloggdToastClasses = cn(
     'flex items-center justify-between gap-2',
-    'w-[300px] px-[16px] py-[10px]',
-    'rounded-[4px] bg-[var(--back-pink-dk,#ea377a)] text-[#ffffff]',
+    'w-[300px] px-4 py-2.5',
+    'bg-primary rounded text-white',
     'pointer-events-auto select-none opacity-80 hover:opacity-100',
   );
 
@@ -35,20 +35,12 @@ const BackloggdToasterProvider = ({
           duration: 5000,
           removeDelay: 0,
           error: {
-            className: cn(
-              baseBackloggdToastClasses,
-              'bg-[#fdedec] text-[#ff5757]',
-            ),
+            className: cn(baseBackloggdToastClasses, 'bg-white/95 text-error'),
           },
         }}
       >
         {(t) => (
-          <ToastBar
-            style={{
-              ...t.style,
-            }}
-            toast={t}
-          >
+          <ToastBar style={t.style} toast={t}>
             {({ message }) => (
               <>
                 {resolveValue(message, t)}

@@ -24,6 +24,7 @@ const createUi = async (
     position: 'inline', // NOTE: Adds inline styles to the container depending on the value.
     onMount: (container) => {
       // NOTE: Use container inline style by using `container.style`.
+      container.dataset.theme = 'business'; // Set theme because :root selector misses the Shadow DOM.
 
       const root = createRoot(container);
       root.render(<App username={options.username} />);

@@ -1,4 +1,4 @@
-import { MouseEvent, ReactNode, SyntheticEvent } from 'react';
+import { MouseEvent, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Button from '@globalShared/components/Button';
@@ -31,6 +31,9 @@ const Dialog = ({
   const { t } = useTranslation(undefined, { keyPrefix: 'common.dialog' });
   const dialogRef = useRef<HTMLDialogElement>(null);
 
+  const submitLabel = submitText ?? t('submit');
+  const closeLabel = closeText ?? t('close');
+
   useEffect(() => {
     if (!dialogRef.current) return;
 
@@ -41,21 +44,22 @@ const Dialog = ({
     }
   }, [isOpen]);
 
-  const handleClose = (_e: SyntheticEvent<HTMLDialogElement>) => {
-    onClose();
-  };
-
   const handleSubmit = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     onConfirm();
   };
 
   return (
-    <dialog ref={dialogRef} className="modal" onClose={handleClose}>
+    <dialog
+      ref={dialogRef}
+      aria-label={title}
+      className="modal"
+      onClose={onClose}
+    >
       <div
         className={cn(
           'modal-box w-[calc(100vw-2rem)] max-w-[36rem] rounded-lg p-0',
-          'border border-[var(--back-secondary,#242832)] bg-[var(--back-primary,#16181c)] shadow-2xl',
+          'border-section bg-background border shadow-2xl',
         )}
       >
         {/* Main content area */}
@@ -65,17 +69,17 @@ const Dialog = ({
         </section>
 
         {/* Footer section for actions */}
-        <footer className="modal-action m-0 bg-[var(--back-secondary,#242832)] px-4 py-2">
+        <footer className="modal-action bg-section m-0 px-4 py-2">
           <form method="dialog">
             <div className="flex gap-4">
               <Button disabled={isDisabled} variant="secondary">
-                {closeText ?? t('close')}
+                {closeLabel}
               </Button>
               <Button
                 disabled={isDisabled || isSubmitDisabled}
                 onClick={handleSubmit}
               >
-                {submitText ?? t('submit')}
+                {submitLabel}
               </Button>
             </div>
           </form>
@@ -84,7 +88,7 @@ const Dialog = ({
 
       {/* Form used to natively close the dialog through backdrop click */}
       <form className="modal-backdrop" method="dialog">
-        <button className="cursor-auto" />
+        <button aria-label={closeLabel} className="cursor-auto" tabIndex={-1} />
       </form>
     </dialog>
   );

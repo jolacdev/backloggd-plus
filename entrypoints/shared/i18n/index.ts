@@ -18,7 +18,6 @@ const getInitialLanguage = () => {
 };
 
 i18n.use(initReactI18next).init({
-  // defaultNS: 'common', // A `common` namespace could be defined if needed.
   fallbackLng: FALLBACK_LANGUAGE,
   lng: getInitialLanguage(),
   interpolation: {

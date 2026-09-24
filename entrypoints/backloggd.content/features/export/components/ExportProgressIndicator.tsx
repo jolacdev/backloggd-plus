@@ -1,7 +1,5 @@
 import { useTranslation } from 'react-i18next';
 
-import Typography from '@globalShared/components/Typography';
-
 import { ExportProgress } from '../types';
 
 type ExportProgressIndicatorProps = {
@@ -17,15 +15,27 @@ const ExportProgressIndicator = ({
   });
 
   const isAnalyzing = phase === 'analyzing';
+  const message = isAnalyzing
+    ? t('analyzingCollection')
+    : t('exportingGames', { current, total });
 
   return (
-    <div className="mt-4 flex items-center gap-4">
-      <span className="loading loading-spinner loading-sm" />
-      <Typography variant="subtitle">
-        {isAnalyzing
-          ? t('analyzingLibrary')
-          : t('exportingGames', { current, total })}
-      </Typography>
+    <div
+      className="border-border bg-field mt-5 rounded-md border p-3"
+      role="status"
+    >
+      <div className="text-content flex items-center gap-3 text-sm">
+        <span className="loading loading-spinner loading-sm text-primary" />
+        {message}
+      </div>
+      {!isAnalyzing && total > 0 && (
+        <progress
+          aria-label={message}
+          className="progress text-primary mt-3 h-1.5 w-full"
+          max={total}
+          value={current}
+        />
+      )}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 /* eslint-disable perfectionist/sort-objects */
-import { StatusFiltersState } from '@globalShared/hooks/useStatusFilters';
+import { StatusFiltersState } from '@globalShared/hooks/useExportStatusFilters';
 
 import { ExportPhase, ExportProgress } from '../types';
 import useGameDetails from './useGameDetails';
@@ -32,9 +32,9 @@ const resolvePhase = ({
 };
 
 const useExport = ({ username }: UseExportProps) => {
-  const [isExportEnabled, setIsExportEnabled] = useState(false);
   const [selectedStatuses, setSelectedStatuses] =
-    useState<StatusFiltersState>(); // Default `undefined` to rely on the truthiness of the object to check if the filters have been set.
+    useState<StatusFiltersState>(); // An unset selection means the export has not started.
+  const isExportEnabled = !!selectedStatuses;
 
   // Stages 1 and 2: resolve the full list of games to export.
   const profilePagesData = useProfileGames({
@@ -65,21 +65,19 @@ const useExport = ({ username }: UseExportProps) => {
   };
 
   const fetchData = (selectedFilters: StatusFiltersState) => {
-    // Prevent fetching if username has no value.
-    if (!username) return;
+    // An export needs both a user and at least one selected status.
+    if (!username || !Object.values(selectedFilters).some(Boolean)) return;
 
     gameDetailsData.reset(); // Reset sequential index at the start of a new fetch.
 
     if (!isExportEnabled) {
       setSelectedStatuses(selectedFilters);
-      setIsExportEnabled(true);
     }
   };
 
   return {
     fetchData,
     gameDetails: gameDetailsData.details,
-    isExportEnabled,
     isComplete: phase === 'complete',
     isError: phase === 'error',
     progress,
