@@ -62,13 +62,11 @@ pnpm build       # pnpm build:firefox for Firefox
 pnpm zip         # pnpm zip:firefox for Firefox
 ```
 
-Run `pnpm test` for the test suite and `pnpm lint` to type-check and lint.
+Run `pnpm test` for the test suite and `pnpm lint:no-fix` to type-check and lint without rewriting files (`pnpm lint` applies fixes).
 
 ## Architecture
 
-The core feature lives in the **content script**, which is documented in depth (data flow, WXT specifics, import boundaries, and the API layer) in its dedicated README:
-
-📖 **[Content Script Documentation →](entrypoints/backloggd.content/README.md)**
+The [architecture guide](docs/ARCHITECTURE.md) explains entrypoint boundaries and shared state. See the [content script](entrypoints/backloggd.content/README.md) and [popup](entrypoints/popup/README.md) READMEs for their behavior, and [code style](docs/CODE_STYLE.md) for conventions.
 
 ## Roadmap / TODO
 
