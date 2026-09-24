@@ -55,7 +55,7 @@ const FeatureTabs = ({ 'aria-label': ariaLabel, tabs }: FeatureTabsProps) => {
       {/* Tabs Navigation */}
       <div
         aria-label={ariaLabel}
-        className="border-popup-border mb-2 flex gap-1 overflow-x-auto border-b"
+        className="border-border mb-2 flex gap-1 overflow-x-auto border-b"
         role="tablist"
       >
         {tabs.map(({ id, icon, label }, index) => (
@@ -71,7 +71,7 @@ const FeatureTabs = ({ 'aria-label': ariaLabel, tabs }: FeatureTabsProps) => {
               'outline-offset-[-3px]',
               id === activeTabId
                 ? 'border-brand text-brand'
-                : 'text-popup-muted hover:text-popup-text border-transparent',
+                : 'text-content/75 hover:text-content border-transparent',
             )}
             id={`${id}-tab`}
             role="tab"

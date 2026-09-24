@@ -78,8 +78,8 @@ const Tooltip = ({
         aria-label={ariaLabel}
         className={cn(
           'inline-grid size-6 cursor-pointer place-items-center rounded',
-          'text-popup-muted hover:bg-popup-border hover:text-popup-text',
-          'focus-visible:bg-popup-border focus-visible:text-popup-text',
+          'text-content/75 hover:bg-border hover:text-content',
+          'focus-visible:bg-border focus-visible:text-content',
         )}
         type="button"
         // Support keyboard interaction
@@ -95,7 +95,7 @@ const Tooltip = ({
         <span
           className={cn(
             'absolute bottom-[calc(100%+8px)] z-10 w-max max-w-[min(16.5rem,calc(100vw-16px))] rounded-md p-2',
-            'text-popup-text border border-[#515c6e] bg-[#272c37] shadow-[0_6px_18px_#0006]',
+            'text-content border border-[#515c6e] bg-[#272c37] shadow-[0_6px_18px_#0006]',
             // Tooltip arrow.
             'before:absolute before:-bottom-[5px] before:size-2 before:rotate-45',
             "before:border-r before:border-b before:border-[#515c6e] before:bg-inherit before:content-['']",
