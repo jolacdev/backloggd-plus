@@ -1,4 +1,4 @@
-# Backloggd Plus — Content Script (`backloggd.content`)
+# Toolkittd — Content Script (`backloggd.content`)
 
 > A WXT content script that adds React UI to [Backloggd](https://backloggd.com). Its current feature exports a signed-in user's game collection as **CSV and JSON**.
 
@@ -57,7 +57,7 @@ The UI is injected via WXT's `createShadowRootUi()` helper, which creates a [Sha
 **Why Shadow DOM?**
 
 - **Style Encapsulation** — Backloggd's CSS cannot leak into the extension UI, and the extension's Tailwind/DaisyUI classes cannot break the host page.
-- **DOM Isolation** — The injected component tree lives inside a shadow root (`<backloggd-plus-ui>` custom element), keeping it invisible to Backloggd's own JavaScript and DOM queries.
+- **DOM Isolation** — The injected component tree lives inside a shadow root (`<toolkittd-ui>` custom element), keeping it invisible to Backloggd's own JavaScript and DOM queries.
 - **CSS Strategy** — `style.css` is imported as a raw string (`?inline`) and passed into the Shadow Root. DaisyUI is configured with `root: ':host'` to scope its theme variables to the shadow boundary instead of `:root`.
 
 ### Turbo-Aware Navigation Monitoring

@@ -1,6 +1,6 @@
 {
-  "name": "backloggd-plus",
-  "description": "Backloggd+ is a browser extension that enhances the features of Backloggd by allowing the user to export their game log.",
+  "name": "toolkittd",
+  "description": "Toolkittd is a browser extension that enhances Backloggd with extra tools, including game collection export to CSV and JSON.",
   "private": true,
   "version": "1.0.2",
   "type": "module",

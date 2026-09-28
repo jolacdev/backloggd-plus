@@ -9,7 +9,7 @@ import { getLoggedInUsername } from './shared/utils/user';
 
 import css from './style.css?inline'; // NOTE: Imports CSS file as a string.
 
-const INJECTED_ROOT_ELEMENT = 'backloggd-plus-ui';
+const INJECTED_ROOT_ELEMENT = 'toolkittd-ui';
 const SETTINGS_DATA_PATHNAME = '/settings/data/';
 
 const createUi = async (

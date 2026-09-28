@@ -1,4 +1,4 @@
-# Backloggd Plus — Popup (`popup`)
+# Toolkittd — Popup (`popup`)
 
 > A WXT popup for the extension's features and preferences. Its current feature configures game-collection export defaults and opens Backloggd's Data settings page.
 

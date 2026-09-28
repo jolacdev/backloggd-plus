@@ -1,10 +1,10 @@
 <div align="center">
 
-<img src="public/icon/128.png" alt="Backloggd Plus logo" width="128" height="128" />
+<img src="public/icon/128.png" alt="Toolkittd logo" width="128" height="128" />
 
-# Backloggd Plus
+# Toolkittd
 
-**Own your game collection: export your Backloggd data as CSV & JSON.**
+**Extra tools to enhance your Backloggd experience.**
 
 ![Version](https://img.shields.io/badge/Version-1.0.2-brightgreen)
 ![License](https://img.shields.io/badge/License-GPL%20v3-blue)
@@ -17,11 +17,11 @@
 
 ## Overview
 
-**Backloggd Plus** is a browser extension that enhances [Backloggd](https://backloggd.com) with features the platform doesn't offer natively.
+**Toolkittd** is a browser extension that enhances [Backloggd](https://backloggd.com) with features the platform doesn't offer natively.
 
-It injects a React-powered UI directly into the Backloggd website, visually matching the site's own styling, so authenticated users can **export their game collection** (including ratings, play status, playthroughs, etc.) as downloadable **CSV and JSON** files. The JSON contains the full data; the CSV is more limited and contains only the first playthrough of each game.
+Its current feature lets authenticated users **export their game collection** (including ratings, play status, playthroughs, etc.) as downloadable **CSV and JSON** files. The JSON contains the full data; the CSV is more limited and contains only the first playthrough of each game.
 
-The extension pulls your games from your profile, enriches each entry with log data from Backloggd's internal APIs, and hands you files you can use to back up, migrate, or analyze your game collection.
+The export feature pulls your games from your profile, enriches each entry with log data from Backloggd's internal APIs, and hands you files you can use to back up, migrate, or analyze your game collection.
 
 > [!WARNING]
 > The export feature relies on **internal, undocumented Backloggd endpoints** that may change without notice. Their behavior is inferred, so issues like rate-limit errors or other unexpected behavior may occur.
@@ -62,13 +62,14 @@ pnpm build       # pnpm build:firefox for Firefox
 pnpm zip         # pnpm zip:firefox for Firefox
 ```
 
-Run `pnpm test` for the test suite and `pnpm lint` to type-check and lint.
+Run `pnpm test` for the test suite and `pnpm lint:no-fix` to type-check and lint without rewriting files (`pnpm lint` applies fixes).
 
 ## Architecture
 
-The core feature lives in the **content script**, which is documented in depth (data flow, WXT specifics, import boundaries, and the API layer) in its dedicated README:
+The **content script** enhances Backloggd pages, while the **popup** provides feature preferences. Their dedicated READMEs cover implementation details:
 
-📖 **[Content Script Documentation →](entrypoints/backloggd.content/README.md)**
+- 📖 **[Content Script Documentation →](entrypoints/backloggd.content/README.md)** — data flow, WXT specifics, import boundaries, and the API layer.
+- 📖 **[Popup Documentation →](entrypoints/popup/README.md)** — feature navigation, saved preferences, and UI behavior.
 
 ## Roadmap / TODO
 

@@ -8,9 +8,16 @@ const App = () => {
   const { t } = useTranslation();
   return (
     <div className="bg-background p-3">
-      <header className="text-content mb-2 text-lg leading-6 font-semibold">
-        <h1>
-          Backloggd<span className="text-primary">+</span>
+      <header className="text-content mb-3 flex items-center gap-3 px-2 py-1">
+        <img
+          alt=""
+          className="size-7 shrink-0"
+          height={28}
+          src="/icon/96.png"
+          width={28}
+        />
+        <h1 className="text-lg leading-6 font-semibold tracking-tight">
+          Toolkittd
         </h1>
       </header>
 
