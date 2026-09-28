@@ -94,8 +94,9 @@ const Tooltip = ({
       {isOpen && (
         <span
           className={cn(
-            'absolute bottom-[calc(100%+8px)] z-10 w-max max-w-[min(16.5rem,calc(100vw-16px))] rounded-md p-2',
-            'text-content bg-border border-content/30 border shadow-lg',
+            'absolute bottom-[calc(100%+8px)] z-10 w-max',
+            'max-w-[min(16.5rem,calc(100vw-16px))] rounded-md border p-2',
+            'text-content bg-border border-content/30 shadow-lg',
             // Tooltip arrow.
             'before:absolute before:-bottom-[5px] before:size-2 before:rotate-45',
             "before:border-content/30 before:border-r before:border-b before:bg-inherit before:content-['']",

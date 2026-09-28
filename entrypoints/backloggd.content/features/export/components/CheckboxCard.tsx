@@ -11,7 +11,10 @@ const CheckboxCard = ({ checked, children, onChange }: CheckboxCardProps) => (
       'hover:border-content/50 focus-within:outline-content',
       checked ? 'border-content/35 bg-secondary/35' : 'border-border bg-field',
     )}
-    checkboxClassName="size-5 border-border bg-field text-white hover:border-content/40 checked:border-content/60 checked:bg-secondary checked:text-white"
+    checkboxClassName={cn(
+      'size-5 border-border bg-field text-white',
+      'hover:border-content/40 checked:border-content/60 checked:bg-secondary checked:text-white',
+    )}
     checked={checked}
     onChange={onChange}
   >

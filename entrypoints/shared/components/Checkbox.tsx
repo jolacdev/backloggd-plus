@@ -17,9 +17,7 @@ const Checkbox = ({ checked, className, onChange, ...rest }: CheckboxProps) => (
     {...rest}
     checked={checked} // NOTE: Using 'checked' instead of 'defaultChecked' to be a controlled component.
     className={cn(
-      'checkbox shadow-none',
-      'rounded border',
-      'disabled:opacity-40',
+      'checkbox rounded border shadow-none disabled:opacity-40',
       className,
     )}
     type="checkbox"

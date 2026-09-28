@@ -57,16 +57,20 @@ export default defineContentScript({
       // Avoid duplicate injections or missing anchor.
       if (injectedRootElement || !dataManagementSubtitleRow) return;
 
-      const ui = await createUi(ctx, {
-        anchor: dataManagementSubtitleRow,
-        username,
-      });
+      try {
+        const ui = await createUi(ctx, {
+          anchor: dataManagementSubtitleRow,
+          username,
+        });
 
-      ui.mount();
+        ui.mount();
+      } catch (error) {
+        console.error('Failed to inject Toolkittd UI:', error);
+      }
     };
 
     // Initial injection
-    inject();
+    void inject();
 
     // NOTE: Backloggd uses Turbo, so we listen to 'turbo:load' to detect when a new page is loaded.
     const handlePageChange = () => {
@@ -77,7 +81,7 @@ export default defineContentScript({
       }
 
       // If Turbo re-renders, the DOM elements are replaced even if the URL is identical, therefore, we proceed to re-inject.
-      inject();
+      void inject();
     };
 
     document.addEventListener('turbo:load', handlePageChange);

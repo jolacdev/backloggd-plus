@@ -11,7 +11,6 @@
 - [WXT Content Script Specifics](#wxt-content-script-specifics)
 - [Technical Stack](#technical-stack)
 - [Development Standards](#development-standards)
-- [State Management](#state-management)
 - [API Layer](#api-layer)
 
 ---
@@ -57,7 +56,7 @@ The UI is injected via WXT's `createShadowRootUi()` helper, which creates a [Sha
 **Why Shadow DOM?**
 
 - **Style Encapsulation** — Backloggd's CSS cannot leak into the extension UI, and the extension's Tailwind/DaisyUI classes cannot break the host page.
-- **DOM Isolation** — The injected component tree lives inside a shadow root (`<toolkittd-ui>` custom element), keeping it invisible to Backloggd's own JavaScript and DOM queries.
+- **DOM Isolation** — The `<toolkittd-ui>` shadow root isolates the component tree from Backloggd's normal page DOM queries. Page JavaScript can still access it explicitly through `shadowRoot`.
 - **CSS Strategy** — `style.css` is imported as a raw string (`?inline`) and passed into the Shadow Root. DaisyUI is configured with `root: ':host'` to scope its theme variables to the shadow boundary instead of `:root`.
 
 ### Turbo-Aware Navigation Monitoring
