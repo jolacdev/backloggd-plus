@@ -73,6 +73,7 @@ The **content script** enhances Backloggd pages, while the **popup** provides fe
 
 ## Roadmap / TODO
 
+- Add **HowLongToBeat (HLTB)** integration to Backloggd game pages to display estimated completion times.
 - Add export support for Backloggd 1.18's **Library** section (`/u/{username}/library/`), including its platform-grouped library entries. This is separate from the classic games-log export fixed for 1.18.
 
 ## License
