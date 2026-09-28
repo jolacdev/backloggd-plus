@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/icon/128.png" alt="Toolkittd logo" width="128" height="128" />
+<img src="assets/branding/toolkittd.svg" alt="Toolkittd logo" width="128" height="128" />
 
 # Toolkittd
 
