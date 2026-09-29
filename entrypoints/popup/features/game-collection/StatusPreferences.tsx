@@ -12,6 +12,7 @@ import CheckboxCard from './CheckboxCard';
 type StatusPreferencesProps = {
   filters: StatusFiltersState;
   isDisabled: boolean;
+  isLoaded: boolean;
   onChange: (key: StatusKey) => void;
 };
 
@@ -20,6 +21,7 @@ const StatusPreferences = ({
   filters,
   onChange,
   isDisabled,
+  isLoaded,
 }: StatusPreferencesProps) => {
   const { t } = useTranslation('popup', {
     keyPrefix: 'gameCollection.preferences',
@@ -41,19 +43,21 @@ const StatusPreferences = ({
       <Typography className="text-content/75" variant="caption">
         {t('description')}
       </Typography>
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        {(Object.entries(filters) as [StatusKey, boolean][]).map(
-          ([key, isChecked]) => (
-            <CheckboxCard
-              key={key}
-              checked={isChecked}
-              onChange={() => onChange(key)}
-            >
-              {tShared(key)}
-            </CheckboxCard>
-          ),
-        )}
-      </div>
+      {isLoaded && (
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          {(Object.entries(filters) as [StatusKey, boolean][]).map(
+            ([key, isChecked]) => (
+              <CheckboxCard
+                key={key}
+                checked={isChecked}
+                onChange={() => onChange(key)}
+              >
+                {tShared(key)}
+              </CheckboxCard>
+            ),
+          )}
+        </div>
+      )}
     </fieldset>
   );
 };

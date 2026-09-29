@@ -65,6 +65,7 @@ const GameCollection = () => {
         <StatusPreferences
           filters={preferences.filters}
           isDisabled={!preferences.hasLoaded || isNavigating}
+          isLoaded={preferences.hasLoaded}
           onChange={preferences.toggle}
         />
         <Typography

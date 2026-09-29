@@ -199,7 +199,7 @@ describe('popup game collection', () => {
     render(<App />);
     await screen.findByText('gameCollection.loadError');
     expect(action()).toBeDisabled();
-    expect(checkbox('backlog')).toBeDisabled();
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
     read.mockRestore();
     await userEvent.click(
       screen.getByRole('button', { name: 'gameCollection.retry' }),
