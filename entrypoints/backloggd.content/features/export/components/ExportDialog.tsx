@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 import Dialog from '@content/shared/components/Dialog/Dialog';
 import Icon from '@globalShared/components/Icon';
 import Typography from '@globalShared/components/Typography';
-import { useExportStatusFilters } from '@globalShared/hooks/useExportStatusFilters';
 import { cn } from '@globalShared/utils/cn';
 
 import useExport from '../hooks/useExport';
+import { useExportStatusFilters } from '../hooks/useExportStatusFilters';
 import { downloadGameDetailsCSV, parseToGameDetailsCSV } from '../utils/csv';
 import { getFilename } from '../utils/filename';
 import { downloadGameDetailsJSON, parseToGameDetailsJSON } from '../utils/json';

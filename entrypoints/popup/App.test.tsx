@@ -2,14 +2,12 @@ import {
   act,
   fireEvent,
   render,
-  renderHook,
   screen,
   waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StrictMode } from 'react';
 
-import { useExportStatusFilters } from '@globalShared/hooks/useExportStatusFilters';
 import { filtersStorageItem } from '@globalShared/storage';
 
 import App from './App';
@@ -86,20 +84,13 @@ describe('popup game collection', () => {
     },
   );
 
-  it('preserves saved selections across popup reopening and dialog-local edits', async () => {
+  it('preserves saved selections across popup reopening', async () => {
     const view = await renderPopup();
     await userEvent.click(checkbox('wishlist'));
     await screen.findByText('gameCollection.save.saved');
     view.unmount();
     await renderPopup();
     expect(checkbox('wishlist')).toBeChecked();
-    const dialog = renderHook(() => useExportStatusFilters());
-    await waitFor(() =>
-      expect(dialog.result.current.hasLoadedStatuses).toBe(true),
-    );
-    expect(dialog.result.current.filters.wishlist).toBe(true);
-    act(() => dialog.result.current.toggleStatusFilter('wishlist'));
-    expect(dialog.result.current.filters.wishlist).toBe(false);
     expect(await filtersStorageItem.getValue()).toEqual({
       ...defaults,
       wishlist: true,

@@ -1,8 +1,8 @@
-import { filtersStorageItem } from '@globalShared/storage';
-
-export type StatusKey = 'backlog' | 'played' | 'playing' | 'wishlist';
-
-export type StatusFiltersState = Record<StatusKey, boolean>;
+import {
+  filtersStorageItem,
+  StatusFiltersState,
+  StatusKey,
+} from '@globalShared/storage';
 
 /** Loads saved defaults into a local selection for one export. */
 export const useExportStatusFilters = () => {

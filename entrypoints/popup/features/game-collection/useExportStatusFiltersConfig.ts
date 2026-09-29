@@ -1,8 +1,8 @@
 import {
+  filtersStorageItem,
   StatusFiltersState,
   StatusKey,
-} from '@globalShared/hooks/useExportStatusFilters';
-import { filtersStorageItem } from '@globalShared/storage';
+} from '@globalShared/storage';
 
 type SaveState = 'error' | 'idle' | 'saved' | 'saving';
 

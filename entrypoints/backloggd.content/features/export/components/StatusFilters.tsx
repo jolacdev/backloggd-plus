@@ -1,10 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import Typography from '@globalShared/components/Typography';
-import {
-  StatusFiltersState,
-  StatusKey,
-} from '@globalShared/hooks/useExportStatusFilters';
+import { StatusFiltersState, StatusKey } from '@globalShared/storage';
 
 import CheckboxCard from './CheckboxCard';
 

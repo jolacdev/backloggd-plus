@@ -1,4 +1,4 @@
-import { StatusFiltersState } from '@globalShared/hooks/useExportStatusFilters';
+import { StatusFiltersState } from '@globalShared/storage';
 
 export const queryKeys = {
   gameLogDetails: (gameId: string) => ['gameLogDetails', gameId] as const,

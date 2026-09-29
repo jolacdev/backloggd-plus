@@ -1,5 +1,5 @@
 /* eslint-disable perfectionist/sort-objects */
-import { StatusFiltersState } from '@globalShared/hooks/useExportStatusFilters';
+import { StatusFiltersState } from '@globalShared/storage';
 
 import { ExportPhase, ExportProgress } from '../types';
 import useGameDetails from './useGameDetails';

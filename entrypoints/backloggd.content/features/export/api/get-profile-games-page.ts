@@ -2,10 +2,7 @@ import { queryOptions, UseQueryOptions } from '@tanstack/react-query';
 
 import { api } from '@content/lib/axios';
 import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
-import {
-  StatusFiltersState,
-  StatusKey,
-} from '@globalShared/hooks/useExportStatusFilters';
+import { StatusFiltersState, StatusKey } from '@globalShared/storage';
 
 import { queryKeys } from './keys';
 
