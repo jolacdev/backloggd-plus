@@ -9,13 +9,15 @@ export type IconName = keyof typeof icons;
 
 type IconProps = {
   name: IconName;
+  className?: string;
   size?: number;
 };
 
 /** Renders a named SVG icon at the requested size. */
-const Icon = ({ name, size = 20 }: IconProps) => (
+const Icon = ({ className = undefined, name, size = 20 }: IconProps) => (
   <svg
     aria-hidden="true"
+    className={className}
     fill="currentColor"
     focusable="false"
     height={size}

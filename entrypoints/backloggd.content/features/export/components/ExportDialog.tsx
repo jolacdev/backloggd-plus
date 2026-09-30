@@ -108,9 +108,7 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
           'border-border bg-field border',
         )}
       >
-        <span className="text-content">
-          <Icon name="download" size={20} />
-        </span>
+        <Icon className="text-content" name="download" size={20} />
         <span className="min-w-0 flex-1 text-sm font-medium">
           {t('filesDescription')}
         </span>
