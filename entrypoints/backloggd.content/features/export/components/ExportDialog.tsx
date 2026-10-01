@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 import Dialog from '@content/shared/components/Dialog/Dialog';
 import Icon from '@globalShared/components/Icon';
 import Typography from '@globalShared/components/Typography';
+import { useStatusFilters } from '@globalShared/hooks/useStatusFilters';
 import { cn } from '@globalShared/utils/cn';
 
 import useExport from '../hooks/useExport';
-import { useExportStatusFilters } from '../hooks/useExportStatusFilters';
 import { downloadGameDetailsCSV, parseToGameDetailsCSV } from '../utils/csv';
 import { getFilename } from '../utils/filename';
 import { downloadGameDetailsJSON, parseToGameDetailsJSON } from '../utils/json';
@@ -31,8 +31,8 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
   const {
     filters: selectedStatuses,
     toggleStatusFilter,
-    hasLoadedStatuses,
-  } = useExportStatusFilters();
+    hasLoaded,
+  } = useStatusFilters();
   const { fetchData, gameDetails, progress, isComplete, isError } = useExport({
     username, // NOTE: username truthiness is checked inside useExport
   });
@@ -86,7 +86,7 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
     fetchData(selectedStatuses);
   };
 
-  if (!hasLoadedStatuses) return;
+  if (!hasLoaded) return;
 
   return (
     <Dialog

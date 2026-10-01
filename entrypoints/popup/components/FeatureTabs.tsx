@@ -92,7 +92,7 @@ const FeatureTabs = ({ 'aria-label': ariaLabel, tabs }: FeatureTabsProps) => {
       </div>
 
       {/* Tabs Content */}
-      {/* Keep hidden panels mounted so switching cannot discard edits or pending saves. */}
+      {/* Keep hidden panels mounted so switching preserves edits. */}
       {tabs.map(({ id, content }) => (
         <div
           key={id}

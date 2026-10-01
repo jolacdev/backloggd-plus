@@ -7,6 +7,7 @@
 - Prefer `const`; use `let` when reassignment is clearer.
 - Extract only for reuse or clearer responsibility.
 - Avoid speculative abstractions unless explicitly requested.
+- Add defensive state, retries, or guards only when the probability of failure justifies the complexity.
 - Avoid unnecessary `useCallback`/`useMemo`.
 - Add one-line `/** ... */` intent comments to components and named hooks with unclear names.
 - Use WXT and React hook auto-imports.

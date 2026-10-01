@@ -8,7 +8,7 @@
 
 1. **Feature navigation** — `App.tsx` lists implemented features in `FeatureTabs`; only one panel is visible at a time.
 2. **Saved defaults** — `features/game-collection/` loads and updates play-status defaults in `local:statusFilters` storage.
-3. **Open export page** — The popup waits for pending saves before opening `/settings/data/` in a new tab. Failed loads or saves show feedback; successful saves show brief confirmation.
+3. **Open export page** — The popup opens `/settings/data/` in a new tab.
 
 ## Architecture
 
@@ -27,7 +27,7 @@
 
 ### Navigation & Lifecycle
 
-`index.tsx` mounts `<App />` with the popup translation namespace. `FeatureTabs` supports arrow keys, Home, and End; inactive panels stay mounted so switching features preserves edits and pending saves. Add tabs only for implemented features.
+`index.tsx` mounts `<App />` with the popup translation namespace. `FeatureTabs` supports arrow keys, Home, and End; inactive panels stay mounted so switching features preserves edits. Add tabs only for implemented features.
 
 ### Styling & Help
 
