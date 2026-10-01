@@ -12,9 +12,10 @@ export const useExportStatusFiltersConfig = () => {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [hasLoadError, setHasLoadError] = useState(false);
   const [saveState, setSaveState] = useState<SaveState>('idle');
-  const [loadAttempt, setLoadAttempt] = useState(0);
-  const latest = useRef<StatusFiltersState>(filtersStorageItem.fallback);
-  const lastSaved = useRef<StatusFiltersState>(filtersStorageItem.fallback);
+  const latestFilters = useRef<StatusFiltersState>(filtersStorageItem.fallback);
+  const lastSavedFilters = useRef<StatusFiltersState>(
+    filtersStorageItem.fallback,
+  );
   const pendingWrite = useRef<null | Promise<boolean>>(null);
 
   // Restart after every edit, including fast writes React batches together.
@@ -32,8 +33,8 @@ export const useExportStatusFiltersConfig = () => {
       .getValue()
       .then((storedFilters) => {
         if (!isActive) return;
-        latest.current = storedFilters;
-        lastSaved.current = storedFilters;
+        latestFilters.current = storedFilters;
+        lastSavedFilters.current = storedFilters;
         setFilters(storedFilters);
         setHasLoaded(true);
       })
@@ -43,23 +44,26 @@ export const useExportStatusFiltersConfig = () => {
     return () => {
       isActive = false;
     };
-  }, [loadAttempt]);
+  }, []);
 
   /** Saves queued changes and lets navigation wait for the latest selection. */
-  const flush = (): Promise<boolean> => {
+  const savePendingPreferences = (): Promise<boolean> => {
     if (pendingWrite.current) return pendingWrite.current;
     if (!hasLoaded) return Promise.resolve(false);
-    if (lastSaved.current === latest.current) return Promise.resolve(true);
+    if (lastSavedFilters.current === latestFilters.current) {
+      if (saveState === 'error') setSaveState('idle');
+      return Promise.resolve(true);
+    }
 
     setSaveState('saving');
     // Serialize writes, coalescing edits made while storage is busy. Navigation
     // awaits this same promise, including every newer selection in the queue.
     pendingWrite.current = Promise.resolve().then(async () => {
       try {
-        while (lastSaved.current !== latest.current) {
-          const writing = latest.current;
+        while (lastSavedFilters.current !== latestFilters.current) {
+          const writing = latestFilters.current;
           await filtersStorageItem.setValue(writing);
-          lastSaved.current = writing;
+          lastSavedFilters.current = writing;
         }
         setSaveState('saved');
         return true;
@@ -74,25 +78,23 @@ export const useExportStatusFiltersConfig = () => {
   };
 
   /** Changes one default immediately, then starts a serialized save. */
-  const toggle = (key: StatusKey) => {
+  const toggleStatusFilter = (key: StatusKey) => {
     if (!hasLoaded) return;
-    latest.current = { ...latest.current, [key]: !latest.current[key] };
-    setFilters(latest.current);
-    void flush();
-  };
 
-  /** Retries loading defaults after a storage read fails. */
-  const retryLoad = () => {
-    setHasLoadError(false);
-    setLoadAttempt((attempt) => attempt + 1);
+    const updatedFilters = {
+      ...latestFilters.current,
+      [key]: !latestFilters.current[key],
+    };
+    latestFilters.current = updatedFilters;
+    setFilters(updatedFilters);
+    void savePendingPreferences();
   };
 
   return {
     filters,
-    flush,
-    retryLoad,
+    savePendingPreferences,
     saveState,
-    toggle,
+    toggleStatusFilter,
     hasLoaded,
     hasLoadError,
   };

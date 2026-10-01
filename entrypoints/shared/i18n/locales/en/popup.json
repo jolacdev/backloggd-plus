@@ -9,13 +9,12 @@
     "instructionsAfter": "to choose your options and download.",
     "navigationError": "Couldn't open the export page. Try “Go to export page” again.",
     "loading": "Loading preferences...",
-    "loadError": "Couldn't load your preferences.",
-    "retry": "Retry",
+    "loadError": "Couldn't load preferences. Reopen the popup to try again.",
     "save": {
       "idle": "Changes save automatically",
       "saving": "Saving...",
       "saved": "Preferences saved",
-      "error": "Couldn't save your changes. Your selections are still here."
+      "error": "Couldn't save preferences."
     },
     "preferences": {
       "title": "Default export statuses",

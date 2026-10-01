@@ -7,6 +7,16 @@ import FeatureSection from '@popup/components/FeatureSection';
 import StatusPreferences from './StatusPreferences';
 import { useExportStatusFiltersConfig } from './useExportStatusFiltersConfig';
 
+const getPreferenceStatusKey = ({
+  saveState,
+  hasLoaded,
+  hasLoadError,
+}: ReturnType<typeof useExportStatusFiltersConfig>) => {
+  if (hasLoadError) return 'loadError';
+  if (!hasLoaded) return 'loading';
+  return `save.${saveState}`;
+};
+
 /** Presents game collection export navigation and saved defaults. */
 const GameCollection = () => {
   const { t } = useTranslation('popup', { keyPrefix: 'gameCollection' });
@@ -15,13 +25,15 @@ const GameCollection = () => {
   const [hasNavigationError, setHasNavigationError] = useState(false);
   const isOpening = useRef(false);
 
+  const preferenceStatusKey = getPreferenceStatusKey(preferences);
+
   const navigate = async () => {
     if (isOpening.current) return;
     isOpening.current = true;
     setIsNavigating(true);
     setHasNavigationError(false);
     try {
-      if (!(await preferences.flush())) return;
+      if (!(await preferences.savePendingPreferences())) return;
       await browser.tabs.create({
         active: true,
         url: 'https://backloggd.com/settings/data/',
@@ -66,41 +78,18 @@ const GameCollection = () => {
           filters={preferences.filters}
           isDisabled={!preferences.hasLoaded || isNavigating}
           isLoaded={preferences.hasLoaded}
-          onChange={preferences.toggle}
+          onChange={preferences.toggleStatusFilter}
         />
         <Typography
-          as="div"
-          className="mt-2 flex min-h-[18px] items-baseline gap-2"
+          className={
+            preferences.hasLoadError || preferences.saveState === 'error'
+              ? 'text-error mt-2 min-h-[18px]'
+              : 'text-content/75 mt-2 min-h-[18px]'
+          }
           role="status"
           variant="caption"
         >
-          <span
-            className={
-              preferences.hasLoadError || preferences.saveState === 'error'
-                ? 'text-error'
-                : 'text-content/75'
-            }
-          >
-            {t(
-              preferences.hasLoadError
-                ? 'loadError'
-                : !preferences.hasLoaded
-                  ? 'loading'
-                  : `save.${preferences.saveState}`,
-            )}
-          </span>
-          {(preferences.hasLoadError || preferences.saveState === 'error') && (
-            <button
-              className="text-error shrink-0 cursor-pointer underline underline-offset-3"
-              type="button"
-              onClick={() => {
-                if (preferences.hasLoadError) void preferences.retryLoad();
-                else void preferences.flush();
-              }}
-            >
-              {t('retry')}
-            </button>
-          )}
+          {t(preferenceStatusKey)}
         </Typography>
       </div>
     </FeatureSection>

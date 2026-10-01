@@ -156,7 +156,7 @@ describe('popup game collection', () => {
     expect(window.close).toHaveBeenCalledOnce();
   });
 
-  it('retains failed selections, blocks navigation, and retries the latest values', async () => {
+  it('retains failed selections and retries the save before navigation', async () => {
     const pending = deferred();
     const write = vi
       .spyOn(filtersStorageItem, 'setValue')
@@ -170,10 +170,8 @@ describe('popup game collection', () => {
     expect(checkbox('wishlist')).toBeChecked();
     expect(createTab).not.toHaveBeenCalled();
     expect(window.close).not.toHaveBeenCalled();
-    await userEvent.click(
-      screen.getByRole('button', { name: 'gameCollection.retry' }),
-    );
-    await screen.findByText('gameCollection.save.saved');
+    await userEvent.click(action());
+    await waitFor(() => expect(createTab).toHaveBeenCalledOnce());
     expect(write).toHaveBeenLastCalledWith({ ...defaults, wishlist: true });
     expect(await filtersStorageItem.getValue()).toEqual({
       ...defaults,
@@ -181,21 +179,19 @@ describe('popup game collection', () => {
     });
   });
 
-  it('offers a retry for failed initial reads without overwriting saved preferences', async () => {
+  it('reports failed initial reads without overwriting saved preferences', async () => {
     await filtersStorageItem.setValue({ ...defaults, played: false });
     const read = vi
       .spyOn(filtersStorageItem, 'getValue')
       .mockRejectedValue(new Error('Read failed'));
     const write = vi.spyOn(filtersStorageItem, 'setValue');
-    render(<App />);
+    const view = render(<App />);
     await screen.findByText('gameCollection.loadError');
     expect(action()).toBeDisabled();
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
     read.mockRestore();
-    await userEvent.click(
-      screen.getByRole('button', { name: 'gameCollection.retry' }),
-    );
-    await waitFor(() => expect(action()).toBeEnabled());
+    view.unmount();
+    await renderPopup();
     expect(checkbox('played')).not.toBeChecked();
     expect(write).not.toHaveBeenCalled();
   });
