@@ -9,7 +9,7 @@ import { getLoggedInUsername } from './shared/utils/user';
 
 import css from './style.css?inline'; // NOTE: Imports CSS file as a string.
 
-const INJECTED_ROOT_ELEMENT = 'backloggd-plus-ui';
+const INJECTED_ROOT_ELEMENT = 'toolkittd-ui';
 const SETTINGS_DATA_PATHNAME = '/settings/data/';
 
 const createUi = async (
@@ -24,6 +24,7 @@ const createUi = async (
     position: 'inline', // NOTE: Adds inline styles to the container depending on the value.
     onMount: (container) => {
       // NOTE: Use container inline style by using `container.style`.
+      container.dataset.theme = 'business'; // Set theme because :root selector misses the Shadow DOM.
 
       const root = createRoot(container);
       root.render(<App username={options.username} />);
@@ -56,16 +57,20 @@ export default defineContentScript({
       // Avoid duplicate injections or missing anchor.
       if (injectedRootElement || !dataManagementSubtitleRow) return;
 
-      const ui = await createUi(ctx, {
-        anchor: dataManagementSubtitleRow,
-        username,
-      });
+      try {
+        const ui = await createUi(ctx, {
+          anchor: dataManagementSubtitleRow,
+          username,
+        });
 
-      ui.mount();
+        ui.mount();
+      } catch (error) {
+        console.error('Failed to inject Toolkittd UI:', error);
+      }
     };
 
     // Initial injection
-    inject();
+    void inject();
 
     // NOTE: Backloggd uses Turbo, so we listen to 'turbo:load' to detect when a new page is loaded.
     const handlePageChange = () => {
@@ -76,7 +81,7 @@ export default defineContentScript({
       }
 
       // If Turbo re-renders, the DOM elements are replaced even if the URL is identical, therefore, we proceed to re-inject.
-      inject();
+      void inject();
     };
 
     document.addEventListener('turbo:load', handlePageChange);

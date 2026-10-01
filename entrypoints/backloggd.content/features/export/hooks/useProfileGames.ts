@@ -2,7 +2,7 @@
 import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query';
 
 import { ProfileGamesPageScrapeResponse } from '@content/shared/types/api';
-import { StatusFiltersState } from '@globalShared/hooks/useStatusFilters';
+import { StatusFiltersState } from '@globalShared/storage';
 
 import { createProfileGamesPageQueryOptions } from '../api/get-profile-games-page';
 import {

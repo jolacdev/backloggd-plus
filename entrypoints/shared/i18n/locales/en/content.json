@@ -2,23 +2,26 @@
   "features": {
     "export": {
       "settingsAction": {
-        "title": "Export games",
+        "title": "Export game collection",
         "description": "Export your game collection.",
         "button": "Export"
       },
       "dialog": {
-        "title": "Export your logged games",
-        "description": "Download a CSV/JSON file containing your logged game details.",
+        "title": "Export your game collection",
+        "description": "Choose which game statuses to include.",
+        "filesDescription": "Your game collection in two files",
+        "selectionNote": "These choices apply to this export only.",
+        "cancel": "Cancel",
         "submit": "Export",
         "progress": {
-          "analyzingLibrary": "Analyzing library...",
+          "analyzingCollection": "Preparing your game collection...",
           "exportingGames": "Exporting... {{current}} / {{total}}"
         }
       },
       "toast": {
         "dataExported": "Your game collection has been successfully exported.",
         "exportFailed": "Something went wrong while exporting your game collection.",
-        "noGamesFound": "No logged games found to export."
+        "noGamesFound": "No games matched the selected statuses."
       }
     }
   },

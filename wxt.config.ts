@@ -6,6 +6,7 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   manifest: {
+    name: 'Toolkittd',
     permissions: ['storage'],
     browser_specific_settings: {
       // `data_collection_permissions` is required by Firefox but not yet in WXT's manifest types.
@@ -16,6 +17,8 @@ export default defineConfig({
         },
       },
     },
+    description:
+      'Enhance Backloggd with extra tools, including game collection export to CSV and JSON.',
   },
   vite: () => ({
     plugins: [tailwindcss(), tsconfigPaths()],

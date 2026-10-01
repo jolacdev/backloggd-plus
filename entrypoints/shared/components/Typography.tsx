@@ -5,6 +5,9 @@ import { cn } from '@globalShared/utils/cn';
 const DEFAULT_VARIANT_MAPPING = {
   body1: 'p',
   body2: 'p',
+  bodyCompact: 'p',
+  bodySmall: 'p',
+  caption: 'p',
   h1: 'h1',
   h2: 'h2',
   h3: 'h3',
@@ -12,6 +15,7 @@ const DEFAULT_VARIANT_MAPPING = {
   h5: 'h5',
   h6: 'h6',
   label: 'label',
+  labelSmall: 'label',
   subtitle: 'p',
 } as const satisfies Record<string, ElementType>;
 
@@ -20,17 +24,20 @@ type TypographyVariant = keyof typeof DEFAULT_VARIANT_MAPPING;
 type VariantTagMap = typeof DEFAULT_VARIANT_MAPPING;
 
 const VARIANT_CLASSES: Record<keyof typeof DEFAULT_VARIANT_MAPPING, string> = {
-  body1: 'mb-0 text-[1rem] leading-[1.5] font-[200] text-[#fff]',
-  body2: 'mb-0 text-[1rem] leading-[1.5] font-[400] text-[#fff]',
-  h1: 'mb-[1rem] text-[4.5rem] leading-[1.2] font-[500] text-[var(--back-text,#badefc)]',
-  h2: 'mb-[0.5rem] text-[2rem] leading-[1.2] font-[500] text-[var(--back-text,#badefc)]',
-  h3: 'mb-[0.25rem] text-[1.75rem] leading-[1.2] font-[500] text-[var(--back-text,#badefc)]',
-  h4: 'mb-[0.25rem] text-[1.5rem] leading-[1.2] font-[500] text-[var(--back-text,#badefc)]',
-  h5: 'mb-[0.25rem] text-[1.25rem] leading-[1.2] font-[500] text-[var(--back-text,#badefc)]',
-  h6: 'mb-[0.25rem] text-[1rem] leading-[1.2] font-[500] text-[var(--back-text,#badefc)]',
-  label: 'mb-0 text-[1rem] leading-[1.5] font-[200] text-[#fff]',
-  subtitle:
-    'mb-0 text-[1rem] font-[300] leading-[1.5] text-[var(--back-text-secondary,#8f9ca7)]',
+  body1: 'mb-0 text-base leading-normal font-extralight text-white',
+  body2: 'mb-0 text-base leading-normal font-normal text-white',
+  bodyCompact: 'mb-0 text-sm leading-5 font-normal text-content/70',
+  bodySmall: 'mb-0 text-[13px] leading-5 font-normal',
+  caption: 'mb-0 text-xs leading-[18px] font-normal',
+  h1: 'mb-4 text-[4.5rem] leading-[1.2] font-medium text-content',
+  h2: 'mb-2 text-[2rem] leading-[1.2] font-medium text-content',
+  h3: 'mb-1 text-[1.75rem] leading-[1.2] font-medium text-content',
+  h4: 'mb-1 text-2xl leading-[1.2] font-medium text-content',
+  h5: 'mb-1 text-xl leading-[1.2] font-medium text-content',
+  h6: 'mb-1 text-base leading-[1.2] font-medium text-content',
+  label: 'mb-0 text-base leading-normal font-extralight text-white',
+  labelSmall: 'mb-0 text-[13px] leading-6 font-semibold',
+  subtitle: 'mb-0 text-base leading-normal font-light text-content/70',
 };
 
 type TypographyOwnProps<
@@ -57,7 +64,7 @@ export type TypographyProps<
   >;
 
 /**
- * Versatile, polymorphic text component following Backloggd style.
+ * Versatile, polymorphic text component providing Backloggd and shared extension text styles.
  * @param variant - The visual style of the component. Also determines the HTML tag if `as` is not provided.
  * @param as - The HTML tag to render. Takes precedence over `variant`'s default HTML tag.
  * @param className - Additional CSS classes to apply.

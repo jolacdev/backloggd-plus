@@ -2,21 +2,25 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 import Dialog from '@content/shared/components/Dialog/Dialog';
-import StatusFilters from '@globalShared/components/StatusFilters';
+import Icon from '@globalShared/components/Icon';
 import Typography from '@globalShared/components/Typography';
 import { useStatusFilters } from '@globalShared/hooks/useStatusFilters';
+import { cn } from '@globalShared/utils/cn';
 
 import useExport from '../hooks/useExport';
 import { downloadGameDetailsCSV, parseToGameDetailsCSV } from '../utils/csv';
 import { getFilename } from '../utils/filename';
 import { downloadGameDetailsJSON, parseToGameDetailsJSON } from '../utils/json';
 import ExportProgressIndicator from './ExportProgressIndicator';
+import StatusFilters from './StatusFilters';
+import Tag from './Tag';
 
 type ExportDialogProps = {
   username: string;
   onClose: () => void;
 };
 
+/** Collects per-export statuses and starts the game collection export. */
 const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
   const { t } = useTranslation(undefined, {
     keyPrefix: 'features.export.dialog',
@@ -27,16 +31,15 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
   const {
     filters: selectedStatuses,
     toggleStatusFilter,
-    hasLoadedStatuses,
-  } = useStatusFilters({
-    canEditStorage: false,
-  });
+    hasLoaded,
+  } = useStatusFilters();
   const { fetchData, gameDetails, progress, isComplete, isError } = useExport({
     username, // NOTE: username truthiness is checked inside useExport
   });
 
   const isDialogDisabled =
     progress.phase === 'analyzing' || progress.phase === 'exporting';
+  const hasSelectedStatus = Object.values(selectedStatuses).some(Boolean);
 
   useEffect(() => {
     if (!isExportTriggered.current || (!isComplete && !isError)) return;
@@ -78,30 +81,48 @@ const ExportDialog = ({ onClose, username }: ExportDialogProps) => {
   }, [isComplete, isError, gameDetails, t, onClose, username]);
 
   const handleExport = () => {
+    if (!hasSelectedStatus) return;
     isExportTriggered.current = true;
     fetchData(selectedStatuses);
   };
 
-  if (!hasLoadedStatuses) return;
+  if (!hasLoaded) return;
 
   return (
     <Dialog
+      closeText={t('cancel')}
       isDisabled={isDialogDisabled}
       isOpen={true} // NOTE: Dialog visibility is managed by the parent so it can be unmounted to reset internal state.
+      isSubmitDisabled={!hasSelectedStatus}
       submitText={t('submit')}
       title={t('title')}
       onClose={onClose}
       onConfirm={handleExport}
     >
-      <Typography className="mb-4" variant="body2">
+      <Typography className="text-content/70 mb-4" variant="body2">
         {t('description')}
       </Typography>
+      <div
+        className={cn(
+          'mb-5 flex flex-wrap items-center gap-3 rounded-md px-3 py-3',
+          'border-border bg-field border',
+        )}
+      >
+        <Icon className="text-content" name="download" size={20} />
+        <span className="min-w-0 flex-1 text-sm font-medium">
+          {t('filesDescription')}
+        </span>
+        <Tag>CSV</Tag>
+        <Tag>JSON</Tag>
+      </div>
       <StatusFilters
-        direction="row"
         filters={selectedStatuses}
         isDisabled={isDialogDisabled}
         onChange={toggleStatusFilter}
       />
+      <Typography className="mt-3" variant="bodyCompact">
+        {t('selectionNote')}
+      </Typography>
       {isDialogDisabled && <ExportProgressIndicator progress={progress} />}
     </Dialog>
   );
