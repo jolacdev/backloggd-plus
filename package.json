@@ -26,8 +26,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "check:packages": "jiti scripts/check-packages.ts",
-    "check:firefox-sources": "jiti scripts/check-firefox-sources.ts"
+    "check:packages": "jiti scripts/workflows/ci/check-packages.ts",
+    "check:firefox-sources": "jiti scripts/workflows/ci/check-firefox-sources.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "5.90.16",

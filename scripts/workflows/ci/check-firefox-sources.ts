@@ -12,7 +12,7 @@ import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, relative, resolve } from 'node:path';
 
-import { name, version } from '../package.json'; // Values used in the sources ZIP filename.
+import { name, version } from '../../../package.json'; // Values used in the sources ZIP filename.
 
 const sourcesZipPath = resolve(`.output/${name}-${version}-sources.zip`); // Get the existing sources ZIP path.
 const tempSourcesDirectory = mkdtempSync(join(tmpdir(), 'toolkittd-sources-')); // Create a temporary directory to extract the sources ZIP into.

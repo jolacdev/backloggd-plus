@@ -75,7 +75,7 @@ jobs:
       ref: ${{ needs.prepare.outputs.sha }} # [Custom Key] Build the tag's commit, even if master has advanced.
       release_tag: ${{ needs.prepare.outputs.release_tag }} # [Custom Key] CI checks the version against this tag and rebuilds the Firefox sources ZIP.
 
-  prepare_github_draft: # [Custom Key] After release CI passes, attach verified ZIPs and leave the draft ready for manual publication.
+  prepare_github_release_draft: # [Custom Key] After release CI passes, attach verified ZIPs and leave the draft ready for manual publication.
     name: Prepare GitHub release draft
     needs: [prepare, package] # Start only if prepare and every job in the called CI workflow pass.
     runs-on: ubuntu-24.04
@@ -93,6 +93,9 @@ jobs:
         with:
           ref: ${{ needs.prepare.outputs.sha }} # Use the same project commit that CI checked.
           persist-credentials: false
+      - uses: actions/setup-node@v7.0.0 # Run draft preparation directly without installing dependencies.
+        with:
+          node-version-file: .node-version
 
       - uses: actions/download-artifact@v8.0.1 # Transfer the ZIPs from CI's runners to this job's runner.
         with:
@@ -105,26 +108,4 @@ jobs:
           RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }} # [Custom Key] Select the GitHub Release to update.
           RELEASE_COMMIT: ${{ needs.prepare.outputs.sha }} # [Custom Key] Commit CI built, which may differ from this workflow's triggering commit.
           GH_TOKEN: ${{ github.token }} # Authenticate GitHub CLI (gh) to upload files and update the draft.
-        run: |
-          # Reruns may replace draft assets, but must keep already published downloads unchanged.
-          is_draft=$(gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft')
-          if [ "$is_draft" = false ]; then
-            echo "$RELEASE_TAG is already published; its assets will not be changed."
-            exit 0
-          fi
-
-          test "$is_draft" = true # Allow asset replacement only while the release is a draft.
-          # Require both browser ZIPs and the Firefox source ZIP before marking the draft ready.
-          asset_prefix=$(jq -r '.name + "-" + .version' package.json)
-          for suffix in chrome.zip firefox.zip sources.zip; do
-            test -f "release-assets/$asset_prefix-$suffix"
-          done
-
-          gh release upload "$RELEASE_TAG" release-assets/*.zip --clobber # Upload CI's ZIPs, replacing draft assets with the same names.
-          gh release edit "$RELEASE_TAG" --title "Toolkittd $RELEASE_TAG" # Set its title while keeping the release as a draft.
-
-          # Record the exact build/run after ZIP uploads succeed; publish.yml verifies this run finished successfully.
-          jq -n --arg release_tag "$RELEASE_TAG" --arg commit_sha "$RELEASE_COMMIT" --argjson run_id "$GITHUB_RUN_ID" \
-            '{release_tag: $release_tag, commit_sha: $commit_sha, run_id: $run_id}' > release-assets/release-ready.json
-          gh release upload "$RELEASE_TAG" release-assets/release-ready.json --clobber
-          echo "Draft $RELEASE_TAG is ready. Review its ZIPs in GitHub Releases, then select Publish release." >> "$GITHUB_STEP_SUMMARY"
+        run: node scripts/workflows/release/prepare-github-release-draft.ts # Attach verified ZIPs, set the title, and record readiness without publishing.

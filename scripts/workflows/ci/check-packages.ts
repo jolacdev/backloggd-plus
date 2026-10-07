@@ -8,7 +8,7 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 
-import { name, version } from '../package.json'; // Values used in the package ZIP filename.
+import { name, version } from '../../../package.json'; // Values used in the package ZIP filename.
 
 type PackageManifest = {
   manifest_version: number;
