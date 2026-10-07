@@ -4,6 +4,7 @@
 
 - Follow existing TypeScript, React, WXT, and Tailwind patterns.
 - Prefer clear names, short functions, and early returns.
+- Use `type` aliases instead of interfaces.
 - Prefer `const`; use `let` when reassignment is clearer.
 - Extract only for reuse or clearer responsibility.
 - Avoid speculative abstractions unless explicitly requested.

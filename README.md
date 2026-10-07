@@ -6,7 +6,7 @@
 
 **Extra tools to enhance your Backloggd experience.**
 
-![Version](https://img.shields.io/badge/Version-1.1.0-brightgreen)
+![Version](https://img.shields.io/github/v/release/jolacdev/backloggd-plus)
 ![License](https://img.shields.io/badge/License-GPL%20v3-blue)
 ![Framework WXT](https://img.shields.io/badge/Framework-WXT-67217A)
 ![React 19](https://img.shields.io/badge/React-19-149ECA)
@@ -46,11 +46,11 @@ The export feature pulls your games from your profile, enriches each entry with 
 
 ## Getting Started
 
-This project uses **pnpm** as its package manager.
+Use the **Node** version in `.node-version` and the **pnpm** version in `package.json#packageManager`.
 
 ```bash
 # Install dependencies
-pnpm install
+pnpm install --frozen-lockfile
 
 # Start the dev server
 pnpm dev         # pnpm dev:firefox for Firefox
@@ -64,6 +64,8 @@ pnpm zip         # pnpm zip:firefox for Firefox
 
 Run `pnpm test` for the test suite and `pnpm lint:no-fix` to type-check and lint without rewriting files (`pnpm lint` applies fixes).
 
+Firefox reviewer build instructions are in [Firefox reviewer instructions](docs/FIREFOX_REVIEWER_INSTRUCTIONS.md).
+
 ## Architecture
 
 The **content script** enhances Backloggd pages, while the **popup** provides feature preferences. Their dedicated READMEs cover implementation details:
@@ -71,10 +73,9 @@ The **content script** enhances Backloggd pages, while the **popup** provides fe
 - 📖 **[Content Script Documentation →](entrypoints/backloggd.content/README.md)** — data flow, WXT specifics, import boundaries, and the API layer.
 - 📖 **[Popup Documentation →](entrypoints/popup/README.md)** — feature navigation, saved preferences, and UI behavior.
 
-## Roadmap / TODO
+## Planned improvements
 
-- Add **HowLongToBeat (HLTB)** integration to Backloggd game pages to display estimated completion times.
-- Add export support for Backloggd 1.18's **Library** section (`/u/{username}/library/`), including its platform-grouped library entries. This is separate from the classic games-log export fixed for 1.18.
+See [ROADMAP.md](ROADMAP.md) for planned features and future automation improvements.
 
 ## License
 
