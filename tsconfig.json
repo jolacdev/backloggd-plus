@@ -38,7 +38,7 @@
     "entrypoints", // NOTE: WXT uses `entrypoints/` for extension entry points (background, content, etc) instead of `src/`.
     "eslint.config.ts",
     "eslint.constants.ts",
-    ".prettierrc.mjs",
+    ".prettierrc.ts",
     "wxt.config.ts",
     "vitest.config.ts",
     "vitest.setup.ts",

@@ -5,21 +5,30 @@ import { defineConfig } from 'wxt';
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
-  manifest: {
+  // Include hidden build configuration for AMO rebuilds; exclude downloaded release assets.
+  zip: {
+    excludeSources: ['release-assets/**'], // Exclude release packages downloaded by GitHub workflows.
+    includeSources: ['.node-version', '.gitignore', '.prettierrc.ts'], // Include hidden files needed to reproduce the build.
+  },
+  manifest: ({ browser }) => ({
     name: 'Toolkittd',
     permissions: ['storage'],
-    browser_specific_settings: {
-      // `data_collection_permissions` is required by Firefox but not yet in WXT's manifest types.
-      gecko: {
-        id: 'backloggd-plus@jolacdev',
-        data_collection_permissions: {
-          required: ['none'],
+    // Conditioanlly include Firefox-specific manifest based on the browser being built.
+    ...(browser === 'firefox' && {
+      browser_specific_settings: {
+        gecko: {
+          // Firefox ID should be preserved for existing listings.
+          id: 'backloggd-plus@jolacdev',
+          // `data_collection_permissions` is required by Firefox but not yet in WXT's manifest types.
+          data_collection_permissions: {
+            required: ['none'],
+          },
         },
       },
-    },
+    }),
     description:
       'Enhance Backloggd with extra tools, including game collection export to CSV and JSON.',
-  },
+  }),
   vite: () => ({
     plugins: [tailwindcss(), tsconfigPaths()],
     // Manual mode resolution for build and runtime is not needed as it is handled by by vite-tsconfig-paths.

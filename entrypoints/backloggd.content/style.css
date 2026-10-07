@@ -1,5 +1,17 @@
 @import 'tailwindcss';
 
+/* Prevent examples and tooling from adding unused utilities to the generated CSS. */
+/* Exclude tests and type declarations. */
+@source not '../../**/*.{test,spec}.*';
+@source not '../../**/{__tests__,__mocks__,tests}/**';
+@source not '../../**/*.d.{ts,mts,cts}';
+/* Exclude documentation, tooling, and repository configuration. */
+@source not '../../**/*.{md,mdx}';
+@source not '../../{scripts,skills,.github,.vscode}/**';
+@source not '../../*.config.{js,mjs,cjs,ts,mts,cts}';
+@source not '../../{eslint.constants.ts,vitest.setup.ts,.prettierrc.ts}';
+@source not '../../*.{json,yaml,yml}';
+
 /*
   NOTE: Shadow DOM Compatibility: By setting `root: ':host'`, it forces DaisyUI to define 
   its CSS variables to the `:host` (`where(:host)`) selector.

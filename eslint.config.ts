@@ -54,7 +54,7 @@ export default [
 
   // TYPESCRIPT: Specific rules for TypeScript files in separate object to prevent parser conflicts with JS files.
   {
-    ignores: ['*.{js,mjs,jsx}'], // Ignore JavaScript files.
+    ignores: ['**/*.{js,mjs,jsx}'], // Ignore JavaScript files.
     // PARSER: TypeScript & JSX support using the nearest tsconfig.json.
     // More details: https://eslint.org/docs/latest/use/configure/parser
     languageOptions: {

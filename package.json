@@ -4,16 +4,20 @@
   "private": true,
   "version": "1.1.0",
   "type": "module",
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": ">=24.21.0 <25"
+  },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
-    "build": "tsc && wxt build",
-    "build:firefox": "tsc && wxt build -b firefox",
-    "zip": "wxt zip",
-    "zip:firefox": "wxt zip -b firefox",
+    "build": "tsc && wxt build --mv3",
+    "build:firefox": "tsc && wxt build -b firefox --mv2",
+    "zip": "wxt zip --mv3",
+    "zip:firefox": "wxt zip -b firefox --mv2",
     "compile": "tsc --noEmit",
-    "postinstall": "wxt prepare && pnpm sync:skills",
+    "postinstall": "wxt prepare",
     "sync:skills": "jiti scripts/sync-skills.ts",
     "tscheck": "tsc --noEmit",
     "lint": "pnpm tscheck && eslint --fix",
@@ -21,7 +25,9 @@
     "lint:no-fix": "pnpm tscheck && eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "check:packages": "jiti scripts/check-packages.ts",
+    "check:firefox-sources": "jiti scripts/check-firefox-sources.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "5.90.16",
