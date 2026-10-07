@@ -11,6 +11,12 @@ const config: Config = {
   singleQuote: true,
   tabWidth: 2,
   trailingComma: 'all',
+  overrides: [
+    {
+      files: 'scripts/**/*.ts',
+      options: { printWidth: 120 }, // Keep script commands and assertions together.
+    },
+  ],
 };
 
 export default config;

@@ -30,25 +30,16 @@ if (releaseTag) {
 }
 
 // Reject unknown browsers.
-assert.ok(
-  browser === 'all' || browser in expectedManifestVersions,
-  'Unknown browser',
-);
+assert.ok(browser === 'all' || browser in expectedManifestVersions, 'Unknown browser');
 
 // Per-browser versioning and Firefox ID checks.
-for (const [browserName, manifestVersion] of Object.entries(
-  expectedManifestVersions,
-)) {
+for (const [browserName, manifestVersion] of Object.entries(expectedManifestVersions)) {
   const shouldCheck = browser === 'all' || browser === browserName;
   if (!shouldCheck) continue;
 
   // Read manifest.json without extracting the ZIP to disk (`p`).
   const packageZipPath = `.output/${name}-${version}-${browserName}.zip`;
-  const manifestJson = execFileSync(
-    'unzip',
-    ['-p', packageZipPath, 'manifest.json'],
-    { encoding: 'utf8' },
-  );
+  const manifestJson = execFileSync('unzip', ['-p', packageZipPath, 'manifest.json'], { encoding: 'utf8' });
   const manifest: PackageManifest = JSON.parse(manifestJson);
 
   // Require both manifest version and package version to match the expected values.
@@ -57,9 +48,6 @@ for (const [browserName, manifestVersion] of Object.entries(
 
   // Preserve the extension ID used by the existing Firefox listing.
   if (browserName === 'firefox') {
-    assert.equal(
-      manifest.browser_specific_settings?.gecko.id,
-      'backloggd-plus@jolacdev',
-    );
+    assert.equal(manifest.browser_specific_settings?.gecko.id, 'backloggd-plus@jolacdev');
   }
 }

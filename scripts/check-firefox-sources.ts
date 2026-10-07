@@ -22,10 +22,7 @@ const tempSourcesDirectory = mkdtempSync(join(tmpdir(), 'toolkittd-sources-')); 
  * @example getSortedRelativeFilePaths(".output/firefox-mv2") // ['assets/popup.css', 'assets/popup.js', ..., 'manifest.json']
  */
 const getSortedRelativeFilePaths = (directory: string) =>
-  readdirSync(directory, {
-    recursive: true,
-    withFileTypes: true,
-  })
+  readdirSync(directory, { recursive: true, withFileTypes: true })
     .filter((entry) => entry.isFile())
     .map((entry) => relative(directory, join(entry.parentPath, entry.name)))
     .sort();
@@ -34,27 +31,15 @@ try {
   execFileSync('unzip', ['-q', sourcesZipPath, '-d', tempSourcesDirectory]); // Extract sources into the temporary directory.
 
   // Check that prerequisite files and Firefox reviewer instructions files are present.
-  for (const filePath of [
-    '.node-version',
-    'pnpm-lock.yaml',
-    'docs/FIREFOX_REVIEWER_INSTRUCTIONS.md',
-  ]) {
-    assert.ok(
-      readFileSync(join(tempSourcesDirectory, filePath)).length, // Require the file to exist and be non-empty.
-      `Missing ${filePath}`,
-    );
+  for (const filePath of ['.node-version', 'pnpm-lock.yaml', 'docs/FIREFOX_REVIEWER_INSTRUCTIONS.md']) {
+    // Require the file to exist and be non-empty.
+    assert.ok(readFileSync(join(tempSourcesDirectory, filePath)).length, `Missing ${filePath}`);
   }
 
-  // Install dependencies from the extracted sources.
-  execFileSync('pnpm', ['install', '--frozen-lockfile'], {
-    cwd: tempSourcesDirectory,
-    stdio: 'inherit', // Show output log.
-  });
-  // Type-check and build Firefox MV2 from the extracted sources.
-  execFileSync('pnpm', ['build:firefox'], {
-    cwd: tempSourcesDirectory,
-    stdio: 'inherit', // Show output log.
-  });
+  // Install dependencies from the extracted sources. Show output log.
+  execFileSync('pnpm', ['install', '--frozen-lockfile'], { cwd: tempSourcesDirectory, stdio: 'inherit' });
+  // Type-check and build Firefox MV2 from the extracted sources. Show output log.
+  execFileSync('pnpm', ['build:firefox'], { cwd: tempSourcesDirectory, stdio: 'inherit' });
 
   // Compare all generated files.
   const buildDirectory = resolve('.output/firefox-mv2'); // Original build produced during packaging.
@@ -74,15 +59,10 @@ try {
     const originalContents = readFileSync(join(buildDirectory, filePath));
     const rebuiltContents = readFileSync(join(rebuiltDirectory, filePath));
 
-    assert.ok(
-      originalContents.equals(rebuiltContents), // Require identical bytes.
-      `Source rebuild changed ${filePath}`,
-    );
+    // Require identical bytes.
+    assert.ok(originalContents.equals(rebuiltContents), `Source rebuild changed ${filePath}`);
   }
 } finally {
   // Always run a cleanup.
-  rmSync(tempSourcesDirectory, {
-    force: true,
-    recursive: true,
-  });
+  rmSync(tempSourcesDirectory, { force: true, recursive: true });
 }
