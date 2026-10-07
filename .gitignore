@@ -23,6 +23,7 @@ lerna-debug.log*
 .output
 .wxt
 web-ext.config.ts
+release-assets/
 
 # Agent Skills Mirrors
 ## Copilot
