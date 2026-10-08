@@ -60,7 +60,7 @@ jobs:
         with:
           token: ${{ steps.app.outputs.token || github.token }} # Use the App token if configured; otherwise use GITHUB_TOKEN.
           target-branch: master # The bot opens its release PR against master.
-          config-file: release-please-config.json # Version/changelog/tag rules.
+          config-file: release-please-config.json # Version/changelog/tag rules; release steps are documented in docs/RELEASING.md.
           manifest-file: .release-please-manifest.json # Version recorded by the last merged bot release PR.
 
   package: # [Custom Key] After the bot's release PR merge creates a tag/draft, call `ci.yml` to validate and build its ZIPs.
@@ -106,6 +106,5 @@ jobs:
       - name: Attach verified packages to the draft
         env:
           RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }} # [Custom Key] Select the GitHub Release to update.
-          RELEASE_COMMIT: ${{ needs.prepare.outputs.sha }} # [Custom Key] Commit CI built, which may differ from this workflow's triggering commit.
           GH_TOKEN: ${{ github.token }} # Authenticate GitHub CLI (gh) to upload files and update the draft.
-        run: node scripts/workflows/release/prepare-github-release-draft.ts # Attach verified ZIPs, set the title, and record readiness without publishing.
+        run: node scripts/workflows/release/prepare-github-release-draft.ts # Attach verified ZIPs and set the title without publishing.

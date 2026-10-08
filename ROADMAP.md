@@ -13,7 +13,7 @@ Planned work; these items are outside the current release automation scope.
 - [ ] Add packaged-extension browser tests for popup preferences, Turbo navigation, and CSV/JSON downloads, with failure reports.
 - [ ] Add `web-ext lint` to check Firefox packages before AMO submission.
 - [ ] Automate Chrome Web Store publishing once its account and first listing are ready; use API v2 and a protected environment.
-- [ ] Add release checksums to verify ZIP integrity; tag, commit, and build run are already recorded in `release-ready.json`.
+- [ ] Add release checksums to verify ZIP integrity.
 - [ ] Add manual recovery of an existing draft release by tag if rerunning jobs in the original release run proves insufficient; rebuild the exact tagged commit.
 - [ ] Normalize ZIP ordering and timestamps if byte-identical archives are needed for recovery or verification.
 - [ ] Detect already uploaded or pending store versions automatically if manual submission recovery becomes frequent; cover that logic with focused tests.

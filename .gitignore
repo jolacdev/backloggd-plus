@@ -25,6 +25,10 @@ lerna-debug.log*
 web-ext.config.ts
 release-assets/
 
+# Publishing credentials
+.env*
+!.env.example
+
 # Agent Skills Mirrors
 ## Copilot
 .github/skills/*

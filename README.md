@@ -64,7 +64,7 @@ pnpm zip         # pnpm zip:firefox for Firefox
 
 Run `pnpm test` for the test suite and `pnpm lint:no-fix` to type-check and lint without rewriting files (`pnpm lint` applies fixes).
 
-Firefox reviewer build instructions are in [Firefox reviewer instructions](docs/FIREFOX_REVIEWER_INSTRUCTIONS.md).
+CI checks PRs and updates to `master` and provides browser packages. See [Development and releases](docs/RELEASING.md) for local development, GitHub releases, and Firefox publishing. Firefox reviewer build instructions are in [Firefox reviewer instructions](docs/FIREFOX_REVIEWER_INSTRUCTIONS.md).
 
 ## Architecture
 
