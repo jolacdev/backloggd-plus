@@ -33,7 +33,10 @@ describe('Dialog', () => {
         </Dialog>,
       );
 
-      expect(screen.getByText(defaultProps.title)).toBeInTheDocument();
+      expect(screen.getByRole('dialog', { hidden: true })).toHaveAttribute(
+        'aria-label',
+        defaultProps.title,
+      );
       expect(screen.getByText(expectedContent)).toBeInTheDocument();
       expect(screen.getByText(defaultKeys.close)).toBeInTheDocument();
       expect(screen.getByText(defaultKeys.submit)).toBeInTheDocument();
@@ -49,6 +52,16 @@ describe('Dialog', () => {
       render(<Dialog {...defaultProps} isDisabled={true} />);
       const submitButton = screen.getByText(defaultKeys.submit);
       expect(submitButton.closest('button')).toHaveProperty('disabled', true);
+    });
+
+    it('can disable submit without disabling close', () => {
+      render(<Dialog {...defaultProps} isSubmitDisabled={true} />);
+      expect(
+        screen.getByText(defaultKeys.submit).closest('button'),
+      ).toBeDisabled();
+      expect(
+        screen.getByText(defaultKeys.close).closest('button'),
+      ).toBeEnabled();
     });
   });
 

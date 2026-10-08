@@ -1,12 +1,12 @@
 <div align="center">
 
-<img src="public/icon/128.png" alt="Backloggd Plus logo" width="128" height="128" />
+<img src="assets/branding/toolkittd.svg" alt="Toolkittd logo" width="128" height="128" />
 
-# Backloggd Plus
+# Toolkittd
 
-**Own your game library: export your Backloggd logs as CSV & JSON.**
+**Extra tools to enhance your Backloggd experience.**
 
-![Version](https://img.shields.io/badge/Version-1.0.2-brightgreen)
+![Version](https://img.shields.io/github/v/release/jolacdev/toolkittd)
 ![License](https://img.shields.io/badge/License-GPL%20v3-blue)
 ![Framework WXT](https://img.shields.io/badge/Framework-WXT-67217A)
 ![React 19](https://img.shields.io/badge/React-19-149ECA)
@@ -17,18 +17,18 @@
 
 ## Overview
 
-**Backloggd Plus** is a browser extension that enhances [Backloggd](https://backloggd.com) with features the platform doesn't offer natively.
+**Toolkittd** is a browser extension that enhances [Backloggd](https://backloggd.com) with features the platform doesn't offer natively.
 
-It injects a React-powered UI directly into the Backloggd website, visually matching the site's own styling, so authenticated users can **export their entire game library** (including ratings, play status, playthroughs, etc.) as downloadable **CSV and JSON** files. The JSON contains the full data; the CSV is more limited and contains only the first playthrough of each game.
+Its current feature lets authenticated users **export their game collection** (including ratings, play status, playthroughs, etc.) as downloadable **CSV and JSON** files. The JSON contains the full data; the CSV is more limited and contains only the first playthrough of each game.
 
-The extension pulls your games from your profile, enriches each entry with log data from Backloggd's internal APIs, and hands you files you can use to back up, migrate, or analyze your library.
+The export feature pulls your games from your profile, enriches each entry with log data from Backloggd's internal APIs, and hands you files you can use to back up, migrate, or analyze your game collection.
 
 > [!WARNING]
 > The export feature relies on **internal, undocumented Backloggd endpoints** that may change without notice. Their behavior is inferred, so issues like rate-limit errors or other unexpected behavior may occur.
 
 ## Key Features
 
-- **📤 Library export:** Export your full game log from **Settings → Data Management**.
+- **📤 Game collection export:** Export your game collection from **Settings → Data Management**.
 - **🎨 Native look & feel:** Injected via Shadow DOM for full style isolation, matching Backloggd's UI without leaking styles either way.
 - **🎯 Status filtering:** Choose which play statuses to include (played, playing, backlog, wishlist). Configure your preferred statuses in the extension popup; your selection is saved and automatically applied to future exports.
 - **🗂️ CSV & JSON output:** Every run produces both formats: a concise and more limited CSV and a complete JSON with all data to analyze or manage however you like.
@@ -46,11 +46,11 @@ The extension pulls your games from your profile, enriches each entry with log d
 
 ## Getting Started
 
-This project uses **pnpm** as its package manager.
+Use the **Node** version in `.node-version` and the **pnpm** version in `package.json#packageManager`.
 
 ```bash
 # Install dependencies
-pnpm install
+pnpm install --frozen-lockfile
 
 # Start the dev server
 pnpm dev         # pnpm dev:firefox for Firefox
@@ -62,17 +62,20 @@ pnpm build       # pnpm build:firefox for Firefox
 pnpm zip         # pnpm zip:firefox for Firefox
 ```
 
-Run `pnpm test` for the test suite and `pnpm lint` to type-check and lint.
+Run `pnpm test` for the test suite and `pnpm lint:no-fix` to type-check and lint without rewriting files (`pnpm lint` applies fixes).
+
+CI checks PRs and updates to `master` and provides browser packages. See [Development and releases](docs/RELEASING.md) for local development, GitHub releases, and Firefox publishing. Firefox reviewer build instructions are in [Firefox reviewer instructions](docs/FIREFOX_REVIEWER_INSTRUCTIONS.md).
 
 ## Architecture
 
-The core feature lives in the **content script**, which is documented in depth (data flow, WXT specifics, import boundaries, and the API layer) in its dedicated README:
+The **content script** enhances Backloggd pages, while the **popup** provides feature preferences. Their dedicated READMEs cover implementation details:
 
-📖 **[Content Script Documentation →](entrypoints/backloggd.content/README.md)**
+- 📖 **[Content Script Documentation →](entrypoints/backloggd.content/README.md)** — data flow, WXT specifics, import boundaries, and the API layer.
+- 📖 **[Popup Documentation →](entrypoints/popup/README.md)** — feature navigation, saved preferences, and UI behavior.
 
-## Roadmap / TODO
+## Planned improvements
 
-- Add export support for Backloggd 1.18's **Library** section (`/u/{username}/library/`), including its platform-grouped library entries. This is separate from the classic games-log export fixed for 1.18.
+See [ROADMAP.md](ROADMAP.md) for planned features and future automation improvements.
 
 ## License
 

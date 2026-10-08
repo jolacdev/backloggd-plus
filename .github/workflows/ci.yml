@@ -1,0 +1,115 @@
+# Validate changes and build browser ZIPs for previews or release attachment.
+# Runs directly on PR/push events, or is called by release.yml for a tagged commit.
+# Quality checks must pass before browser packages are built in parallel.
+name: CI
+
+# Trigger events on:
+on:
+  push: # Pushes to the following branches.
+    branches: [master]
+
+  pull_request: # PRs to the following branches.
+    branches: [master]
+    types: [opened, synchronize, reopened] # Triggers on PR creation, new code commits, and PR re-openings.
+
+  workflow_call: # Workflows that reuse these CI checks to stay aligned. E.g. `release.yml`
+    inputs: # Custom parameters to be supplied by the calling workflow.
+      ref: # [Custom Key] Commit SHA reference for the check out.
+        type: string
+        default: ''
+      release_tag: # [Custom Key] Release tag to validate versions and generated sources.
+        type: string
+        default: ''
+
+# Read access is sufficient for validation and packaging.
+permissions:
+  contents: read
+
+# Ensure that only one workflow per concurrency group/id will run at a time.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ inputs.ref || github.ref }} # Generate the id for the concurrency group.
+  cancel-in-progress: ${{ inputs.release_tag == '' }} # Cancel run if `release_tag` is not provided (i.e. PR/push runs).
+
+# Define jobs that run independently unless using `needs` to link them.
+jobs:
+  quality: # [Custom Key] Job ID for the validations.
+    name: Tests and lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps: # Ordered commands.
+      # Sync Node/pnpm versions so CI matches developer versions.
+      - uses: actions/checkout@v7.0.1 # Check out project files.
+        with:
+          ref: ${{ inputs.ref || github.ref }} # Check the supplied commit; otherwise use the event trigger reference.
+          persist-credentials: false
+      - uses: actions/setup-node@v7.0.0 # Installs Node.js version from `.node-version`.
+        with:
+          node-version-file: .node-version
+      - uses: pnpm/action-setup@v6.1.0 # Install pnpm from package.json#packageManager.
+        with:
+          cache: true # Cache the pnpm store using the lockfile to reduce downloads.
+
+      - name: Validate PR title # Enforce Conventional titles for Release Please.
+        if: github.event_name == 'pull_request' # Run for PR only.
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }} # [Custom Key] Save as variable to pass to the Node script.
+        run: node scripts/workflows/ci/check-pr-title.ts
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check types and lint
+        run: pnpm lint:no-fix
+      - name: Run unit tests
+        run: pnpm test
+
+  package: # [Custom Key] Job ID for building, checking and saving extension ZIPs.
+    name: Package (${{ matrix.browser }}) # Separate name for each browser.
+    needs: quality # Build ZIPs only after all `quality` checks pass.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    strategy: # One job per browser.
+      fail-fast: false # Check both browsers even if one fails.
+
+      # Select the matching package.json script here so packaging needs no shell branching.
+      matrix: # Browser and packaging command for each job.
+        include: # Explicit matrix entries.
+          - browser: chrome # [Custom Key]
+            zip_script: zip # [Custom Key] Generate the Chrome ZIP.
+          - browser: firefox # [Custom Key]
+            zip_script: zip:firefox # [Custom Key] Generate the Firefox ZIP and source.
+
+    steps: # Ordered commands.
+      - uses: actions/checkout@v7.0.1 # Check out project files.
+        with:
+          ref: ${{ inputs.ref || github.ref }} # Build the supplied release commit; otherwise use the event reference.
+          persist-credentials: false
+      - uses: actions/setup-node@v7.0.0 # Installs Node.js version from `.node-version`.
+        with:
+          node-version-file: .node-version
+      - uses: pnpm/action-setup@v6.1.0 # Install pnpm from package.json#packageManager.
+        with:
+          cache: true # Cache the pnpm store using the lockfile to reduce downloads.
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Package browser zip
+        run: pnpm ${{ matrix.zip_script }}
+      - name: Validate package # Check the packaged manifest before making the ZIP available for download.
+        env:
+          TARGET_BROWSER: ${{ matrix.browser }} # [Custom Key] Save as variable to select this browser's manifest rules.
+          RELEASE_TAG: ${{ inputs.release_tag }} # [Custom Key] Save as variable to check tag/version consistency; empty for PR/push runs.
+        run: pnpm check:packages "$TARGET_BROWSER" "$RELEASE_TAG"
+      - name: Rebuild Firefox from submitted sources # Ensure the Firefox ZIP can be rebuilt and matches its source ZIP.
+        if: matrix.browser == 'firefox' && inputs.release_tag != '' # Run only if `release_tag` is supplied; PR/push runs skip this.
+        run: pnpm check:firefox-sources
+
+      - uses: actions/upload-artifact@v7.0.1 # PR ZIPs are available in Actions > Artifacts. In `release.yml`, `prepare_github_release_draft` attaches these ZIPs to the GitHub Release.
+        with:
+          name: packages-${{ github.run_id }}-${{ matrix.browser }}
+          path: .output/*.zip # Search for ZIPs generated by this browser job.
+          include-hidden-files: true # Include ZIPs inside the hidden .output directory.
+          if-no-files-found: error
+          compression-level: 0 # ZIPs are already compressed.
+          overwrite: true
+          retention-days: 1 # Keep Actions artifacts for 1 day.

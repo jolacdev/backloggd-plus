@@ -1,0 +1,110 @@
+# Developer PR: feature/fix changes. Release PR: the bot's proposed version and changelog.
+
+# 1. Merge a developer PR into master: Release Please creates/updates the bot's release PR.
+# 2. Review and merge the bot's release PR into master: Release Please creates its tag and draft release.
+# 3. Call CI on that tagged commit; after checks pass, attach ZIPs and leave the GitHub Release as a draft.
+# 4. A maintainer reviews and publishes the draft; that publication starts publish.yml independently.
+name: Release
+
+on:
+  push: # Both developer PR merges and bot release PR merges trigger this workflow.
+    branches: [master]
+
+  workflow_dispatch: # Run Release Please manually.
+
+# Jobs start with read access; jobs that modify GitHub data request write access below.
+permissions:
+  contents: read
+
+jobs:
+  prepare: # [Custom Key] Run Release Please after either a developer PR or the bot's release PR is merged into master.
+    name: Run Release Please
+    if: github.ref == 'refs/heads/master' # Manual runs must also select master.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    concurrency:
+      group: release-please-master
+      cancel-in-progress: false # Do not cancel this job if it is already in progress.
+
+    permissions:
+      contents: write # Commit version/changelog changes, create tags and draft releases.
+      pull-requests: write # Create/update the bot's release PR.
+      issues: write # Add/remove labels on the bot's release PR; GitHub uses the issues API for PR labels.
+
+    outputs: # Developer PR merge: empty. Bot's release PR merge: tag and commit of the newly created release.
+      release_tag: ${{ steps.release.outputs.tag_name }} # [Custom Key] Tag created by Release Please, e.g. v1.1.0.
+      sha: ${{ steps.release.outputs.sha }} # [Custom Key] Commit tagged by Release Please; CI builds this exact commit.
+
+    steps:
+      # A GitHub App provides a bot identity installed on this repository with specific permissions.
+      # An App token is a temporary credential that lets Release Please act as that bot.
+      - name: Create release bot token # Optional App token lets CI run automatically on the bot's release PR.
+        if: vars.RELEASE_APP_CLIENT_ID != '' # Skip if the App is unconfigured.
+        id: app
+        uses: actions/create-github-app-token@v3.2.0
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }} # App client ID configured in repository variables.
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }} # App private key configured in repository secrets.
+          # Permissions for the App token; the job's permissions above apply to GITHUB_TOKEN.
+          permission-contents: write # Commit version/changelog changes, create tags and draft releases.
+          permission-pull-requests: write # Create/update the bot's release PR.
+          permission-issues: write # Add/remove labels on the bot's release PR.
+
+      # Developer PR merged: propose version/changelog changes in the bot's release PR; no tag or draft yet.
+      # Bot's release PR merged: create its tag/draft and return the tag/commit for the following jobs.
+      # The bot's release PR updates package.json's version, CHANGELOG.md, and the version manifest.
+      - name: Update release PR or create draft release
+        id: release
+        uses: googleapis/release-please-action@v5.0.0
+        with:
+          token: ${{ steps.app.outputs.token || github.token }} # Use the App token if configured; otherwise use GITHUB_TOKEN.
+          target-branch: master # The bot opens its release PR against master.
+          config-file: release-please-config.json # Version/changelog/tag rules; release steps are documented in docs/RELEASING.md.
+          manifest-file: .release-please-manifest.json # Version recorded by the last merged bot release PR.
+
+  package: # [Custom Key] After the bot's release PR merge creates a tag/draft, call `ci.yml` to validate and build its ZIPs.
+    name: Validate and package release
+    needs: prepare # Wait for prepare to supply the tag and its commit.
+    if: needs.prepare.outputs.release_tag != '' # A tag means the bot's release PR was merged; creating/updating that PR leaves this empty.
+    permissions:
+      contents: read
+
+    uses: ./.github/workflows/ci.yml
+    with:
+      ref: ${{ needs.prepare.outputs.sha }} # [Custom Key] Build the tag's commit, even if master has advanced.
+      release_tag: ${{ needs.prepare.outputs.release_tag }} # [Custom Key] CI checks the version against this tag and rebuilds the Firefox sources ZIP.
+
+  prepare_github_release_draft: # [Custom Key] After release CI passes, attach verified ZIPs and leave the draft ready for manual publication.
+    name: Prepare GitHub release draft
+    needs: [prepare, package] # Start only if prepare and every job in the called CI workflow pass.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    concurrency:
+      group: release-assets-${{ needs.prepare.outputs.release_tag }}
+      cancel-in-progress: false # Do not interrupt an asset upload already in progress.
+
+    permissions:
+      contents: write # Upload files and set the draft's title; publication remains manual.
+
+    steps:
+      - uses: actions/checkout@v7.0.1 # Check out project files.
+        with:
+          ref: ${{ needs.prepare.outputs.sha }} # Use the same project commit that CI checked.
+          persist-credentials: false
+      - uses: actions/setup-node@v7.0.0 # Run draft preparation directly without installing dependencies.
+        with:
+          node-version-file: .node-version
+
+      - uses: actions/download-artifact@v8.0.1 # Transfer the ZIPs from CI's runners to this job's runner.
+        with:
+          pattern: packages-${{ github.run_id }}-* # Matches ci.yml's artifact names; called CI shares this Release run's ID.
+          path: release-assets # Create this directory and download the ZIPs into it.
+          merge-multiple: true # Put Chrome, Firefox, and source ZIPs together instead of separate artifact folders.
+
+      - name: Attach verified packages to the draft
+        env:
+          RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }} # [Custom Key] Select the GitHub Release to update.
+          GH_TOKEN: ${{ github.token }} # Authenticate GitHub CLI (gh) to upload files and update the draft.
+        run: node scripts/workflows/release/prepare-github-release-draft.ts # Attach verified ZIPs and set the title without publishing.

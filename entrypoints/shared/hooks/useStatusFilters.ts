@@ -1,54 +1,35 @@
-import { filtersStorageItem } from '@globalShared/storage';
+import {
+  filtersStorageItem,
+  StatusFiltersState,
+  StatusKey,
+} from '@globalShared/storage';
 
-export type StatusKey = 'backlog' | 'played' | 'playing' | 'wishlist';
-
-export type StatusFiltersState = Record<StatusKey, boolean>;
-
-type UseStatusFiltersParams = {
-  canEditStorage?: boolean;
-};
-
-export const useStatusFilters = ({
-  canEditStorage = false,
-}: UseStatusFiltersParams = {}) => {
+/** Loads status defaults and optionally saves changes to them. */
+export const useStatusFilters = ({ canEditStorage = false } = {}) => {
   const [filters, setFilters] = useState<StatusFiltersState>(
     filtersStorageItem.fallback,
   );
   const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const loadStoredFilters = async () => {
-      const storedFilters = await filtersStorageItem.getValue();
-
-      // Only update state if the component is still actively mounted
-      if (isMounted) {
-        if (storedFilters) {
-          setFilters(storedFilters);
-        }
-        setHasLoaded(true);
-      }
-    };
-
-    loadStoredFilters();
-
-    // Cleanup flag when unmounting
-    return () => {
-      isMounted = false;
-    };
+    void filtersStorageItem
+      .getValue()
+      .then(setFilters)
+      .catch(() => {
+        // Keep the fallback when storage is unavailable.
+      })
+      .finally(() => setHasLoaded(true));
   }, []);
 
   const toggleStatusFilter = (key: StatusKey) => {
-    const nextState = { ...filters, [key]: !filters[key] };
-
-    setFilters(nextState);
-
-    // Only save if allowed
+    const nextFilters = { ...filters, [key]: !filters[key] };
+    setFilters(nextFilters);
     if (canEditStorage) {
-      filtersStorageItem.setValue(nextState);
+      void filtersStorageItem.setValue(nextFilters).catch(() => {
+        // TODO: Check - Keep the local selection if storage is unavailable.
+      });
     }
   };
 
-  return { filters, toggleStatusFilter, hasLoadedStatuses: hasLoaded };
+  return { filters, toggleStatusFilter, hasLoaded };
 };

@@ -23,18 +23,14 @@ if (!existsSync(SOURCE_DIR)) {
 }
 
 // 1. Get all skill subdirectories
-const skillNames = readdirSync(SOURCE_DIR).filter((file) =>
-  lstatSync(join(SOURCE_DIR, file)).isDirectory(),
-);
+const skillNames = readdirSync(SOURCE_DIR).filter((file) => lstatSync(join(SOURCE_DIR, file)).isDirectory());
 
 // 2. Copy each skill to all mirror directories
 for (const skillName of skillNames) {
   const skillSourceDir = join(SOURCE_DIR, skillName);
 
   // Skip skill if mandatory SKILL.md does not exist
-  if (!existsSync(join(skillSourceDir, 'SKILL.md'))) {
-    continue;
-  }
+  if (!existsSync(join(skillSourceDir, 'SKILL.md'))) continue;
 
   // 3. Copy skill to each mirror directory
   for (const destinationSkillsDir of MIRROR_ROOTS) {
@@ -46,14 +42,9 @@ for (const skillName of skillNames) {
     }
 
     // Create mirror directory and copy recursively
-    cpSync(skillSourceDir, skillDestinationDir, {
-      force: true,
-      recursive: true,
-    });
+    cpSync(skillSourceDir, skillDestinationDir, { force: true, recursive: true });
 
-    console.log(
-      `[skills] Synced skill "${skillName}" to ${destinationSkillsDir}.`,
-    );
+    console.log(`[skills] Synced skill "${skillName}" to ${destinationSkillsDir}.`);
   }
 }
 

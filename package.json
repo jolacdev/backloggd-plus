@@ -1,19 +1,23 @@
 {
-  "name": "backloggd-plus",
-  "description": "Backloggd+ is a browser extension that enhances the features of Backloggd by allowing the user to export their game log.",
+  "name": "toolkittd",
+  "description": "Toolkittd is a browser extension that enhances Backloggd with extra tools, including game collection export to CSV and JSON.",
   "private": true,
   "version": "1.0.2",
   "type": "module",
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": ">=24.21.0 <25"
+  },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
-    "build": "tsc && wxt build",
-    "build:firefox": "tsc && wxt build -b firefox",
-    "zip": "wxt zip",
-    "zip:firefox": "wxt zip -b firefox",
+    "build": "tsc && wxt build --mv3",
+    "build:firefox": "tsc && wxt build -b firefox --mv2",
+    "zip": "wxt zip --mv3",
+    "zip:firefox": "wxt zip -b firefox --mv2",
     "compile": "tsc --noEmit",
-    "postinstall": "wxt prepare && pnpm sync:skills",
+    "postinstall": "wxt prepare",
     "sync:skills": "jiti scripts/sync-skills.ts",
     "tscheck": "tsc --noEmit",
     "lint": "pnpm tscheck && eslint --fix",
@@ -21,7 +25,9 @@
     "lint:no-fix": "pnpm tscheck && eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "check:packages": "jiti scripts/workflows/ci/check-packages.ts",
+    "check:firefox-sources": "jiti scripts/workflows/ci/check-firefox-sources.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "5.90.16",
@@ -64,6 +70,7 @@
     "jsdom": "27.0.0",
     "prettier": "3.6.2",
     "prettier-plugin-tailwindcss": "0.7.0",
+    "publish-browser-extension": "6.1.1",
     "react-i18next": "16.0.1",
     "tailwind-merge": "3.5.0",
     "tailwindcss": "4.1.14",
