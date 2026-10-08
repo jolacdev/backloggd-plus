@@ -13,5 +13,33 @@
       "description": "Preselected when you open the export dialog. You can change them for each export.",
       "tooltip": "Saved for future exports. Changing a selection here does not start an export."
     }
+  },
+  "hltb": {
+    "title": "HowLongToBeat",
+    "description": "See estimated completion times on any profile’s game collection.",
+    "enable": "Show completion times",
+    "enableHint": "Applies to open collections.",
+    "category": "Time shown on covers",
+    "categoryHint": "Falls back to an available estimate. Open a badge for all times.",
+    "saveHint": "Changes save automatically",
+    "loading": "Loading preferences...",
+    "saveError": "Could not save preferences. Try again.",
+    "cacheTitle": "Saved estimates",
+    "cacheHint": "Estimates stay saved until you clear them. Refresh to check again.",
+    "clearCache": "Refresh saved estimates",
+    "clearing": "Refreshing...",
+    "cacheCleared": "Saved estimates cleared. Open collections will look up nearby games again.",
+    "cacheError": "Could not refresh saved estimates. Try again."
+  },
+  "settings": {
+    "title": "General settings",
+    "back": "Back",
+    "aria": {
+      "open": "Settings",
+      "back": "Back to features"
+    },
+    "logging": "Console logging",
+    "loggingHint": "Show extension diagnostics in the browser console. Off by default.",
+    "saveError": "Could not save this preference. Try again."
   }
 }

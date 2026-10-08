@@ -40,3 +40,7 @@ release-assets/
 .cursor/skills/*
 ## Windsurf
 .windsurf/skills/*
+
+# Playwright test output
+playwright-report/
+test-results/

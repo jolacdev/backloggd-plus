@@ -18,3 +18,10 @@ vi.mock('react-i18next', () => ({
       options?.keyPrefix ? `${options.keyPrefix}.${key}` : key,
   }),
 }));
+
+// Reuse WxtVitest's global fake browser without loading its build-tool barrel
+// through the installed version's virtual browser module in jsdom.
+vi.mock('wxt/browser', async () => {
+  const { fakeBrowser: testBrowser } = await import('wxt/testing/fake-browser');
+  return { browser: testBrowser };
+});

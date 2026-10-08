@@ -21,7 +21,7 @@
 
 _Toolkittd is an independent project and is not affiliated with, endorsed by, or sponsored by Backloggd._
 
-Its current feature lets authenticated users **export their game collection** (including ratings, play status, playthroughs, etc.) as downloadable **CSV and JSON** files. The JSON contains the full data; the CSV is more limited and contains only the first playthrough of each game.
+Authenticated users can **export their game collection** (including ratings, play status, playthroughs, etc.) as downloadable **CSV and JSON** files. The JSON contains the full data; the CSV is more limited and contains only the first playthrough of each game. Toolkittd also shows **HowLongToBeat completion estimates** on profile game collections, with popup preferences and persistent caching.
 
 The export feature pulls your games from your profile, enriches each entry with log data from Backloggd's internal APIs, and hands you files you can use to back up, migrate, or analyze your game collection.
 
@@ -31,6 +31,7 @@ The export feature pulls your games from your profile, enriches each entry with 
 ## Key Features
 
 - **📤 Game collection export:** Export your game collection from **Settings → Data Management**.
+- **⏱️ HowLongToBeat:** Completion-time badges and a full breakdown on profile game collections. Enable badges, choose a preferred category, or refresh saved estimates from the popup. See [implementation and cache behavior](entrypoints/backloggd.content/features/hltb/README.md).
 - **🎨 Native look & feel:** Injected via Shadow DOM for full style isolation, matching Backloggd's UI without leaking styles either way.
 - **🎯 Status filtering:** Choose which play statuses to include (played, playing, backlog, wishlist). Configure your preferred statuses in the extension popup; your selection is saved and automatically applied to future exports.
 - **🗂️ CSV & JSON output:** Every run produces both formats: a concise and more limited CSV and a complete JSON with all data to analyze or manage however you like.
@@ -78,6 +79,10 @@ The **content script** enhances Backloggd pages, while the **popup** provides fe
 ## Planned improvements
 
 See [ROADMAP.md](ROADMAP.md) for planned features and future automation improvements.
+
+- Extend the shared, preference-guarded logger to the rest of the extension's console diagnostics; currently only HLTB errors use it.
+- Extend **HowLongToBeat (HLTB)** support to individual game pages and manual match corrections.
+- Add export support for Backloggd 1.18's **Library** section (`/u/{username}/library/`), including its platform-grouped library entries. This is separate from the classic games-log export fixed for 1.18.
 
 ## License
 

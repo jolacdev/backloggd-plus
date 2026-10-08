@@ -1,6 +1,6 @@
 {
   "name": "toolkittd",
-  "description": "Toolkittd is a browser extension that enhances Backloggd with extra tools, including game collection export to CSV and JSON.",
+  "description": "Toolkittd enhances Backloggd with game collection export and HowLongToBeat completion estimates.",
   "private": true,
   "version": "1.1.0",
   "type": "module",
@@ -24,6 +24,7 @@
     "lint:errors": "pnpm tscheck && eslint --fix --quiet",
     "lint:no-fix": "pnpm tscheck && eslint",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "check:packages": "jiti scripts/workflows/ci/check-packages.ts",
@@ -39,6 +40,8 @@
   },
   "devDependencies": {
     "@eslint/js": "9.37.0",
+    "@hotwired/turbo": "8.0.23",
+    "@playwright/test": "1.63.0",
     "@tailwindcss/vite": "4.1.14",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.0",

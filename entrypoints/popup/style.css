@@ -57,7 +57,7 @@
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   }
 
-  :is(button, input):focus-visible {
+  :is(button, input, select):focus-visible {
     outline: 2px solid var(--color-content);
     outline-offset: 3px;
   }

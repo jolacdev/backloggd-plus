@@ -1,6 +1,6 @@
 # Toolkittd — Content Script (`backloggd.content`)
 
-> A WXT content script that adds React UI to [Backloggd](https://backloggd.com). Its current feature exports a signed-in user's game collection as **CSV and JSON**.
+> A WXT content script that adds game collection exports and HowLongToBeat completion estimates to [Backloggd](https://backloggd.com).
 
 ---
 
@@ -27,6 +27,8 @@ The content script enhances Backloggd pages. Its current feature exports a signe
 
 > **Note:** Backloggd's internal endpoints are undocumented and may change. Response types live in [`shared/types/api.ts`](./shared/types/api.ts).
 
+On `/u/:username/games/` and its filtered/sorted routes, `features/hltb/` adds completion-time badges for nearby game covers. The background handles HLTB requests and persistent caching; content handles title/year matching and isolated UI. Popup settings apply live. See the [HLTB feature guide](./features/hltb/README.md) for matching rules, cache retention, permissions, and validation limits.
+
 ## Architecture
 
 ### Directory Structure
@@ -37,6 +39,7 @@ The content script enhances Backloggd pages. Its current feature exports a signe
 ├── 📜 App.tsx             React Query and toast providers
 ├── 📜 style.css           Styles injected into the shadow root
 ├── 📂 features/export/    Export UI, hooks, API, types, and file utilities
+├── 📂 features/hltb/      Completion badges, matching, card tracking, and cache messaging
 ├── 📂 lib/                Axios, PapaParse, and React Query setup
 └── 📂 shared/             Content-only UI, providers, types, and helpers
 ```
@@ -45,13 +48,13 @@ The content script enhances Backloggd pages. Its current feature exports a signe
 
 ### Entry Point & Lifecycle
 
-WXT discovers this entrypoint through `backloggd.content/index.tsx`. Its `defineContentScript()` declaration matches Backloggd pages; `main()` mounts the UI only on `/settings/data/` when the user is signed in and the Data Management anchor exists. It skips duplicate mounts.
+WXT discovers this entrypoint through `backloggd.content/index.tsx`. Its `defineContentScript()` declaration matches Backloggd pages; `main()` mounts export UI on `/settings/data/` when the user is signed in and the Data Management anchor exists, and mounts the HLTB layer on profile game collection routes. It tracks owned roots and guards against duplicate or stale async mounts.
 
 The script runs in the browser's isolated world: it can inspect the page DOM and use extension APIs, but cannot access Backloggd's page-level JavaScript variables. `index.tsx` mounts `<App />`, which owns the React Query and toast providers.
 
 ### Shadow DOM & Style Isolation
 
-The UI is injected via WXT's `createShadowRootUi()` helper, which creates a [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM) boundary.
+The export UI and floating HLTB layer use WXT's `createShadowRootUi()` helper, which creates a [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM) boundary. HLTB cover buttons are portals into small per-cover shadow roots sharing one constructed stylesheet.
 
 **Why Shadow DOM?**
 
@@ -61,7 +64,7 @@ The UI is injected via WXT's `createShadowRootUi()` helper, which creates a [Sha
 
 ### Turbo-Aware Navigation Monitoring
 
-Backloggd uses [Turbo](https://turbo.hotwired.dev/) navigation, so the script rechecks injection on `turbo:load`. It removes the listener when the extension context becomes invalid.
+Backloggd uses [Turbo](https://turbo.hotwired.dev/) navigation. The script rechecks injection on `turbo:load`, `turbo:render`, `turbo:frame-load`, `turbo:morph`, and `popstate`. It unmounts roots on `turbo:before-cache` and `turbo:before-render`, and releases listeners/roots when the extension context becomes invalid. The HLTB card observer also detects in-place changes and frame/container replacement.
 
 ## Technical Stack
 

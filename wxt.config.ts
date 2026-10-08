@@ -10,10 +10,17 @@ export default defineConfig({
     excludeSources: ['release-assets/**'], // Exclude release packages downloaded by GitHub workflows.
     includeSources: ['.node-version', '.gitignore', '.prettierrc.ts'], // Include hidden files needed to reproduce the build.
   },
-  manifest: ({ browser }) => ({
+  manifest: ({ browser, manifestVersion }) => ({
     name: 'Toolkittd',
-    permissions: ['storage'],
-    // Conditioanlly include Firefox-specific manifest based on the browser being built.
+    permissions: [
+      'storage',
+      ...(manifestVersion === 3
+        ? ['declarativeNetRequestWithHostAccess']
+        : ['webRequest', 'webRequestBlocking', 'https://howlongtobeat.com/*']),
+    ],
+    ...(manifestVersion === 3 && {
+      host_permissions: ['https://howlongtobeat.com/*'],
+    }),
     ...(browser === 'firefox' && {
       browser_specific_settings: {
         gecko: {
@@ -21,13 +28,13 @@ export default defineConfig({
           id: 'backloggd-plus@jolacdev',
           // `data_collection_permissions` is required by Firefox but not yet in WXT's manifest types.
           data_collection_permissions: {
-            required: ['none'],
+            required: ['websiteContent'],
           },
         },
       },
     }),
     description:
-      'Enhance Backloggd with extra tools, including game collection export to CSV and JSON.',
+      'Enhance Backloggd with game collection export and HowLongToBeat completion estimates.',
   }),
   vite: () => ({
     plugins: [tailwindcss(), tsconfigPaths()],

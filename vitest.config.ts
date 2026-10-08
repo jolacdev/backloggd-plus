@@ -8,6 +8,7 @@ export default defineConfig({
 
   test: {
     environment: 'jsdom',
+    exclude: ['**/node_modules/**', '**/.wxt/**', '**/.output/**', 'e2e/**'],
     globals: true,
     include: ['**/__tests__/**/*.{ts,tsx}', '**/*.{test,spec}.{ts,tsx}'],
     mockReset: true,

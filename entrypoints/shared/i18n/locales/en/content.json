@@ -23,6 +23,14 @@
         "exportFailed": "Something went wrong while exporting your game collection.",
         "noGamesFound": "No games matched the selected statuses."
       }
+    },
+    "hltb": {
+      "viewOnHltb": "View on HowLongToBeat",
+      "aria": {
+        "badge": "HowLongToBeat estimates for {{name}}",
+        "breakdown": "Completion time estimates",
+        "close": "Close completion times"
+      }
     }
   },
   "common": {

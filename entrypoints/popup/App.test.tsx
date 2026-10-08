@@ -2,16 +2,12 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StrictMode } from 'react';
 
-import { filtersStorageItem } from '@globalShared/storage';
+import {
+  filtersStorageItem,
+  preferencesStorageItem,
+} from '@globalShared/storage';
 
 import App from './App';
-
-// Reuse WxtVitest's global fake browser without loading its build-tool barrel
-// through the installed version's virtual browser module in jsdom.
-vi.mock('wxt/browser', async () => {
-  const { fakeBrowser: testBrowser } = await import('wxt/testing/fake-browser');
-  return { browser: testBrowser };
-});
 
 const defaults = {
   backlog: true,
@@ -25,6 +21,10 @@ const checkbox = (status: string) =>
   screen.getByRole('checkbox', {
     name: `features.export.filters.status.${status}`,
   });
+const openSettings = async () =>
+  await userEvent.click(
+    screen.getByRole('button', { name: 'settings.aria.open' }),
+  );
 const renderPopup = async () => {
   const view = render(
     <StrictMode>
@@ -80,10 +80,81 @@ describe('popup game collection', () => {
     expect(checkbox('wishlist')).toBeChecked();
   });
 
+  it('keeps the global logging preference outside feature panels and saves it across reopening', async () => {
+    const view = await renderPopup();
+    expect(
+      screen.queryByRole('checkbox', { name: 'settings.logging' }),
+    ).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'hltb.title' }));
+    await openSettings();
+    expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
+    const logging = screen.getByRole('checkbox', { name: 'settings.logging' });
+    await waitFor(() => expect(logging).toBeEnabled());
+    expect(logging).not.toBeChecked();
+    expect(logging.closest('[role="tabpanel"]')).toBeNull();
+    await userEvent.click(logging);
+    await waitFor(async () =>
+      expect(await preferencesStorageItem.getValue()).toEqual({
+        isLoggingEnabled: true,
+      }),
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'settings.aria.back' }),
+    );
+    expect(screen.getByRole('tab', { name: 'hltb.title' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    expect(logging).not.toBeVisible();
+    await openSettings();
+    expect(logging).toBeChecked();
+    view.unmount();
+    await renderPopup();
+    await openSettings();
+    await waitFor(() =>
+      expect(
+        screen.getByRole('checkbox', { name: 'settings.logging' }),
+      ).toBeChecked(),
+    );
+  });
+
+  it('shows a failed logging preference save without enabling it', async () => {
+    await renderPopup();
+    await openSettings();
+    const logging = screen.getByRole('checkbox', { name: 'settings.logging' });
+    await waitFor(() => expect(logging).toBeEnabled());
+    vi.spyOn(preferencesStorageItem, 'setValue').mockRejectedValue(
+      new Error('Storage unavailable'),
+    );
+    await userEvent.click(logging);
+    expect(await screen.findByText('settings.saveError')).toBeVisible();
+    expect(logging).not.toBeChecked();
+  });
+
   it('supports keyboard access to the export button, tooltip, and status choices', async () => {
     const user = userEvent.setup();
     await renderPopup();
     expect(screen.getByRole('tablist')).toBeInTheDocument();
+    await user.tab();
+    expect(
+      screen.getByRole('button', { name: 'settings.aria.open' }),
+    ).toHaveFocus();
+    await user.keyboard('{Enter}');
+    expect(
+      screen.getByRole('heading', { name: 'settings.title' }),
+    ).toBeVisible();
+    await user.tab();
+    expect(
+      screen.getByRole('checkbox', { name: 'settings.logging' }),
+    ).toHaveFocus();
+    await user.tab({ shift: true });
+    expect(
+      screen.getByRole('button', { name: 'settings.aria.back' }),
+    ).toHaveFocus();
+    await user.keyboard('{Enter}');
+    expect(
+      screen.getByRole('button', { name: 'settings.aria.open' }),
+    ).toHaveFocus();
     await user.tab();
     expect(
       screen.getByRole('tab', { name: 'gameCollection.title' }),

@@ -42,6 +42,8 @@
     "wxt.config.ts",
     "vitest.config.ts",
     "vitest.setup.ts",
+    "playwright.config.ts",
+    "e2e",
     "global.d.ts", // NOTE: Internal file to provide global type definitions for modules that don't have them.
     ".wxt/wxt.d.ts", // NOTE: Provides type definitions for WXT related (Vite, React...)
     "scripts"

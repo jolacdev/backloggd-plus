@@ -11,6 +11,14 @@
           "wishlist": "Wishlist"
         }
       }
+    },
+    "hltb": {
+      "category": {
+        "main": "Main story",
+        "plus": "Main + extras",
+        "hundred": "Completionist",
+        "all": "All styles"
+      }
     }
   }
 }
