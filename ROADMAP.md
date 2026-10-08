@@ -17,3 +17,8 @@ Planned work; these items are outside the current release automation scope.
 - [ ] Add manual recovery of an existing draft release by tag if rerunning jobs in the original release run proves insufficient; rebuild the exact tagged commit.
 - [ ] Normalize ZIP ordering and timestamps if byte-identical archives are needed for recovery or verification.
 - [ ] Detect already uploaded or pending store versions automatically if manual submission recovery becomes frequent; cover that logic with focused tests.
+
+## GitHub Configuration
+
+- [ ] Issues templates for bug reports and feature requests.
+- [ ] Check to enable release immutability.
