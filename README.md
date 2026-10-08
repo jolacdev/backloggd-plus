@@ -19,6 +19,8 @@
 
 **Toolkittd** is a browser extension that enhances [Backloggd](https://backloggd.com) with features the platform doesn't offer natively.
 
+_Toolkittd is an independent project and is not affiliated with, endorsed by, or sponsored by Backloggd._
+
 Its current feature lets authenticated users **export their game collection** (including ratings, play status, playthroughs, etc.) as downloadable **CSV and JSON** files. The JSON contains the full data; the CSV is more limited and contains only the first playthrough of each game.
 
 The export feature pulls your games from your profile, enriches each entry with log data from Backloggd's internal APIs, and hands you files you can use to back up, migrate, or analyze your game collection.
